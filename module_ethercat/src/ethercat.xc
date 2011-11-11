@@ -288,7 +288,7 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 
 		if (wordCount < (h.length/2)) {
 			wordCount = wordCount;
-			printstr("Error length in header is too large: 0x");
+			printstr("Error length in mailbox header is too large: 0x");
 			printhexln(h.length);
 			error = AL_ERROR;
 		} else {
@@ -735,7 +735,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 				switch (manager[i].control&0x0f) {
 				case SYNCM_BUFFER_MODE_READ:
-					if ((manager[i].status & 0x30) == 0) { /* read buffer is accessible */
+					if ((manager[i].status & 0x01) == 1) { /* read buffer is accessible, buffer was successfully written */
 						packet_error = ecat_process_packet(manager[i].address, manager[i].size, SYNCM_BUFFER_MODE,
 									c_coe_s, c_eoe_s, c_foe_s, c_pdo_s);
 					}
