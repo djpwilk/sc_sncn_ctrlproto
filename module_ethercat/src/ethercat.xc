@@ -328,7 +328,7 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 			break;
 
 		case ERROR_PACKET:
-			printstr("found unknown package: ");
+			printstr("Error packet received: ");
 			printhexln(h.type);
 			error = AL_ERROR;
 			break;
@@ -368,10 +368,10 @@ static void ecat_read_syncm(void)
 		address = EC_SYNCM_BASE+i*8;
 
 		data = ecat_read(address);
-		manager[i].address = data&0x1fff; //ecat_read(address);
+		manager[i].address = data&0xffff;
 		address+=2;
 		data = ecat_read(address);
-		manager[i].size = data&0x0fff; //ecat_read(address);
+		manager[i].size = data&0xffff;
 
 		address+=2;
 		data = ecat_read(address);
