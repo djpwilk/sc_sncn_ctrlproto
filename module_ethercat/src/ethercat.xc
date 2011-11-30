@@ -204,7 +204,7 @@ static int ecat_write(uint16_t address, uint16_t word)
 	unsigned int time;
 	uint16_t adr;
 
-	address = address&0x3fff; /* FIXME ET1100 only handles bits 13:0 of address! */
+	address = address&0xffff;
 	adr = BYTESWAP_16(address);
 
 	ecatAddress <: adr;
@@ -220,6 +220,20 @@ static int ecat_write(uint16_t address, uint16_t word)
 	t when timerafter(time+2) :> void; /* wait t_wr_delay >= 10ns to make sure the next WR access is in time. */
 
 	return 0;
+}
+
+static unsigned int ecat_write_block(uint16_t addr, uint16_t len, uint16_t buf[])
+{
+	unsigned int wordcount = 0;
+	uint16_t address = addr;
+
+	while (wordcount<len) {
+		buf[wordcount] = ecat_read(address);
+		wordcount++;
+		address+=2;
+	}
+
+	return wordcount;
 }
 
 /* FIXME check if split up in ecat_read_buffer() and ecat_read_mailbox() makes sense. */
@@ -343,6 +357,75 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 	}
 
 	return error;
+}
+
+/* FIXME: since sendbuffer[0] holds the size of the mailbox payload the
+ * additional parameter sendsize is oboslete */
+static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int type,
+					uint16_t buffer[], uint16_t sendsize)
+{
+	uint16_t sendbuffer[256];
+	uint16_t temp = 0;
+	unsigned int pos = 0;
+	unsigned int i = 0;
+
+	struct _ec_mailbox_header h;
+
+	h.length = sendsize*2; /* FIXME add handling of uneven sized payload */
+	h.address = start_address; /* ??? */
+	h.channel = 0;
+	h. priority = 1; /* should be set differentialy */
+	h.type = type;
+	h.control = 1; /* start value 1, 0 is reserved */
+
+	sendbuffer[pos++] = h.length;
+	sendbuffer[pos++] = h.address;
+	sendbuffer[pos] = h.channel&0x003f;
+	temp = h.priority&0x3;
+	sendbuffer[pos] |= (temp<<6);
+	temp = h.type&0xf;
+	sendbuffer[pos] |= (temp<<8);
+	temp = h.control&0x7;
+	sendbuffer[pos] |= (temp<<12);
+	pos++;
+
+	for (i=0; i<sendsize; i++, pos++) {
+		sendbuffer[pos] = buffer[i];
+	}
+
+	/* DEBUG */
+	printstr("DEBUG Send this mailbox packet:\n> ");
+	for (i=0; i<(sendsize+3); i++) {
+		printhex(sendbuffer[i]);
+		printstr(" ");
+	}
+	printstr("\n");
+	/* /DEBUG */
+
+	return ecat_write_block(start_address, pos, sendbuffer);
+
+#if 0
+	switch (type) {
+	case COE_PACKET:
+		break;
+	case EOE_PACKET:
+		break;
+	case FOE_PACKET:
+		break;
+	case SOE_PACKET:
+		break;
+	case VOE_PACKET:
+		break;
+	case VENDOR_BECKHOFF_PACKET:
+		break;
+	case ERROR_PACKET:
+		break;
+	default:
+		break;
+	}
+
+	return 0;
+#endif
 }
 
 static void ecat_update_error_counter(void)
@@ -700,6 +783,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	uint16_t packet_error = AL_NO_ERROR;
 
 	uint16_t out_buffer[256];
+	uint16_t out_size = 0;
+	uint16_t out_type = ERROR_PACKET;
+	unsigned int otmp = 0;
 	int pending_buffer = 0; /* no buffer to send */
 	int pending_mailbox = 0; /* no mailbox to send */
 
@@ -746,6 +832,8 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 					if (pending_buffer) {
 						printstr("Write Buffer SyncM: ");
 						printintln(i);
+						/* FIXME check return value */
+						ecat_write_block(manager[i].address, out_size, out_buffer);
 					}
 					break;
 
@@ -766,7 +854,10 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 					if (pending_mailbox && manager[i].status == 0) {
 						printstr("write mailbox! SyncM: ");
 						printintln(i);
+						packet_error = ecat_mbox_packet_send(manager[i].address, manager[i].size,
+									 out_type, out_buffer, out_size);
 					}
+					pending_buffer=0;
 					break;
 
 				}
@@ -785,6 +876,48 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 		/* FIXME: check FMMU data */
 		//ecat_read_fmmu(fmmu_inbuf);
 		//ecat_write_fmmu(fmmu_outbuf); /* echo the current values */
+
+		select {
+		case c_coe_r :> otmp :
+			out_size = otmp&0xffff;
+			out_type = COE_PACKET;
+			for (i=0; i<out_size; i++) {
+				c_coe_r :> otmp;
+				out_buffer[i] = otmp&0xffff;
+			}
+			pending_mailbox=1;
+			break;
+
+		case c_eoe_r :> otmp :
+			out_size = otmp&0xffff;
+			out_type = EOE_PACKET;
+			for (i=0; i<out_size; i++) {
+				c_eoe_r :> otmp;
+				out_buffer[i] = otmp&0xffff;
+			}
+			pending_mailbox=1;
+			break;
+
+		case c_foe_r :> otmp :
+			out_size = otmp&0xffff;
+			out_type = FOE_PACKET;
+			for (i=0; i<out_size; i++) {
+				c_foe_r :> otmp;
+				out_buffer[i] = otmp&0xffff;
+			}
+			pending_mailbox=1;
+			break;
+
+		case c_pdo_r :> otmp :
+			out_size = otmp&0xffff;
+			out_type = ERROR_PACKET; /* no mailbox packet, unused there! */
+			for (i=0; i<out_size; i++) {
+				c_pdo_r :> otmp;
+				out_buffer[i] = otmp&0xffff;
+			}
+			pending_mailbox=1;
+			break;
+		}
 	}
 
 	EC_CS_UNSET();
