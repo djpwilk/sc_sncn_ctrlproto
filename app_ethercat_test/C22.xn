@@ -79,10 +79,12 @@
     </Link>
 
     <!-- L2-1 to L2-2 -->
+    <!--
     <Link Encoding="5wire" Delays="4,4">
       <LinkEndpoint NodeId="1" Link="XLA"/>
       <LinkEndpoint NodeId="2" Link="XLA"/>
     </Link>
+    -->
     <Link Encoding="5wire" Delays="4,4">
       <LinkEndpoint NodeId="1" Link="XLB"/>
       <LinkEndpoint NodeId="2" Link="XLB"/>
