@@ -833,7 +833,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 						printstr("Write Buffer SyncM: ");
 						printintln(i);
 						/* FIXME check return value */
+/* FIXME: disabled
 						ecat_write_block(manager[i].address, out_size, out_buffer);
+*/
 					}
 					break;
 
@@ -854,10 +856,14 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 					if (pending_mailbox && manager[i].status == 0) {
 						printstr("write mailbox! SyncM: ");
 						printintln(i);
+/* FIXME: disabled
 						packet_error = ecat_mbox_packet_send(manager[i].address, manager[i].size,
 									 out_type, out_buffer, out_size);
+*/
 					}
+/* FIXME: disabled
 					pending_buffer=0;
+*/
 					break;
 
 				}
@@ -876,7 +882,8 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 		/* FIXME: check FMMU data */
 		//ecat_read_fmmu(fmmu_inbuf);
 		//ecat_write_fmmu(fmmu_outbuf); /* echo the current values */
-
+/* FIXME: disabled */
+#if 0
 		select {
 		case c_coe_r :> otmp :
 			out_size = otmp&0xffff;
@@ -910,7 +917,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 		case c_pdo_r :> otmp :
 			out_size = otmp&0xffff;
-			out_type = ERROR_PACKET; /* no mailbox packet, unused there! */
+			out_type = ERROR_PACKET; // no mailbox packet, unused there!
 			for (i=0; i<out_size; i++) {
 				c_pdo_r :> otmp;
 				out_buffer[i] = otmp&0xffff;
@@ -918,7 +925,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			pending_mailbox=1;
 			break;
 		}
+#endif
 	}
-
 	EC_CS_UNSET();
 }
