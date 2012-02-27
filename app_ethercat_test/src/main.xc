@@ -137,6 +137,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 		}
 
 		/* send data */
+		#if 0
 		switch (outBuffer[0]) {
 		case COE_PACKET:
 			count=1;
@@ -165,6 +166,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 
 		t :> time;
 		t when timerafter(time+delay) :> void;
+		#endif
 	}
 }
 
