@@ -246,6 +246,7 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 	int error = AL_NO_ERROR;
 	int data_start;
 	int i, wc;
+	uint16_t offset=0;
 
 	uint16_t wordCount;
 	uint16_t packetWords;
@@ -313,7 +314,12 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 			wordCount = h.length/2;
 		}
 
-		ecat_read_block(start+(mailboxHeaderLength*2), wordCount, buffer);  // read mailbox data
+		offset = start+(mailboxHeaderLength*2);
+		ecat_read_block(offset, wordCount, buffer);  // read mailbox data
+
+		/* I have to read the last byte to finish mailbox operation! */
+		offset = start+(mailboxHeaderLength*2)+wordCount;
+		ecat_read_block(offset, MAX_BUFFER_SIZE-offset , buffer);
 
 		switch (h.type) {
 		case EOE_PACKET:
