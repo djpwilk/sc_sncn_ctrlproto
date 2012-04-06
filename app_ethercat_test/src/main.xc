@@ -43,10 +43,11 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 	while (1) {
 		/* Receive data */
 		select {
-		case coe_out :> tmp :
+		case coe_in :> tmp :
 			inBuffer[0] = tmp&0xffff;
 			printstr("[APP] Received COE packet\n");
 			count=0;
+
 			while (count < inBuffer[0]) {
 				coe_in :> tmp;
 				inBuffer[count+1] = tmp&0xffff;
@@ -54,7 +55,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			}
 			break;
 
-		case eoe_out :> tmp :
+		case eoe_in :> tmp :
 			inBuffer[0] = tmp&0xffff;
 			printstr("[APP] Received EOE packet\n");
 			count=0;
@@ -65,13 +66,13 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			}
 			break;
 
-		case foe_out :> tmp :
+		case foe_in :> tmp :
 			size = (uint16_t)(tmp&0xffff);
 			count=0;
 
 			while (count < size) {
 				tmp = 0;
-				foe_out :> tmp;
+				foe_in :> tmp;
 				inBuffer[count] = (tmp&0xffff);
 				count++;
 			}
@@ -182,14 +183,14 @@ static void pdo_handler(chanend pdo_in, chanend pdo_out)
 
 	while (1){
 		select {
-		case pdo_out :> tmp :
+		case pdo_in :> tmp :
 			inBuffer[0] = tmp&0xffff;
 			//printstr("[APP] Received PDO packet: \n");
 
 			count = 0;
 			while (count<inBuffer[0]) {
 				tmp = 0;
-				pdo_out :> tmp;
+				pdo_in :> tmp;
 				inBuffer[count+1] = (tmp&0xffff);
 				count++;
 			}
@@ -242,9 +243,9 @@ int main(void) {
 	par {
 		on stdcore[0] : {
 			ecat_init();
-			ecat_handler(coe_in, coe_out, eoe_in, eoe_out, foe_in, foe_out, pdo_in, pdo_out);
+			ecat_handler(coe_out, coe_in, eoe_out, eoe_in, foe_out, foe_in, pdo_out, pdo_in);
 		}
-	
+
 		on stdcore[0] : {
 			consumer(coe_in, coe_out, eoe_in, eoe_out, foe_in, foe_out/*, pdo_in, pdo_out*/);
 		}
@@ -256,9 +257,9 @@ int main(void) {
 		*/
 
 		on stdcore[1] : {
-			pdo_handler(pdo_in, pdo_out);
+			pdo_handler(pdo_out, pdo_in);
 		}
 	}
-	
+
 	return 0;
 }
