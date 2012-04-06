@@ -171,10 +171,12 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 	}
 }
 
-static void pdo_handler(chanend pdo_in, chanend pdo_out)
+/* FIXME check channels! */
+static void pdo_handler(chanend pdo_out, chanend pdo_in)
 {
 	unsigned int inBuffer[64];
-	unsigned int count;
+	unsigned int count=0;
+	unsigned int outCount=0;
 	unsigned int tmp;
 
 	timer t;
@@ -182,18 +184,21 @@ static void pdo_handler(chanend pdo_in, chanend pdo_out)
 	unsigned int time = 0;
 
 	while (1){
+		count = 0;
+
 		select {
 		case pdo_in :> tmp :
 			inBuffer[0] = tmp&0xffff;
-			//printstr("[APP] Received PDO packet: \n");
+			printstr("[APP DEBUG] Received PDO packet: \n");
 
-			count = 0;
 			while (count<inBuffer[0]) {
 				tmp = 0;
 				pdo_in :> tmp;
 				inBuffer[count+1] = (tmp&0xffff);
+				printhex(tmp&0xffff);
 				count++;
 			}
+			printstr("\n");
 
 			if (inBuffer[1] == 0xdead || inBuffer[1] == 0xadde || inBuffer[1] == 0xbeef || inBuffer[1] == 0xefbe) {
 				ledGreen <: 0;
@@ -207,8 +212,18 @@ static void pdo_handler(chanend pdo_in, chanend pdo_out)
 				ledRed <: 1;
 			}
 			break;
+		default:
+			break;
 		}
 
+		if (count>0) {
+			/* echo pdo input */
+			printstr("[APP DEBUG] echo pdo input\n");
+			outCount=0;
+			while (outCount >= count) {
+				pdo_out <: inBuffer[outCount++];
+			}
+		}
 		//t :> time;
 		//t when timerafter(time+delay) :> void;
 	}
