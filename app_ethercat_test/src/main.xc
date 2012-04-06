@@ -53,6 +53,22 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				inBuffer[count+1] = tmp&0xffff;
 				count++;
 			}
+
+			outSize = 8;
+
+			/* Test packet, reply to init download SDO */
+			printstr("[APP DEBUG] construction of dummy answer\n");
+			outBuffer[0] = COE_PACKET;
+			outBuffer[1] = outSize;
+			outBuffer[2] = 0x60; /* initial download sdo answer */
+			outBuffer[3] = 0x1c;
+			outBuffer[4] = 0x00;
+			outBuffer[5] = 0x00;
+			outBuffer[6] = 0x00;
+			outBuffer[7] = 0x00;
+			outBuffer[8] = 0x00;
+			outBuffer[9] = 0x00;
+
 			break;
 
 		case eoe_in :> tmp :
