@@ -77,14 +77,46 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				count++;
 			}
 
+#if 1
+			/* check packet content */
+			tmp = (inBuffer[0]>>8)&0xff;
+			printstr("DEBUG FOE primitive: ");
+			printhexln(tmp);
+
+			switch (tmp) {
+			case 0x01: /* FoE read */
+				printstr("DEBUG main FoE read request\n");
+				break;
+			case 0x02: /* FoE write */
+				printstr("DEBUG main FoE write request\n");
+				break;
+			case 0x03: /* data request */
+				printstr("DEBUG main FoE data request\n");
+				break;
+			case 0x04: /* ack request */
+				printstr("DEBUG main FoE ack request\n");
+				break;
+			case 0x05: /* error request */
+				printstr("DEBUG main FoE error request\n");
+				break;
+			case 0x06: /* busy request */
+				printstr("DEBUG main FoE busy request\n");
+				break;
+			}
+
 			/* Here comes the code to handle the package content! */
-			printstr("[APP] Received FOE packet\n");
+			printstr("[APP] Received FOE packet (echoing)\n");
 			printhexln(size);
+			count = 0;
+			outBuffer[count++] = FOE_PACKET;
+			outBuffer[count++] = size; /* FIXME simple echo test */
 			for (i=0;i<size;i++) {
 				printstr("Received: ");
 				printhexln(inBuffer[i]);
+				outBuffer[i+1] = tmp&0xffff; /* FIXME simple echo test */
 			}
 			/* end example */
+#endif
 			break;
 
 #if 0
@@ -122,52 +154,45 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 
 			break;
 #endif
-#if 0
-		case coe_out <: outBuffer[0] :
-			count=1;
-			break;
-
-		case eoe_out <: outBuffer[0] :
-			count=1;
-			break;
-
-		case foe_out <: outBuffer[0] :
-			count=1;
-			break;
-#endif
 		}
-
-		/* send data */
-		#if 0
+/* send data */
 		switch (outBuffer[0]) {
 		case COE_PACKET:
 			count=1;
-			while (count<outSize) {
+			printstr("[APP DEBUG] send CoE packet\n");
+			while (count<(outSize+2)) {
 				coe_out <: outBuffer[count];
 				count++;
 			}
+			outBuffer[0] = 0;
 			break;
 
 		case EOE_PACKET:
 			count=1;
+			printstr("DEBUG send EoE packet\n");
 			while (count<outSize) {
 				eoe_out <: outBuffer[count];
 				count++;
 			}
+			outBuffer[0] = 0;
 			break;
 
 		case FOE_PACKET:
 			count=1;
+			printstr("DEBUG send FoE packet\n");
 			while (count<outSize) {
 				foe_out <: outBuffer[count];
 				count++;
 			}
+			outBuffer[0] = 0;
+			break;
+
+		default:
 			break;
 		}
 
 		t :> time;
 		t when timerafter(time+delay) :> void;
-		#endif
 	}
 }
 
