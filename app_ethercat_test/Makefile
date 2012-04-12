@@ -24,7 +24,7 @@ XCC_FLAGS = -g
 
 # The USED_MODULES variable lists other module used by the application. 
 
-USED_MODULES = module_ethercat
+USED_MODULES = module_ethercat module_xtcp
 
 AUTO_ECLIPSE = 0
 
