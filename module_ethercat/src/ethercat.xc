@@ -378,6 +378,8 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 	uint16_t temp = 0;
 	unsigned int pos = 0;
 	unsigned int i = 0;
+	uint16_t size = max_size/2;
+	uint16_t sent = 0;
 
 	struct _ec_mailbox_header h;
 
@@ -404,7 +406,7 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 	}
 
 	/* Padding: The last byte in SyncM mailbox buffer must be written to trigger send signal */
-	for (i=pos; i<max_size; i++) {
+	for (i=pos; i<size; i++) {
 		sendbuffer[i] = 0x00;
 	}
 
@@ -418,7 +420,12 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 	printstr("\n");
 	// /DEBUG */
 
-	return ecat_write_block(start_address, max_size/*pos*/, sendbuffer);
+	sent = ecat_write_block(start_address, size/*pos*/, sendbuffer);
+	if (sent != size) {
+		return AL_ERROR;
+	}
+
+	return AL_NO_ERROR;
 }
 
 static void ecat_update_error_counter(void)
