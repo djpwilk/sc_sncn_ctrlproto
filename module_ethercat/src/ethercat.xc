@@ -391,7 +391,7 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 	struct _ec_mailbox_header h;
 
 	h.length = sendsize*2; /* FIXME add handling of uneven sized payload */
-	h.address = start_address;
+	h.address = escStationAddress;
 	h.channel = 0;
 	h. priority = 1;
 	h.type = type;
