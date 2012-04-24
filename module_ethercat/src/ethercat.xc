@@ -856,9 +856,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 				case SYNCM_MAILBOX_MODE_WRITE:
 					/* send packets pending? */
-					if (pending_mailbox && manager[i].status == 0) {
-						printstr("[DEBUG] write mailbox! SyncM: "); printintln(i);
-						printstr("  +++ sync manager size: "); printintln(manager[i].size);
+					if (pending_mailbox == 1 && manager[i].status == 0) {
 						packet_error = ecat_mbox_packet_send(manager[i].address, manager[i].size,
 									 out_type, out_buffer, out_size);
 						pending_mailbox=0;
