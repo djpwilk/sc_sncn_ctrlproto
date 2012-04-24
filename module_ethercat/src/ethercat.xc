@@ -230,7 +230,7 @@ static unsigned int ecat_write_block(uint16_t addr, uint16_t len, uint16_t buf[]
 	uint16_t address = addr;
 
 	while (wordcount<len) {
-		buf[wordcount] = ecat_read(address);
+		ecat_write(address, buf[wordcount]);
 		wordcount++;
 		address+=2;
 	}
@@ -323,7 +323,7 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		}
 
 		offset = start+(mailboxHeaderLength*2);
-		ecat_read_block(offset, wordCount, buffer);  // read mailbox data
+		ecat_read_block(offset, packetWords-mailboxHeaderLength/*wordCount*/, buffer);  // read mailbox data
 
 		/* I have to read the last byte to finish mailbox operation! */
 		offset = start+(mailboxHeaderLength*2)+wordCount;
@@ -418,17 +418,7 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 		sendbuffer[i] = 0x00;
 	}
 
-	/* DEBUG * /
-	printstr("DEBUG Send this mailbox packet:\n> ");
-	printstr("Type: 0x"); printhexln(h.type);
-	for (i=0; i<(sendsize+3); i++) {
-		printhex(sendbuffer[i]);
-		printstr(" ");
-	}
-	printstr("\n");
-	// /DEBUG */
-
-	sent = ecat_write_block(start_address, size/*pos*/, sendbuffer);
+	sent = ecat_write_block(start_address, size, sendbuffer);
 	if (sent != size) {
 		return AL_ERROR;
 	}
@@ -824,6 +814,8 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 		}
 
 		for (i=0; i<8; i++) {
+			packet_error = AL_NO_ERROR;
+
 			if ((manager[i].activate&0x01) == 1) { /* sync manager is active */
 				data = ecat_read(EC_SYNCM_GET_CONTROL_STATUS(i));
 				manager[i].control = data&0xff;
