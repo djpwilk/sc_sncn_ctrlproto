@@ -265,11 +265,12 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 
 	switch (type) {
 	case SYNCM_BUFFER_MODE:
-		printstr("DEBUG ecat_process_packet(): processing Buffer Mode\n");
+		//printstr("DEBUG ecat_process_packet(): processing Buffer Mode\n");
 		ecat_read_block(start, wordCount, buffer);
 		ecat_send_handler(c_pdo, buffer, wordCount);
 
 		/* FIXME: makeshift echo the buffer packet */
+		/* FIXME is it really necessary to echo the packet? */
 		for (i=0; i<8; i++) {
 			if ((manager[i].activate&0x01) != 1) {
 				continue;
@@ -310,8 +311,10 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		h.type = (buffer[2]>>8)&0x000f;
 		h.control = (buffer[2]>>12)&0x0007;
 
-		printstr("Received mailbox packet of type: 0x");
+#if 0 /* DEBUG */
+		printstr("[DEBUG ecat_process_packet()] Received mailbox packet of type: 0x");
 		printhexln(h.type);
+#endif
 
 		if (wordCount < (h.length/2)) {
 			wordCount = wordCount;
@@ -325,24 +328,20 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		offset = start+(mailboxHeaderLength*2);
 		ecat_read_block(offset, packetWords-mailboxHeaderLength/*wordCount*/, buffer);  // read mailbox data
 
-		/* I have to read the last byte to finish mailbox operation! */
-		offset = start+(mailboxHeaderLength*2)+wordCount;
-		ecat_read_block(offset, MAX_BUFFER_SIZE-offset , buffer);
-
 		switch (h.type) {
 		case EOE_PACKET:
-			printstr("DEBUG ethercat: received EOE packet.\n");
+			//printstr("DEBUG ethercat: received EOE packet.\n");
 			ecat_send_handler(c_eoe, buffer, wordCount);
 			break;
 
 		case COE_PACKET:
-			printstr("DEBUG ethercat: received COE packet, but this is not processed.\n");
+			//printstr("DEBUG ethercat: received COE packet, but this is not processed.\n");
 			ecat_send_handler(c_coe, buffer, wordCount);
 			//error = AL_MBX_COE;
 			break;
 
 		case FOE_PACKET:
-			printstr("DEBUG ethercat: received FOE packet, start processing.\n");
+			//printstr("DEBUG ethercat: received FOE packet, start processing.\n");
 			ecat_send_handler(c_foe, buffer, wordCount);
 			//error = AL_MBX_FOE;
 			break;
@@ -843,7 +842,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 					break;
 
 				case SYNCM_MAILBOX_MODE_READ:
-					printstr("[DEBUG:] Mailbox ready to read.\n");
+					//printstr("[DEBUG:] Mailbox ready to read.\n");
 					if ((manager[i].status & 0x08) != 0) { /* mailbox full */
 						//printstr("Read Mailbox SyncM: ");
 						//printintln(i);
@@ -920,12 +919,16 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 		case c_foe_r :> otmp :
 			printstr("DEBUG: processing outgoing FoE packets\n");
 			out_size = otmp&0xffff;
+			//printstr("DEBUG: read: "); printhexln(out_size);
+			//printstr("> ");
 			out_type = FOE_PACKET;
 			for (i=0; i<out_size; i++) {
 				c_foe_r :> otmp;
 				out_buffer[i] = otmp&0xffff;
+				//printhex(out_buffer[i]);
 			}
 			pending_mailbox=1;
+			//printstr("\nfin\n");
 			break;
 
 		case c_pdo_r :> otmp :
@@ -938,9 +941,11 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			}
 			pending_mailbox=1;
 			break;
+
 		default:
 			break;
 		}
+
 	}
 	EC_CS_UNSET();
 }
