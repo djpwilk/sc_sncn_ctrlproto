@@ -281,6 +281,12 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 					ecat_write(address, buffer[wc]);
 					address+=2;
 				}
+
+				/* padding to make buffer active */
+				for (wc; wc<manager[i].size; wc++) {
+					ecat_write(address, buffer[wc]);
+					address+=2;
+				}
 			}
 		}
 		/* end buffer echo test */
