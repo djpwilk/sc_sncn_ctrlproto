@@ -104,6 +104,8 @@ on stdcore[0]: in  port ecatIRQ = XS1_PORT_1I;
 on stdcore[0]: out port ecatAddress = XS1_PORT_16B;
 on stdcore[0]:     port ecatData = XS1_PORT_16A;
 
+static uint16_t escStationAddress;
+static uint16_t escStationAddressAlias;
 static uint16_t escDlStatus;
 static uint16_t alControl;
 static uint16_t alStatus;
@@ -810,6 +812,8 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 		/* If preop state isn't reached there is no need to process mailbox/buffer communication. */
 		if ((al_state&0xf) < AL_STATE_PREOP) {
+			escStationAddress = ecat_read(0x0010);
+			escStationAddressAlias = ecat_read(0x0012);
 			continue;
 		}
 
