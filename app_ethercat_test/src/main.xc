@@ -31,6 +31,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 	unsigned int tmp = 0;
 	unsigned int size = 0;
 	unsigned count = 0;
+	unsigned int outType = -1; /* FIXME set with define */
 	unsigned outSize;
 
 	int i;
@@ -95,7 +96,8 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 
 #if 1
 			/* check packet content */
-			tmp = (inBuffer[0]>>8)&0xff;
+			//tmp = (inBuffer[0]>>8)&0xff;
+			tmp = (inBuffer[0])&0xff;
 			printstr("DEBUG FOE primitive: ");
 			printhexln(tmp);
 
@@ -105,6 +107,12 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				break;
 			case 0x02: /* FoE write */
 				printstr("DEBUG main FoE write request\n");
+				// reply with ack request
+				outType = FOE_PACKET;
+				outBuffer[0] = 3;
+				outBuffer[1] = 0x0004; /* ack request */
+				outBuffer[2] = 0x0000;
+				outBuffer[3] = 0x0000;
 				break;
 			case 0x03: /* data request */
 				printstr("DEBUG main FoE data request\n");
@@ -121,6 +129,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			}
 
 			/* Here comes the code to handle the package content! */
+#if 0
 			printstr("[APP] Received FOE packet (echoing)\n");
 			printhexln(size);
 			count = 0;
@@ -131,7 +140,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				printhexln(inBuffer[i]);
 				outBuffer[i+1] = tmp&0xffff; /* FIXME simple echo test */
 			}
-			/* end example */
+#endif
 #endif
 			break;
 
@@ -172,7 +181,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 #endif
 		}
 /* send data */
-		switch (outBuffer[0]) {
+		switch (outType /*outBuffer[0]*/) {
 		case COE_PACKET:
 			count=1;
 			printstr("[APP DEBUG] send CoE packet\n");
@@ -194,13 +203,15 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			break;
 
 		case FOE_PACKET:
-			count=1;
+			count=0;
 			printstr("DEBUG send FoE packet\n");
+			outSize = outBuffer[0]+1;
 			while (count<outSize) {
 				foe_out <: outBuffer[count];
 				count++;
 			}
 			outBuffer[0] = 0;
+			outType = -1; /* FIXME set correct define */
 			break;
 
 		default:
@@ -257,14 +268,16 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 			break;
 		}
 
+#if 0
 		if (count>0) {
 			/* echo pdo input */
-			printstr("[APP DEBUG] echo pdo input\n");
+			printstr("[APP DEBUG] echo pdo packet\n");
 			outCount=0;
-			while (outCount >= count) {
+			while (outCount < count) {
 				pdo_out <: inBuffer[outCount++];
 			}
 		}
+#endif
 		//t :> time;
 		//t when timerafter(time+delay) :> void;
 	}
