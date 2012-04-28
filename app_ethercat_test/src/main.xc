@@ -88,7 +88,6 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				count++;
 			}
 
-#if 1
 			/* check packet content */
 			//tmp = (inBuffer[0]>>8)&0xff;
 			tmp = (inBuffer[0])&0xff;
@@ -160,7 +159,6 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				printhexln(inBuffer[i]);
 				outBuffer[i+1] = tmp&0xffff; /* FIXME simple echo test */
 			}
-#endif
 #endif
 			break;
 
