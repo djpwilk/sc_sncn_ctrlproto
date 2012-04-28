@@ -894,58 +894,66 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 		//ecat_read_fmmu(fmmu_inbuf);
 		//ecat_write_fmmu(fmmu_outbuf); /* echo the current values */
 
-		/* read incoming filehandles */
+		/* read incoming filehandles, if no mailbox is pending! */
+		if (pending_mailbox != 1) {
+			select {
+			case c_coe_r :> otmp :
+				printstr("DEBUG: processing outgoing CoE packets\n");
+				out_type = COE_PACKET;
+				out_size = otmp&0xffff;
+				printhexln(out_size);
+				for (i=0; i<out_size; i++) {
+					c_coe_r :> otmp;
+					out_buffer[i] = otmp&0xffff;
+				}
+				pending_mailbox=1;
+				break;
+
+			case c_eoe_r :> otmp :
+				printstr("DEBUG: processing outgoing EoE packets\n");
+				out_size = otmp&0xffff;
+				out_type = EOE_PACKET;
+				for (i=0; i<out_size; i++) {
+					c_eoe_r :> otmp;
+					out_buffer[i] = otmp&0xffff;
+				}
+				pending_mailbox=1;
+				break;
+
+			case c_foe_r :> otmp :
+				printstr("DEBUG: processing outgoing FoE packets\n");
+				out_size = otmp&0xffff;
+				//printstr("DEBUG: read: "); printhexln(out_size);
+				//printstr("> ");
+				out_type = FOE_PACKET;
+				for (i=0; i<out_size; i++) {
+					c_foe_r :> otmp;
+					out_buffer[i] = otmp&0xffff;
+					//printhex(out_buffer[i]);
+				}
+				pending_mailbox=1;
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		/* buffered things can be send anytime */
 		select {
-		case c_coe_r :> otmp :
-			printstr("DEBUG: processing outgoing CoE packets\n");
-			out_type = COE_PACKET;
-			out_size = otmp&0xffff;
-			printhexln(out_size);
-			for (i=0; i<out_size; i++) {
-				c_coe_r :> otmp;
-				out_buffer[i] = otmp&0xffff;
-			}
-			pending_mailbox=1;
-			break;
+			case c_pdo_r :> otmp :
+				printstr("DEBUG: processing outgoing PDO packets\n");
+				out_size = otmp&0xffff;
+				out_type = ERROR_PACKET; // no mailbox packet, unused there!
+				for (i=0; i<out_size; i++) {
+					c_pdo_r :> otmp;
+					out_buffer[i] = otmp&0xffff;
+				}
+				pending_mailbox=1;
+				break;
 
-		case c_eoe_r :> otmp :
-			printstr("DEBUG: processing outgoing EoE packets\n");
-			out_size = otmp&0xffff;
-			out_type = EOE_PACKET;
-			for (i=0; i<out_size; i++) {
-				c_eoe_r :> otmp;
-				out_buffer[i] = otmp&0xffff;
-			}
-			pending_mailbox=1;
-			break;
-
-		case c_foe_r :> otmp :
-			printstr("DEBUG: processing outgoing FoE packets\n");
-			out_size = otmp&0xffff;
-			//printstr("DEBUG: read: "); printhexln(out_size);
-			//printstr("> ");
-			out_type = FOE_PACKET;
-			for (i=0; i<out_size; i++) {
-				c_foe_r :> otmp;
-				out_buffer[i] = otmp&0xffff;
-				//printhex(out_buffer[i]);
-			}
-			pending_mailbox=1;
-			break;
-
-		case c_pdo_r :> otmp :
-			printstr("DEBUG: processing outgoing PDO packets\n");
-			out_size = otmp&0xffff;
-			out_type = ERROR_PACKET; // no mailbox packet, unused there!
-			for (i=0; i<out_size; i++) {
-				c_pdo_r :> otmp;
-				out_buffer[i] = otmp&0xffff;
-			}
-			pending_mailbox=1;
-			break;
-
-		default:
-			break;
+			default:
+				break;
 		}
 
 	}
