@@ -188,13 +188,15 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			break;
 
 		case EOE_PACKET:
-			count=1;
-			printstr("DEBUG send EoE packet\n");
+			count=0;
+			//printstr("DEBUG send EoE packet\n");
+			outSize = outBuffer[0]+1;
 			while (count<outSize) {
 				eoe_out <: outBuffer[count];
 				count++;
 			}
 			outBuffer[0] = 0;
+			outType = -1;
 			break;
 
 		case FOE_PACKET:
