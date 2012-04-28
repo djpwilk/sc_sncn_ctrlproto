@@ -147,19 +147,6 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				break;
 			}
 
-			/* Here comes the code to handle the package content! */
-#if 0
-			printstr("[APP] Received FOE packet (echoing)\n");
-			printhexln(size);
-			count = 0;
-			outBuffer[count++] = FOE_PACKET;
-			outBuffer[count++] = size; /* FIXME simple echo test */
-			for (i=0;i<size;i++) {
-				printstr("Received: ");
-				printhexln(inBuffer[i]);
-				outBuffer[i+1] = tmp&0xffff; /* FIXME simple echo test */
-			}
-#endif
 			break;
 
 #if 0
