@@ -55,22 +55,14 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				count++;
 			}
 
-			outSize = 8;
-
-			/* Test packet, reply to init download SDO * /
-			printstr("[APP DEBUG] construction of dummy answer\n");
-			outBuffer[0] = COE_PACKET;
-			outBuffer[1] = outSize;
-			outBuffer[2] = 0x60; // initial download sdo answer 
-			outBuffer[3] = 0x1c;
-			outBuffer[4] = 0x00;
-			outBuffer[5] = 0x00;
-			outBuffer[6] = 0x00;
-			outBuffer[7] = 0x00;
-			outBuffer[8] = 0x00;
-			outBuffer[9] = 0x00;
-			//  */
-
+			/* Reply with abort initiate download sequence */
+			outType = COE_PACKET;
+			outBuffer[0] = 5;
+			outBuffer[1] = 0x2000;
+			outBuffer[2] = 0x0080;
+			outBuffer[3] = 0x001c;
+			outBuffer[4] = 0x0000;
+			outBuffer[5] = 0x0601;
 			break;
 
 		case eoe_in :> tmp :
@@ -184,13 +176,15 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 /* send data */
 		switch (outType /*outBuffer[0]*/) {
 		case COE_PACKET:
-			count=1;
-			printstr("[APP DEBUG] send CoE packet\n");
-			while (count<(outSize+2)) {
+			count=0;
+			//printstr("[APP DEBUG] send CoE packet\n");
+			outSize = outBuffer[0]+1;
+			while (count<outSize) {
 				coe_out <: outBuffer[count];
 				count++;
 			}
 			outBuffer[0] = 0;
+			outType = -1;
 			break;
 
 		case EOE_PACKET:
