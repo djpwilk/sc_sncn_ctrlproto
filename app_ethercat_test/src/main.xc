@@ -23,7 +23,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			chanend foe_in, chanend foe_out/*, chanend pdo_in, chanend pdo_out*/)
 {
 	timer t;
-	const unsigned int delay = 100000;
+	const unsigned int delay = 10;
 	unsigned int time = 0;
 
 	unsigned int inBuffer[MAX_BUFFER_SIZE];
