@@ -34,6 +34,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 	unsigned int outType = -1; /* FIXME set with define */
 	unsigned outSize;
 
+	unsigned int foePacketNbr = 0;
 	int i;
 
 	for (i=0; i<MAX_BUFFER_SIZE; i++) {
@@ -91,15 +92,22 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			/* check packet content */
 			//tmp = (inBuffer[0]>>8)&0xff;
 			tmp = (inBuffer[0])&0xff;
-			printstr("DEBUG FOE primitive: ");
-			printhexln(tmp);
+			//printstr("DEBUG FOE primitive: ");
+			//printhexln(tmp);
+			foePacketNbr = inBuffer[1]&0xffff;
 
 			switch (tmp) {
-			case 0x01: /* FoE read */
-				printstr("DEBUG main FoE read request\n");
+			case 0x01: /* FoE read req */
+				//printstr("DEBUG main FoE read request\n");
+				outType = FOE_PACKET;
+				outBuffer[0] = 3;
+				outBuffer[1] = 0x0005; /* error request */
+				outBuffer[2] = 0x8001; /* not found */
+				outBuffer[3] = 0x0000;
 				break;
-			case 0x02: /* FoE write */
-				printstr("DEBUG main FoE write request\n");
+
+			case 0x02: /* FoE write req */
+				//printstr("DEBUG main FoE write request\n");
 				// reply with ack request
 				outType = FOE_PACKET;
 				outBuffer[0] = 3;
@@ -107,15 +115,34 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				outBuffer[2] = 0x0000;
 				outBuffer[3] = 0x0000;
 				break;
+
 			case 0x03: /* data request */
-				printstr("DEBUG main FoE data request\n");
+				printstr("Ignore data packet\n");
+				//printstr("DEBUG main FoE data request, packet number: ");
+				//printhexln(foePacketNbr);
+#if 0
+				outType = FOE_PACKET;
+				outBuffer[0] = 3;
+#if 0
+				outBuffer[1] = 0x0005; /* error request */
+				outBuffer[2] = 0x8003; /* not found */
+				outBuffer[3] = 0x0000;
+#else
+				outBuffer[1] = 0x0004; /* ack.req */
+				outBuffer[2] = foePacketNbr;
+				outBuffer[3] = 0x0000;
+#endif
+#endif
 				break;
+
 			case 0x04: /* ack request */
 				printstr("DEBUG main FoE ack request\n");
 				break;
+
 			case 0x05: /* error request */
 				printstr("DEBUG main FoE error request\n");
 				break;
+
 			case 0x06: /* busy request */
 				printstr("DEBUG main FoE busy request\n");
 				break;
@@ -201,7 +228,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 
 		case FOE_PACKET:
 			count=0;
-			printstr("DEBUG send FoE packet\n");
+			//printstr("DEBUG send FoE packet\n");
 			outSize = outBuffer[0]+1;
 			while (count<outSize) {
 				foe_out <: outBuffer[count];
