@@ -89,15 +89,13 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			}
 
 			/* check packet content */
-			//tmp = (inBuffer[0]>>8)&0xff;
 			tmp = (inBuffer[0])&0xff;
-			//printstr("DEBUG FOE primitive: ");
-			//printhexln(tmp);
 			foePacketNbr = inBuffer[1]&0xffff;
 
 			switch (tmp) {
 			case 0x01: /* FoE read req */
 				//printstr("DEBUG main FoE read request\n");
+				/* fixed answer, currently no file is stored */
 				outType = FOE_PACKET;
 				outBuffer[0] = 3;
 				outBuffer[1] = 0x0005; /* error request */
@@ -118,8 +116,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			case 0x03: /* data request */
 				printstr("Ignore data packet\n");
 				//printstr("DEBUG main FoE data request, packet number: ");
-				//printhexln(foePacketNbr);
-#if 0
+#if 0 /* since SOEM doesn't support the ACK reply this is not send! */
 				outType = FOE_PACKET;
 				outBuffer[0] = 3;
 #if 0
