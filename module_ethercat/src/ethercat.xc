@@ -419,6 +419,7 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 
 	sent = ecat_write_block(start_address, size, sendbuffer);
 	if (sent != size) {
+		printstr("Error wrong return size\n");
 		return AL_ERROR;
 	}
 
@@ -930,7 +931,6 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				//printhex(out_buffer[i]);
 			}
 			pending_mailbox=1;
-			//printstr("\nfin\n");
 			break;
 
 		case c_pdo_r :> otmp :
