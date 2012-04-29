@@ -47,6 +47,20 @@ typedef struct {
 	//int transmit_to_master???
 } foefile_t;
 
+typedef struct {
+	unsigned char opcode;
+	union {
+		uint32_t packetnumber;
+		uint32_t password;
+		uint32_t error;
+	} a;
+	union {
+		char filename[512];
+		unsigned char data[512];
+		char errortext[512];
+	} b;
+} foemsg_t;
+
 /*
     application interface (public)
  */
