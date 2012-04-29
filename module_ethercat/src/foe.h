@@ -140,3 +140,11 @@ int foe_release(void);
  * @return 0 on success
  */
 int foe_format(void);
+
+/*
+ * Internal EtherCAT API
+ */
+
+// state machine, showing expected packages
+// parse packet store to file - beware of lock
+
