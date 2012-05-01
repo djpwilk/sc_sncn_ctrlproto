@@ -788,7 +788,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	uint16_t al_error = AL_NO_ERROR;
 	uint16_t packet_error = AL_NO_ERROR;
 
-	uint16_t out_buffer[512];
+	uint16_t out_buffer[256];
 	uint16_t out_size = 0;
 	uint16_t out_type = ERROR_PACKET;
 	unsigned int otmp = 0;
@@ -948,6 +948,14 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			default:
 				break;
 			}
+
+			if (pending_mailbox != 1 && foeReplyPending == 1) {
+				out_size = foe_get_reply(out_buffer);
+				pending_mailbox = 1;
+				foeReplyPending = 0;
+				printstr("[DEBUG] found pending FoE packet, got reply\n");
+				//printhex(out_buffer[0]); printstr("\n");
+			}
 		}
 
 		/* buffered things can be send anytime */
@@ -965,12 +973,6 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 			default:
 				break;
-		}
-
-		if (packet_pending == 0 && foeReplyPending == 1) {
-			out_size = foe_get_reply(out_buffer);
-			packet_pending = 1;
-			foeReplyPending = 0;
 		}
 	}
 	EC_CS_UNSET();
