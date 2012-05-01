@@ -6,6 +6,8 @@
 
 #include "ethercat.h"
 #include "alstate.h"
+#include "foefs.h"
+#include "foe.h"
 
 #include <platform.h>
 #include <xs1.h>
@@ -119,6 +121,7 @@ static uint8_t ecatProcError;
 static uint8_t pdiError;
 
 static int packet_pending; /* indicate packet ready for sending to master */
+static int foeReplyPending;
 
 /**
  * @brief send packages to the connected channel endpoint.
@@ -342,8 +345,8 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 
 		case FOE_PACKET:
 			//printstr("DEBUG ethercat: received FOE packet, start processing.\n");
-			ecat_send_handler(c_foe, buffer, wordCount);
-			//error = AL_MBX_FOE;
+			//ecat_send_handler(c_foe, buffer, wordCount);
+			foeReplyPending = foe_parse_packet(buffer, wordCount);
 			break;
 
 		case SOE_PACKET: /* ignored unsupported */
@@ -753,6 +756,11 @@ int ecat_init(void)
 
 	EC_CS_UNSET();
 
+	/* init foefs and foe */
+	foefs_init();
+	foe_init();
+	foeReplyPending=0;
+
 	return 0;
 }
 
@@ -786,6 +794,8 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	unsigned int otmp = 0;
 	int pending_buffer = 0; /* no buffer to send */
 	int pending_mailbox = 0; /* no mailbox to send */
+
+	foemsg_t foeMessage;
 
 	EC_CS_SET();
 	while (1) {
@@ -920,6 +930,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				pending_mailbox=1;
 				break;
 
+#if 0 /* obsoleted by foeReplyPending */
 			case c_foe_r :> otmp :
 				printstr("DEBUG: processing outgoing FoE packets\n");
 				out_size = otmp&0xffff;
@@ -933,7 +944,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				}
 				pending_mailbox=1;
 				break;
-
+#endif
 			default:
 				break;
 			}
@@ -956,6 +967,11 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				break;
 		}
 
+		if (packet_pending == 0 && foeReplyPending == 1) {
+			out_size = foe_get_reply(out_buffer);
+			packet_pending = 1;
+			foeReplyPending = 0;
+		}
 	}
 	EC_CS_UNSET();
 }
