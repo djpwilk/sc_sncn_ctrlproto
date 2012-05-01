@@ -788,7 +788,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	uint16_t al_error = AL_NO_ERROR;
 	uint16_t packet_error = AL_NO_ERROR;
 
-	uint16_t out_buffer[256];
+	uint16_t out_buffer[512];
 	uint16_t out_size = 0;
 	uint16_t out_type = ERROR_PACKET;
 	unsigned int otmp = 0;
