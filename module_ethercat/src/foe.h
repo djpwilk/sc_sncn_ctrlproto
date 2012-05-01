@@ -67,5 +67,5 @@ int foe_close(void);
  * @return 0 no error, 1 no error, reply pending, <0 error
  */
 int foe_parse_packet(unsigned msg[]);
-foemsg_t foe_get_reply(void);
+unsigned foe_get_reply(uint16_t data[]);
 

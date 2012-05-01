@@ -207,8 +207,20 @@ int foe_parse_packet(unsigned msg[])
 	return ret;
 }
 
-/* FIXME: how to handle non reply packages??? */
-foemsg_t foe_get_reply(void)
+unsigned foe_get_reply(uint16_t data[])
 {
-	return reply;
+	unsigned k = 0;
+	unsigned i;
+	uint16_t tmp;
+
+	data[k++] = 0x0000 | (reply.opcode&0xff);
+	data[k++] = (reply.a.packetnumber & 0xffff);
+	data[k++] = (reply.a.packetnumber>>16)&0xffff;
+
+	for (i=0; i<FOE_DATA_SIZE; i+=2) {
+		tmp = data[i+1];
+		data[k++] = (data[i]&0xff) | ((tmp<<8)&0xff00);
+	}
+
+	return k;
 }
