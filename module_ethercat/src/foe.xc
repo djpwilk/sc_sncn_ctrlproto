@@ -114,6 +114,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 
 	foemsg_t rec = parse(msg, size);
 
+printstr("[DEBUG foe] parse foe package\n");
 	switch (state) {
 	case FOE_STATE_IDLE:
 		/* expected write.req and read.req */

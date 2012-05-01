@@ -415,9 +415,14 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 		sendbuffer[pos] = buffer[i];
 	}
 
+printstr("DEBUG: buffer[0]: "); printhexln(buffer[0]);
 	/* Padding: The last byte in SyncM mailbox buffer must be written to trigger send signal */
 	for (i=pos; i<size; i++) {
 		sendbuffer[i] = 0x00;
+	}
+
+	if (type==FOE_PACKET) {
+		printstr("[DEBUG] Send FoE packet\n");
 	}
 
 	sent = ecat_write_block(start_address, size, sendbuffer);
