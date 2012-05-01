@@ -69,14 +69,14 @@ static int make_reply(unsigned type, uint32_t a, char ?data[], unsigned data_siz
 }
 
 /* draft for handle idle_state */
-static handle_idle_state()
+static int handle_idle_state()
 {
 	int nextState = FOE_STATE_IDLE;
 	return nextState;
 }
 
 /* draft for handle read_state */
-static handle_read_state()
+static int handle_read_state()
 {
 	int nextState = FOE_STATE_IDLE;
 	return nextState;
