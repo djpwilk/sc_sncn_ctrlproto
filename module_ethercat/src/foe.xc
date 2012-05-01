@@ -18,20 +18,23 @@ static foemsg_t reply;
 static unsigned reply_raw[FOE_MAX_MSGSIZE];
 static int current_fp; /* current file pointer */
 
-static foemsg_t parse(uint16_t msg[])
+static foemsg_t parse(uint16_t msg[], unsigned size)
 {
 	foemsg_t m;
 	uint32_t tmp=0;
-	int i=0;
+	int i=0, k=0;
 
-	m.opcode = msg[0]&0xff;
-	tmp = (uint32_t)msg[2];
-	m.a.packetnumber = ((tmp&0xff)<<16)|(msg[1]&0xff);
+	m.opcode = msg[k++]&0xff;
+	tmp = (uint32_t)msg[k+1];
+	m.a.packetnumber = ((tmp&0xffff)<<16)|(msg[k]&0xff);
+	k++;
 
-	for (i=0; i<(FOE_DATA_SIZE/2); i+=2) {
-		m.b.data[i] = (unsigned char)(msg[i+3]&0xff);
-		m.b.data[i+1] = (unsigned char)((msg[i+3]>>8)&0xff);
+	for (i=0; i<(FOE_DATA_SIZE/2) && i<size; i+=2) {
+		m.b.data[i] = (unsigned char)(msg[k]&0xff);
+		m.b.data[i+1] = (unsigned char)((msg[k]>>8)&0xff);
 	}
+
+	return m;
 }
 
 static int make_reply(unsigned type, uint32_t a, char ?data[], unsigned data_size)
@@ -55,6 +58,8 @@ static int make_reply(unsigned type, uint32_t a, char ?data[], unsigned data_siz
 		tmp = data[i+1]&0xff;
 		reply.b.data[i+FOE_HEADER_SIZE] = ((tmp<<8)&0xff00) | (data[i]&0xff);
 	}
+
+	return (i+FOE_HEADER_SIZE);
 }
 
 /* draft for handle idle_state */
@@ -101,7 +106,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 	unsigned int dataSize = 0;
 	uint32_t packetNumber = 0;
 
-	foemsg_t rec = parse(msg);
+	foemsg_t rec = parse(msg, size);
 
 	switch (state) {
 	case FOE_STATE_IDLE:
