@@ -1,123 +1,214 @@
-/* foe.c
-
-   2012-03-29 Frank jeschke <jeschke@fjes.de>
+/* foe.xc
+ *
+ * 2012-03-29 Frank Jeschke <jeschke@fjes.de>
  */
 
 #include <xs1.h>
-#include <platform.h>
-#include <stdint.h>
-#include <string.h>
+#include <print.h>
 
+#include "foefs.h"
 #include "foe.h"
 
-/* FIXME currently only one file in the file system is allowed */
-foefile_t filesystem;
+#define FOE_HEADER_SIZE     6
+#define FOE_MAX_MSGSIZE     512
+#define FOE_DATA_SIZE       (FOE_MAX_MSGSIZE-FOE_HEADER_SIZE)
 
-/* application interface (public) */
+static int state;
+static foemsg_t reply;
+static unsigned reply_raw[FOE_MAX_MSGSIZE];
+static int current_fp; /* current file pointer */
 
-int foe_open(char filename[])
+static foemsg_t parse(unsigned msg[])
 {
-	if (strncmp(filename, filesystem.name, MAX_FNAME) != 0) {
-		return -FOE_ERR_NOTFOUND;
+	foemsg_t m;
+	uint32_t tmp=0;
+	int i=0;
+
+	m.opcode = msg[0]&0xff;
+	tmp = (uint32_t)msg[2];
+	m.a.packetnumber = ((tmp&0xff)<<16)|(msg[1]&0xff);
+
+	for (i=0; i<(FOE_DATA_SIZE/2); i+=2) {
+		m.b.data[i] = (unsigned char)(msg[i+3]&0xff);
+		m.b.data[i+1] = (unsigned char)((msg[i+3]>>8)&0xff);
 	}
-
-	if (filesystem.fh != 0) { /* file already open, and/or currently in use */
-		return -FOE_ERR_PERM;
-	}
-
-	filesystem.fh++;
-	filesystem.currentpos = 0; /* rewind */
-
-	return filesystem.fh;
 }
 
-int foe_close(int fh)
+static int make_reply(unsigned type, uint32_t a, char ?data[], unsigned data_size)
 {
-	filesystem.fh = 0;
-	return filesystem.fh;
+	int16_t tmp;
+	unsigned i, k;
+
+	reply.opcode = type&0xff;
+	reply.a.packetnumber = a; /* here it's irrelevant which field of the union is used. */
+
+	if (data_size <= 0) {
+		return 0;
+	}
+
+	/* FIXME another option is to transfer only FOE_DATA_SIZE */
+	if (data_size > FOE_DATA_SIZE) {
+		return -1;
+	}
+
+	for (i=0, k=0; i<data_size; i+=2, k++) {
+		tmp = data[i+1]&0xff;
+		reply.b.data[i+FOE_HEADER_SIZE] = ((tmp<<8)&0xff00) | (data[i]&0xff);
+	}
 }
 
-int foe_read(int fh, int size, char b[])
+/* draft for handle idle_state */
+static handle_idle_state()
 {
-	int readcount = 0;
-	int i;
-
-	if (fh != filesystem.fh) {
-		return -FOE_ERR_NOACCESS;
-	}
-
-	if (filesystem.size < filesystem.currentpos + size) {
-		return -FOE_ERR_ILLEGAL;
-	}
-
-	for (i=filesystem.currentpos; i<size; i++, readcount++) {
-		b[readcount] = filesystem.bytes[i];
-	}
-
-	return readcount;
+	int nextState = FOE_STATE_IDLE;
+	return nextState;
 }
 
-/*
-FIXME: what happens if offset is larger than file.size at the beginning of write cycle?
-*/
-int foe_write(int fh, int size, char b[])
+/* draft for handle read_state */
+static handle_read_state()
 {
-	int writecount = 0;
-	int i;
-
-	if (fh != filesystem.fh) {
-		return -FOE_ERR_NOACCESS;
-	}
-
-	if (BLKSZ < filesystem.currentpos + size) {
-		return -FOE_ERR_ILLEGAL;
-	}
-
-	for (i=filesystem.currentpos; i<size; i++, writecount++) {
-		filesystem.bytes[i] = b[writecount];
-	}
-
-	filesystem.size += writecount;
-
-	return writecount;
+	int nextState = FOE_STATE_IDLE;
+	return nextState;
 }
 
-int foe_seek(int fh, int offset, int whence)
+/* draft for handle write_state */
+static int handle_write_state()
 {
-	if (fh != filesystem.fh) {
-		return -FOE_ERR_NOACCESS;
-	}
-
-	switch (whence) {
-	case SEEK_SET:
-		filesystem.currentpos = offset;
-		break;
-	case SEEK_CUR:
-		filesystem.currentpos += offset;
-		break;
-	}
-
-	return filesystem.currentpos;
+	int nextState = FOE_STATE_IDLE;
+	return nextState;
 }
 
-/* intermodule interface (private) */
-
-int foe_init()
+/* public function */
+int foe_init(void)
 {
-	filesystem.fh = 0;
-	filesystem.name[0] = 0; /* empty name */
-	filesystem.size = 0;
+	state = FOE_STATE_IDLE;
+	current_fp = 0;
+
 	return 0;
 }
 
-/* placeholder */
-int foe_release()
-{
-	return 0;
-}
-
-int foe_format()
+/* unused */
+int foe_close(void)
 {
 	return foe_init();
 }
 
+/* FIXME add handling of FOE_BUSY packages */
+int foe_parse_packet(unsigned msg[])
+{
+	int ret = -1;
+	unsigned char data[FOE_MAX_MSGSIZE];
+	unsigned int dataSize = 0;
+	uint32_t packetNumber = 0;
+
+	foemsg_t rec = parse(msg);
+
+	switch (state) {
+	case FOE_STATE_IDLE:
+		/* expected write.req and read.req */
+		switch (rec.opcode) {
+		case FOE_READ:
+			if (current_fp <= 0) {
+				state = FOE_STATE_READ;
+				current_fp = foefs_open(rec.b.filename, MODE_RO);
+				if (current_fp <= 0) {
+					state = FOE_STATE_IDLE;
+					make_reply(FOE_ERROR, FOE_ERR_NOTFOUND, null, 0);
+				}
+				/* prepare first data package */
+				dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data); /* FIXME should work with reference here */
+				packetNumber++;
+				make_reply(FOE_DATA, packetNumber, data, dataSize);
+				ret = 1;
+			} else {
+				state = FOE_STATE_IDLE;
+				make_reply(FOE_ERROR, FOE_ERR_ILLEGAL, null, 0);
+				ret = 1;
+			}
+			break;
+
+		case FOE_WRITE:
+			if (current_fp <= 0 && foefs_free() > 0) {
+				state = FOE_STATE_WRITE;
+				make_reply(FOE_ACK, 0, null, 0);
+			} else {
+				state = FOE_STATE_IDLE;
+				make_reply(FOE_ERROR, FOE_ERR_DISKFULL, null, 0);
+			}
+			ret = 1;
+			break;
+
+		default:
+			state = FOE_STATE_IDLE;
+			make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
+			ret = 1;
+			break;
+		}
+		break;
+
+	case FOE_STATE_READ:
+		/* expected ack.req, error.req */
+		switch (rec.opcode) {
+		case FOE_ACK:
+			/* prepare next pacakge or end */
+			dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data);
+			packetNumber++;
+			make_reply(FOE_DATA, packetNumber, data, dataSize);
+			break;
+
+		case FOE_ERROR:
+			/* abort transmission */
+			state = FOE_STATE_IDLE;
+			foefs_close(current_fp);
+			make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
+			ret = 1;
+			break;
+
+		default:
+			state = FOE_STATE_IDLE;
+			foefs_close(current_fp);
+			make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
+			ret = 1;
+			break;
+		}
+		break;
+
+	case FOE_STATE_WRITE:
+		/* expected data.req, error.req */
+		switch (rec.opcode) {
+		case FOE_DATA:
+			/* handle data */
+			foefs_write(current_fp, FOE_DATA_SIZE, rec.b.data); /* FIXME add error check */
+
+			/* FIXME sadly the ACK response isn't recognized by SOEM at the moment * /
+			make_reply(FOE_ACK, rec.a.packetnumber, null, 0);
+			ret = 1;
+			// */
+			break;
+
+		case FOE_ERROR:
+			/* abort transmission */
+			state = FOE_STATE_IDLE;
+			make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
+			foefs_close(current_fp);
+			ret = 1;
+			break;
+
+		default:
+			state = FOE_STATE_IDLE;
+			make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
+			foefs_close(current_fp);
+			ret = 1;
+			break;
+		}
+		break;
+	}
+
+	return ret;
+}
+
+/* FIXME: how to handle non reply packages??? */
+foemsg_t foe_get_reply(void)
+{
+	return reply;
+}
