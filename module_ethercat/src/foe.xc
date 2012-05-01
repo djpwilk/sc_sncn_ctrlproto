@@ -18,7 +18,7 @@ static foemsg_t reply;
 static unsigned reply_raw[FOE_MAX_MSGSIZE];
 static int current_fp; /* current file pointer */
 
-static foemsg_t parse(unsigned msg[])
+static foemsg_t parse(uint16_t msg[])
 {
 	foemsg_t m;
 	uint32_t tmp=0;
@@ -94,7 +94,7 @@ int foe_close(void)
 }
 
 /* FIXME add handling of FOE_BUSY packages */
-int foe_parse_packet(unsigned msg[])
+int foe_parse_packet(uint16_t msg[], unsigned size)
 {
 	int ret = -1;
 	unsigned char data[FOE_MAX_MSGSIZE];
