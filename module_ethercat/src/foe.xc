@@ -10,7 +10,7 @@
 #include "foe.h"
 
 #define FOE_HEADER_SIZE     6
-#define FOE_MAX_MSGSIZE     512
+#define FOE_MAX_MSGSIZE     256
 #define FOE_DATA_SIZE       (FOE_MAX_MSGSIZE-FOE_HEADER_SIZE)
 
 static int state;
@@ -54,9 +54,15 @@ static int make_reply(unsigned type, uint32_t a, char ?data[], unsigned data_siz
 		return -1;
 	}
 
-	for (i=0, k=0; i<data_size; i+=2, k++) {
-		tmp = data[i+1]&0xff;
-		reply.b.data[i+FOE_HEADER_SIZE] = ((tmp<<8)&0xff00) | (data[i]&0xff);
+	if (!isnull(data)) {
+		for (i=0, k=0; i<data_size; i+=2, k++) {
+			tmp = data[i+1]&0xff;
+			reply.b.data[i+FOE_HEADER_SIZE] = ((tmp<<8)&0xff00) | (data[i]&0xff);
+		}
+	} else {
+		for (i=0; i<FOE_DATA_SIZE; i++) {
+			reply.b.data[i+FOE_HEADER_SIZE] = 0;
+		}
 	}
 
 	return (i+FOE_HEADER_SIZE);
@@ -223,8 +229,8 @@ unsigned foe_get_reply(uint16_t data[])
 	data[k++] = (reply.a.packetnumber>>16)&0xffff;
 
 	for (i=0; i<FOE_DATA_SIZE; i+=2) {
-		tmp = data[i+1];
-		data[k++] = (data[i]&0xff) | ((tmp<<8)&0xff00);
+		tmp = reply.b.data[i+1];
+		data[k++] = (reply.b.data[i]&0xff) | ((tmp<<8)&0xff00);
 	}
 
 	return k;
