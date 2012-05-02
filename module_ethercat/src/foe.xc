@@ -71,7 +71,6 @@ static unsigned int make_reply(unsigned type, uint32_t a, char ?data[], unsigned
 		resize += k;
 	}
 
-printstr("[DEBUG foe::make_reply] size of new package: "); printhexln(resize);
 	return resize;
 }
 
@@ -122,7 +121,6 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 
 	foemsg_t rec = parse(msg, size);
 
-printstr("[DEBUG foe] parse foe package\n");
 	switch (state) {
 	case FOE_STATE_IDLE:
 		/* expected write.req and read.req */
@@ -151,7 +149,6 @@ printstr("[DEBUG foe] parse foe package\n");
 			if (current_fp <= 0 && foefs_free() > 0) {
 				state = FOE_STATE_WRITE;
 				replySize = make_reply(FOE_ACK, 0, null, 0);
-			printstr("[DEBUG foe_parse_package] prepared ack package, size: "); printhexln(replySize);
 			} else {
 				state = FOE_STATE_IDLE;
 				replySize = make_reply(FOE_ERROR, FOE_ERR_DISKFULL, null, 0);
@@ -243,7 +240,5 @@ unsigned foe_get_reply(uint16_t data[])
 		data[k++] = (reply.b.data[i]&0xff) | ((tmp<<8)&0xff00);
 	}
 
-printstr("[DEBUG foe_get_reply] opcode: "); printhexln(reply.opcode);
-printstr("[DEBUG foe_get_reply] length: "); printhexln(replySize);
 	return replySize;
 }
