@@ -57,9 +57,8 @@ static unsigned int make_reply(unsigned type, uint32_t a, char ?data[], unsigned
 	}
 
 	if (!isnull(data)) {
-		for (i=0, k=0; i<data_size; i+=2, k++) {
-			tmp = data[i+1]&0xff;
-			reply.b.data[k] = ((tmp<<8)&0xff00) | (data[i]&0xff);
+		for (k=0; k<data_size; k++) {
+			reply.b.data[k] = data[k];
 		}
 	} else {
 		for (i=0; i<FOE_DATA_SIZE; i++) {
