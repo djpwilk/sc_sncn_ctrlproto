@@ -956,6 +956,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 			if (pending_mailbox != 1 && foeReplyPending == 1) {
 				out_size = foe_get_reply(out_buffer);
+				out_type = FOE_PACKET;
 				pending_mailbox = 1;
 				foeReplyPending = 0;
 				printstr("[DEBUG] found pending FoE packet, got reply\n");
