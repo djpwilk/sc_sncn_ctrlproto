@@ -15,6 +15,7 @@
 
 static int state;
 static foemsg_t reply;
+static unsigned replySize;
 static unsigned reply_raw[FOE_MAX_MSGSIZE];
 static int current_fp; /* current file pointer */
 
@@ -37,16 +38,17 @@ static foemsg_t parse(uint16_t msg[], unsigned size)
 	return m;
 }
 
-static int make_reply(unsigned type, uint32_t a, char ?data[], unsigned data_size)
+static unsigned int make_reply(unsigned type, uint32_t a, char ?data[], unsigned data_size)
 {
 	int16_t tmp;
 	unsigned i, k;
+	unsigned resize = FOE_HEADER_SIZE/2;
 
 	reply.opcode = type&0xff;
 	reply.a.packetnumber = a; /* here it's irrelevant which field of the union is used. */
 
 	if (data_size <= 0) {
-		return 0;
+		return resize;
 	}
 
 	/* FIXME another option is to transfer only FOE_DATA_SIZE */
@@ -57,15 +59,20 @@ static int make_reply(unsigned type, uint32_t a, char ?data[], unsigned data_siz
 	if (!isnull(data)) {
 		for (i=0, k=0; i<data_size; i+=2, k++) {
 			tmp = data[i+1]&0xff;
-			reply.b.data[i+FOE_HEADER_SIZE] = ((tmp<<8)&0xff00) | (data[i]&0xff);
+			reply.b.data[k] = ((tmp<<8)&0xff00) | (data[i]&0xff);
 		}
 	} else {
 		for (i=0; i<FOE_DATA_SIZE; i++) {
-			reply.b.data[i+FOE_HEADER_SIZE] = 0;
+			reply.b.data[i] = 0;
 		}
 	}
 
-	return (i+FOE_HEADER_SIZE);
+	if (data_size > 0) {
+		resize += k;
+	}
+
+printstr("[DEBUG foe::make_reply] size of new package: "); printhexln(resize);
+	return resize;
 }
 
 /* draft for handle idle_state */
@@ -94,6 +101,7 @@ int foe_init(void)
 {
 	state = FOE_STATE_IDLE;
 	current_fp = 0;
+	replySize = 0;
 
 	return 0;
 }
@@ -125,16 +133,16 @@ printstr("[DEBUG foe] parse foe package\n");
 				current_fp = foefs_open(rec.b.filename, MODE_RO);
 				if (current_fp <= 0) {
 					state = FOE_STATE_IDLE;
-					make_reply(FOE_ERROR, FOE_ERR_NOTFOUND, null, 0);
+					replySize = make_reply(FOE_ERROR, FOE_ERR_NOTFOUND, null, 0);
 				}
 				/* prepare first data package */
 				dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data); /* FIXME should work with reference here */
 				packetNumber++;
-				make_reply(FOE_DATA, packetNumber, data, dataSize);
+				replySize = make_reply(FOE_DATA, packetNumber, data, dataSize);
 				ret = 1;
 			} else {
 				state = FOE_STATE_IDLE;
-				make_reply(FOE_ERROR, FOE_ERR_ILLEGAL, null, 0);
+				replySize = make_reply(FOE_ERROR, FOE_ERR_ILLEGAL, null, 0);
 				ret = 1;
 			}
 			break;
@@ -142,17 +150,18 @@ printstr("[DEBUG foe] parse foe package\n");
 		case FOE_WRITE:
 			if (current_fp <= 0 && foefs_free() > 0) {
 				state = FOE_STATE_WRITE;
-				make_reply(FOE_ACK, 0, null, 0);
+				replySize = make_reply(FOE_ACK, 0, null, 0);
+			printstr("[DEBUG foe_parse_package] prepared ack package, size: "); printhexln(replySize);
 			} else {
 				state = FOE_STATE_IDLE;
-				make_reply(FOE_ERROR, FOE_ERR_DISKFULL, null, 0);
+				replySize = make_reply(FOE_ERROR, FOE_ERR_DISKFULL, null, 0);
 			}
 			ret = 1;
 			break;
 
 		default:
 			state = FOE_STATE_IDLE;
-			make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
+			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
 			ret = 1;
 			break;
 		}
@@ -165,21 +174,21 @@ printstr("[DEBUG foe] parse foe package\n");
 			/* prepare next pacakge or end */
 			dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data);
 			packetNumber++;
-			make_reply(FOE_DATA, packetNumber, data, dataSize);
+			replySize = make_reply(FOE_DATA, packetNumber, data, dataSize);
 			break;
 
 		case FOE_ERROR:
 			/* abort transmission */
 			state = FOE_STATE_IDLE;
 			foefs_close(current_fp);
-			make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
+			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
 			ret = 1;
 			break;
 
 		default:
 			state = FOE_STATE_IDLE;
 			foefs_close(current_fp);
-			make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
+			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
 			ret = 1;
 			break;
 		}
@@ -193,7 +202,7 @@ printstr("[DEBUG foe] parse foe package\n");
 			foefs_write(current_fp, FOE_DATA_SIZE, rec.b.data); /* FIXME add error check */
 
 			/* FIXME sadly the ACK response isn't recognized by SOEM at the moment * /
-			make_reply(FOE_ACK, rec.a.packetnumber, null, 0);
+			replySize = make_reply(FOE_ACK, rec.a.packetnumber, null, 0);
 			ret = 1;
 			// */
 			break;
@@ -201,14 +210,14 @@ printstr("[DEBUG foe] parse foe package\n");
 		case FOE_ERROR:
 			/* abort transmission */
 			state = FOE_STATE_IDLE;
-			make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
+			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
 			foefs_close(current_fp);
 			ret = 1;
 			break;
 
 		default:
 			state = FOE_STATE_IDLE;
-			make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
+			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
 			foefs_close(current_fp);
 			ret = 1;
 			break;
@@ -229,10 +238,12 @@ unsigned foe_get_reply(uint16_t data[])
 	data[k++] = (reply.a.packetnumber & 0xffff);
 	data[k++] = (reply.a.packetnumber>>16)&0xffff;
 
-	for (i=0; i<FOE_DATA_SIZE; i+=2) {
+	for (i=0; (i<FOE_DATA_SIZE) && (i<(replySize-3)); i+=2) {
 		tmp = reply.b.data[i+1];
 		data[k++] = (reply.b.data[i]&0xff) | ((tmp<<8)&0xff00);
 	}
 
-	return k;
+printstr("[DEBUG foe_get_reply] opcode: "); printhexln(reply.opcode);
+printstr("[DEBUG foe_get_reply] length: "); printhexln(replySize);
+	return replySize;
 }
