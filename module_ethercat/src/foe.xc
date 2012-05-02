@@ -130,7 +130,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 				current_fp = foefs_open(rec.b.filename, MODE_RO);
 				if (current_fp <= 0) {
 					state = FOE_STATE_IDLE;
-					replySize = make_reply(FOE_ERROR, FOE_ERR_NOTFOUND, null, 0);
+					replySize = make_reply(FOE_ERROR, FOE_ERR_NOTFOUND, "File not found", 14);
 				}
 				/* prepare first data package */
 				dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data); /* FIXME should work with reference here */
@@ -157,7 +157,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 
 		default:
 			state = FOE_STATE_IDLE;
-			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
+			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Illegal Request", 15);
 			ret = 1;
 			break;
 		}
@@ -184,7 +184,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		default:
 			state = FOE_STATE_IDLE;
 			foefs_close(current_fp);
-			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
+			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
 			ret = 1;
 			break;
 		}
@@ -213,7 +213,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 
 		default:
 			state = FOE_STATE_IDLE;
-			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, null, 0);
+			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
 			foefs_close(current_fp);
 			ret = 1;
 			break;
