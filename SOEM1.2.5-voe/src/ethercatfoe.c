@@ -312,4 +312,5 @@ int ec_FOEwrite(uint16 slave, char *filename, uint32 password, int psize, void *
 		} while (worktodo);	
 	}
 	return wkc;
-}	
+}
+
