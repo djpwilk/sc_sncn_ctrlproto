@@ -208,8 +208,6 @@ int ec_FOEread(uint16 slave, char *filename, uint32 password, int *psize, void *
  */
 int ec_FOEwrite(uint16 slave, char *filename, uint32 password, int psize, void *p, int timeout)
 {
-printf("[DEBUG %s(slave=%d, filename=%s, password=%d, psize=%d, p=%d, timeout=%d)]\n",
-	__func__, slave, filename, password, psize, (int)p, timeout);
     ec_FOEt *FOEp, *aFOEp;
 	int wkc;
 	int32 packetnumber, sendpacket = 0;
@@ -242,11 +240,9 @@ printf("[DEBUG %s(slave=%d, filename=%s, password=%d, psize=%d, p=%d, timeout=%d
 	/* copy filename in mailbox */
 	memcpy(&FOEp->FileName[0], filename, fnsize);
 	/* send FoE request to slave */
-	printf("[%s] send FoE request to slave\n", __func__);
     wkc = ec_mbxsend(slave, (ec_mbxbuft *)&MbxOut, EC_TIMEOUTTXM);
     if (wkc > 0) /* succeeded to place mailbox in slave ? */
     {
-    		printf("[%s] succeeded to place mailbox in slave\n", __func__);
 		do
 		{	
 			worktodo = FALSE;
@@ -254,21 +250,16 @@ printf("[DEBUG %s(slave=%d, filename=%s, password=%d, psize=%d, p=%d, timeout=%d
 			ec_clearmbx(&MbxIn);
 			/* read slave response */
 			wkc = ec_mbxreceive(slave, (ec_mbxbuft *)&MbxIn, timeout);
-			printf("[%s] wkc after mbox receive: %d\n", __func__, wkc);
 			if (wkc > 0) /* succeeded to read slave response ? */
 			{
 				/* slave response should be FoE */
 				if ((aFOEp->MbxHeader.mbxtype & 0x0f) == ECT_MBXT_FOE)
 				{
-					printf("[%s] mailbox header is FoE\n", __func__);
 					if(aFOEp->OpCode == ECT_FOE_ACK)
 					{
-						printf("[%s] FoE received ECT_FOE_ACK\n", __func__);
 						packetnumber = etohl(aFOEp->PacketNumber);
 						if (packetnumber == sendpacket)
 						{
-							printf("[%s] packetnumber (%d) == sendpacket (%d), size = %d\n",
-								__func__, packetnumber, sendpacket, psize);
 							tsize = psize;
 							if (tsize > maxdata)
 							{
@@ -286,7 +277,6 @@ printf("[DEBUG %s(slave=%d, filename=%s, password=%d, psize=%d, p=%d, timeout=%d
 							FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + (cnt << 4); /* FoE */
 							FOEp->OpCode = ECT_FOE_DATA;
 							FOEp->PacketNumber = htoel(++sendpacket);
-							printf("[%s] Now copy segmentdata of size %d (0x%.4x)\n", __func__, segmentdata, segmentdata);
 							memcpy(&FOEp->Data[0], p, segmentdata);
 							p += segmentdata;
 							/* send FoE data to slave */
@@ -298,7 +288,6 @@ printf("[DEBUG %s(slave=%d, filename=%s, password=%d, psize=%d, p=%d, timeout=%d
 						else
 						{
 							/* FoE error */
-							printf("[%s] FoE packet error\n", __func__);
 							wkc = -EC_ERR_TYPE_FOE_PACKETNUMBER;
 						}
 					}
@@ -321,9 +310,6 @@ printf("[DEBUG %s(slave=%d, filename=%s, password=%d, psize=%d, p=%d, timeout=%d
 				}
 			}
 		} while (worktodo);	
-	} else {
-		printf("[%s] no good reply\n", __func__);
 	}
-	
 	return wkc;
 }	
