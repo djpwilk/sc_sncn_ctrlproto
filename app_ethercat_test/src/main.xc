@@ -56,6 +56,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				count++;
 			}
 
+#if 0
 			/* Reply with abort initiate download sequence */
 			outType = COE_PACKET;
 			outBuffer[0] = 5;
@@ -64,6 +65,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			outBuffer[3] = 0x001c;
 			outBuffer[4] = 0x0000;
 			outBuffer[5] = 0x0601;
+#endif
 			break;
 
 		case eoe_in :> tmp :
