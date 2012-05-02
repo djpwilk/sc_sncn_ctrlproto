@@ -415,14 +415,9 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 		sendbuffer[pos] = buffer[i];
 	}
 
-printstr("DEBUG: buffer[0]: "); printhexln(buffer[0]);
 	/* Padding: The last byte in SyncM mailbox buffer must be written to trigger send signal */
 	for (i=pos; i<size; i++) {
 		sendbuffer[i] = 0x00;
-	}
-
-	if (type==FOE_PACKET) {
-		printstr("[DEBUG] Send FoE packet\n");
 	}
 
 	sent = ecat_write_block(start_address, size, sendbuffer);
@@ -935,9 +930,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				pending_mailbox=1;
 				break;
 
-#if 0 /* obsoleted by foeReplyPending */
 			case c_foe_r :> otmp :
-				printstr("DEBUG: processing outgoing FoE packets\n");
+				printstr("DEBUG: receive FoE command (e.g. fetch filename)\n");
+#if 0 /* obsoleted by foeReplyPending */
 				out_size = otmp&0xffff;
 				//printstr("DEBUG: read: "); printhexln(out_size);
 				//printstr("> ");
@@ -948,19 +943,18 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 					//printhex(out_buffer[i]);
 				}
 				pending_mailbox=1;
-				break;
 #endif
+				break;
 			default:
 				break;
 			}
 
+			/* FIXME Check for potential race conditions between this internal package and channel based communication! */
 			if (pending_mailbox != 1 && foeReplyPending == 1) {
 				out_size = foe_get_reply(out_buffer);
 				out_type = FOE_PACKET;
 				pending_mailbox = 1;
 				foeReplyPending = 0;
-				printstr("[DEBUG] found pending FoE packet, got reply\n");
-				//printhex(out_buffer[0]); printstr("\n");
 			}
 		}
 
