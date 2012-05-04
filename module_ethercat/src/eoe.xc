@@ -1,4 +1,4 @@
-/* eoe.h
+/* eoe.xc
  *
  * Copyright 2012, Synapticon GmbH. All rights reserved.
  * Author: Frank Jeschke <jeschke@fjes.de>
