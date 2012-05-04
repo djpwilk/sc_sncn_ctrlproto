@@ -1,6 +1,6 @@
-/* foe.h
+/* foefs.h
  *
- * header for file file over EtherCAT access.
+ * API for simple and specialized filesystem for use within the EtherCAT module.
  *
  * 2012-03-29 Frank Jeschke <jeschke@fjes.de>
  *
