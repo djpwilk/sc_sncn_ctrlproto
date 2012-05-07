@@ -220,7 +220,8 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 			break;
 		}
 		break;
-	
+
+	/* FIXME check this state machine and bring it to work */
 	case FOE_STATE_REQUEST:
 		switch (rec.opcode) {
 		case FOE_DATA:
@@ -241,6 +242,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		}
 		break;
 
+	/* FIXME check this state machine and bring it to work */
 	case FOE_STATE_COMMIT:
 		switch (rec.opcode) {
 		case FOE_ACK:
