@@ -248,6 +248,10 @@ int foe_request(uint16_t data[])
 	unsigned i;
 	uint16_t request = data[pos++];
 
+	if (state != FOE_STATE_IDLE) {
+		return 1;
+	}
+
 	for (i=0; i<FOE_MAX_DATA_SIZE; i++, pos++) {
 		reply.b.filename[i] = data[pos];
 	}
