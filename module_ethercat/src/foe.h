@@ -35,6 +35,8 @@
 #define FOE_STATE_IDLE     0
 #define FOE_STATE_READ     1
 #define FOE_STATE_WRITE    2
+#define FOE_STATE_REQUEST  3
+#define FOE_STATE_COMMIT   4
 
 #define FOE_MAX_DATA_SIZE  512
 

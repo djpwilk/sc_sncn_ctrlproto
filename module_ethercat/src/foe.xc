@@ -14,6 +14,7 @@
 #define FOE_DATA_SIZE       (FOE_MAX_MSGSIZE-FOE_HEADER_SIZE)
 
 static int state;
+static int file;
 static foemsg_t reply;
 static unsigned replySize;
 static unsigned reply_raw[FOE_MAX_MSGSIZE];
@@ -219,6 +220,48 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 			break;
 		}
 		break;
+	
+	case FOE_STATE_REQUEST:
+		switch (rec.opcode) {
+		case FOE_DATA:
+			foefs_write(file, FOE_DATA_SIZE, rec.b.data); /* FIXME add error check */
+			break;
+
+		case FOE_ERROR:
+			state = FOE_STATE_IDLE;
+			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
+			foefs_close(current_fp);
+			ret = 1;
+			break;
+
+		default:
+			state = FOE_STATE_IDLE;
+			foefs_close(file);
+			break;
+		}
+		break;
+
+	case FOE_STATE_COMMIT:
+		switch (rec.opcode) {
+		case FOE_ACK:
+			foefs_read(file, FOE_DATA_SIZE, rec.b.data); /* FIXME add error check */
+			//replySize = make_reply(FOE_DATA, packetNumber, data, dataSize);
+			break;
+
+		case FOE_ERROR:
+			state = FOE_STATE_IDLE;
+			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
+			foefs_close(current_fp);
+			ret = 1;
+			break;
+
+		default:
+			state = FOE_STATE_IDLE;
+			foefs_close(file);
+			break;
+		}
+		break;
+
 	}
 
 	return ret;
@@ -262,9 +305,13 @@ int foe_request(uint16_t data[])
 	switch (request) {
 	case REQUEST_FILE:
 		replay.opcode = FOE_READ;
+		state = FOE_STATE_REQUEST;
+		file = foefs_open(reply.b.filename, MODE_RW);
 		break;
 	case COMMIT_FILE:
 		reply.opcode = FOE_WRITE;
+		state = FOE_STATE_COMMIT;
+		file = foefs_open(reply.b.filename, MODE_RO);
 		break;
 	default:
 		printstr("Error invalid request\n");
