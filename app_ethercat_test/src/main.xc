@@ -11,12 +11,31 @@
 #include <xs1.h>
 
 #include <ethercat.h>
+#include <foefs.h>
 
 #define MAX_BUFFER_SIZE   1024
 
 on stdcore[1] : out port ledBlue = LED_BLUE;
 on stdcore[1] : out port ledGreen = LED_GREEN;
 on stdcore[1] : out port ledRed = LED_RED;
+
+/* request a file from the master */
+static void get_file(chanend foe_out, char filename[])
+{
+	unsigned i, pos=0;
+	unsigned outBuffer[20];
+	outBuffer[1] = REQUEST_FILE;
+	
+	for (i=0, pos=2; filename[i] != '\n'; i++, pos++) {
+		outBuffer[pos++] = filename[i];
+	}
+
+	outBuffer[0] = pos;
+
+	for (i=0; i<pos; i++) {
+		foe_out <: outBuffer[i];
+	}
+}
 
 /* example consumer */
 static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eoe_out,

@@ -16,6 +16,9 @@
 #define MODE_RO    0
 #define MODE_RW    1
 
+#define REQUEST_FILE   1    ///< request file from ethercat master
+#define COMMIT_FILE    2   ///< push file to ehtercat master
+
 /**
  * @brief Filesystem entry
  *
