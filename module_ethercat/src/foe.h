@@ -36,6 +36,8 @@
 #define FOE_STATE_READ     1
 #define FOE_STATE_WRITE    2
 
+#define FOE_MAX_DATA_SIZE  512
+
 typedef struct {
 	unsigned char opcode;
 	union {
@@ -69,3 +71,4 @@ int foe_close(void);
 int foe_parse_packet(uint16_t msg[], unsigned size);
 unsigned foe_get_reply(uint16_t data[]);
 
+int foe_request(uint16_t data[]);

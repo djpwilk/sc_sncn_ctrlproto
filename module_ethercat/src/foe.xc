@@ -241,3 +241,31 @@ unsigned foe_get_reply(uint16_t data[])
 
 	return replySize;
 }
+
+int foe_request(uint16_t data[])
+{
+	unsigned pos = 0;
+	unsigned i;
+	uint16_t request = data[pos++];
+
+	for (i=0; i<FOE_MAX_DATA_SIZE; i++, pos++) {
+		reply.b.filename[i] = data[pos];
+	}
+
+	reply.a.password = 0x0000;
+
+	/* FIXME put correct state for statemachine */
+	switch (request) {
+	case REQUEST_FILE:
+		replay.opcode = FOE_READ;
+		break;
+	case COMMIT_FILE:
+		reply.opcode = FOE_WRITE;
+		break;
+	default:
+		printstr("Error invalid request\n");
+		break;
+
+	return 0;
+}
+
