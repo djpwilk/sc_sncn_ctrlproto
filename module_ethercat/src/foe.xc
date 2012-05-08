@@ -114,6 +114,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 	unsigned char data[FOE_MAX_MSGSIZE];
 	unsigned int dataSize = 0;
 	uint32_t packetNumber = 0;
+	unsigned bytecount = 0;
 
 	foemsg_t rec = parse(msg, size);
 
@@ -190,14 +191,22 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 	case FOE_STATE_WRITE:
 		/* expected data.req, error.req */
 		switch (rec.opcode) {
-		case FOE_DATA:
+		case FOE_DATA: /* FIXME if !"mailbox full" then the last package is received */
 			/* handle data */
-			foefs_write(current_fp, FOE_DATA_SIZE, rec.b.data); /* FIXME add error check */
+			bytecount = foefs_write(current_fp, FOE_DATA_SIZE, rec.b.data); /* FIXME add error check */
 
-			/* FIXME sadly the ACK response isn't recognized by SOEM at the moment * /
+			/* The last package is recognized by not fully filled data field. */
+			if (bytecount < FOE_DATA_SIZE) {
+				state = FOE_STATE_IDLE;
+			}
+
+			/* FIXME sadly the ACK response isn't recognized by SOEM at the moment */
+			#if 0
 			replySize = make_reply(FOE_ACK, rec.a.packetnumber, null, 0);
 			ret = 1;
-			// */
+			#else
+			ret = 0;
+			#endif
 			break;
 
 		case FOE_ERROR:
