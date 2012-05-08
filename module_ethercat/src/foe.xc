@@ -302,7 +302,7 @@ int foe_request(uint16_t data[])
 	/* FIXME put correct state for statemachine */
 	switch (request) {
 	case REQUEST_FILE:
-		replay.opcode = FOE_READ;
+		reply.opcode = FOE_READ;
 		state = FOE_STATE_REQUEST;
 		file = foefs_open(reply.b.filename, MODE_RW);
 		break;
@@ -314,6 +314,7 @@ int foe_request(uint16_t data[])
 	default:
 		printstr("Error invalid request\n");
 		break;
+	}
 
 	return 0;
 }
