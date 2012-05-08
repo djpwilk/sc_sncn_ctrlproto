@@ -9,10 +9,6 @@
 #include "foefs.h"
 #include "foe.h"
 
-#define FOE_HEADER_SIZE     6
-#define FOE_MAX_MSGSIZE     256
-#define FOE_DATA_SIZE       (FOE_MAX_MSGSIZE-FOE_HEADER_SIZE)
-
 static int state;
 static int file;
 static foemsg_t reply;
@@ -297,7 +293,7 @@ int foe_request(uint16_t data[])
 		return 1;
 	}
 
-	for (i=0; i<FOE_MAX_DATA_SIZE; i++, pos++) {
+	for (i=0; i<FOE_DATA_SIZE; i++, pos++) {
 		reply.b.filename[i] = data[pos];
 	}
 

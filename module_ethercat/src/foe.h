@@ -40,6 +40,10 @@
 
 #define FOE_MAX_DATA_SIZE  512
 
+#define FOE_HEADER_SIZE     6
+#define FOE_MAX_MSGSIZE     256
+#define FOE_DATA_SIZE       (FOE_MAX_MSGSIZE-FOE_HEADER_SIZE)
+
 typedef struct {
 	unsigned char opcode;
 	union {
@@ -48,9 +52,9 @@ typedef struct {
 		uint32_t error;
 	} a;
 	union {
-		char filename[512];
-		unsigned char data[512];
-		char errortext[512];
+		char filename[FOE_DATA_SIZE];
+		unsigned char data[FOE_DATA_SIZE];
+		char errortext[FOE_DATA_SIZE];
 	} b;
 } foemsg_t;
 
