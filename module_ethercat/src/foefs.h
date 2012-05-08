@@ -109,4 +109,9 @@ int foefs_release(void);
  */
 int foefs_format(void);
 
+/**
+ * @brief Request the number of free bytes.
+ *
+ * @return Number of available bytes.
+ */
 int foefs_free(void);
