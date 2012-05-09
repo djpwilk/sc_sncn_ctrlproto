@@ -40,9 +40,9 @@
 
 #define FOE_MAX_DATA_SIZE  512
 
-#define FOE_HEADER_SIZE     6
-#define FOE_MAX_MSGSIZE     256
-#define FOE_DATA_SIZE       (FOE_MAX_MSGSIZE-FOE_HEADER_SIZE)
+#define FOE_HEADER_SIZE    6
+#define FOE_MAX_MSGSIZE    256
+#define FOE_DATA_SIZE      (FOE_MAX_MSGSIZE-FOE_HEADER_SIZE)
 
 typedef struct {
 	unsigned char opcode;
