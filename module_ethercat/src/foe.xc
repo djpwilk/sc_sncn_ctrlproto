@@ -112,7 +112,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 {
 	int ret = -1;
 	unsigned char data[FOE_MAX_MSGSIZE];
-	unsigned int dataSize = 0;
+	int dataSize = 0;
 	uint32_t packetNumber = 0;
 	int bytecount = 0;
 
@@ -129,14 +129,20 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 				if (current_fp <= 0) {
 					state = FOE_STATE_IDLE;
 					replySize = make_reply(FOE_ERROR, FOE_ERR_NOTFOUND, "File not found", 14);
+				} else {
+					/* prepare first data package */
+					dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data); /* FIXME should work with reference here */
+					/* FIXME if dataSize < FOE_DATA_SIZE this is the last packet, if a ACK is expected everything is fine and
+					 * no further action must be taken, if a ACK could be ommited, i have to check state here.
+					 */
+					if (dataSize < 0) { /* read returns a error */
+						state = FOE_STATE_IDLE;
+						replySize = make_reply(FOE_ERROR, -1*dataSize, "File not found", 14);
+					} else {
+						packetNumber++;
+						replySize = make_reply(FOE_DATA, packetNumber, data, dataSize);
+					}
 				}
-				/* prepare first data package */
-				dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data); /* FIXME should work with reference here */
-				/* FIXME if dataSize < FOE_DATA_SIZE this is the last packet, if a ACK is expected everything is fine and
-				 * no further action must be taken, if a ACK could be ommited, i have to check state here.
-				 */
-				packetNumber++;
-				replySize = make_reply(FOE_DATA, packetNumber, data, dataSize);
 				ret = 1;
 			} else {
 				state = FOE_STATE_IDLE;
@@ -178,7 +184,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		case FOE_ERROR:
 			/* abort transmission */
 			state = FOE_STATE_IDLE;
-			foefs_close(current_fp);
+			current_fp = foefs_close(current_fp);
 			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
 			ret = 1;
 			break;
@@ -186,7 +192,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 #if 0 /* FIXME temporarily deactivated */
 		default:
 			state = FOE_STATE_IDLE;
-			foefs_close(current_fp);
+			current_fp = foefs_close(current_fp);
 			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
 			ret = 1;
 			break;
@@ -201,19 +207,16 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 			/* handle data */
 			bytecount = foefs_write(current_fp, size-FOE_HEADER_SIZE/*FOE_DATA_SIZE*/, rec.b.data); /* FIXME add error check */
 			if (bytecount < 0) {
-				printstr("[DEBUG FOE] error writing file: "); printhexln(-1*bytecount);
 				state = FOE_STATE_IDLE;
 				replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
-				foefs_close(current_fp);
+				current_fp = foefs_close(current_fp);
 				ret = 1;
 			} else {
-				printstr("[DEBUG FOE] Wrote data packet, bytes written: "); printintln(bytecount);
 
 				/* The last package is recognized by not fully filled data field. */
 				if (bytecount < FOE_DATA_SIZE) {
 					state = FOE_STATE_IDLE;
-					printstr("[DEBUG FOE] wrote file\n");
-					foefs_close(current_fp);
+					current_fp = foefs_close(current_fp);
 				}
 
 				/* FIXME sadly the ACK response isn't recognized by SOEM at the moment */
@@ -230,7 +233,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 			/* abort transmission */
 			state = FOE_STATE_IDLE;
 			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
-			foefs_close(current_fp);
+			current_fp = foefs_close(current_fp);
 			ret = 1;
 			break;
 
@@ -238,7 +241,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		default:
 			state = FOE_STATE_IDLE;
 			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
-			foefs_close(current_fp);
+			current_fp = foefs_close(current_fp);
 			ret = 1;
 			break;
 #endif
@@ -255,13 +258,13 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		case FOE_ERROR:
 			state = FOE_STATE_IDLE;
 			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
-			foefs_close(current_fp);
+			current_fp = foefs_close(current_fp);
 			ret = 1;
 			break;
 
 		default:
 			state = FOE_STATE_IDLE;
-			foefs_close(file);
+			current_fp = foefs_close(file);
 			break;
 		}
 		break;
@@ -277,13 +280,13 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		case FOE_ERROR:
 			state = FOE_STATE_IDLE;
 			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
-			foefs_close(current_fp);
+			current_fp = foefs_close(current_fp);
 			ret = 1;
 			break;
 
 		default:
 			state = FOE_STATE_IDLE;
-			foefs_close(file);
+			current_fp = foefs_close(file);
 			break;
 		}
 		break;
