@@ -54,11 +54,7 @@ int foefs_read(int fh, int size, char b[])
 		return -FOE_ERR_NOACCESS;
 	}
 
-	if (filesystem.size < filesystem.currentpos + size) {
-		return -FOE_ERR_ILLEGAL;
-	}
-
-	for (i=filesystem.currentpos; i<size; i++, readcount++) {
+	for (i=filesystem.currentpos; i<size && i<filesystem.size; i++, readcount++) {
 		b[readcount] = filesystem.bytes[i];
 	}
 
