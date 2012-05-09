@@ -114,7 +114,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 	unsigned char data[FOE_MAX_MSGSIZE];
 	unsigned int dataSize = 0;
 	uint32_t packetNumber = 0;
-	unsigned bytecount = 0;
+	int bytecount = 0;
 
 	foemsg_t rec = parse(msg, size);
 
@@ -132,6 +132,9 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 				}
 				/* prepare first data package */
 				dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data); /* FIXME should work with reference here */
+				/* FIXME if dataSize < FOE_DATA_SIZE this is the last packet, if a ACK is expected everything is fine and
+				 * no further action must be taken, if a ACK could be ommited, i have to check state here.
+				 */
 				packetNumber++;
 				replySize = make_reply(FOE_DATA, packetNumber, data, dataSize);
 				ret = 1;
@@ -144,6 +147,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 
 		case FOE_WRITE:
 			if (current_fp <= 0 && foefs_free() > 0) {
+				current_fp = foefs_open(rec.b.filename, MODE_RW);
 				state = FOE_STATE_WRITE;
 				replySize = make_reply(FOE_ACK, 0, null, 0);
 			} else {
@@ -179,12 +183,14 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 			ret = 1;
 			break;
 
+#if 0 /* FIXME temporarily deactivated */
 		default:
 			state = FOE_STATE_IDLE;
 			foefs_close(current_fp);
 			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
 			ret = 1;
 			break;
+#endif
 		}
 		break;
 
@@ -193,20 +199,31 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		switch (rec.opcode) {
 		case FOE_DATA: /* FIXME if !"mailbox full" then the last package is received */
 			/* handle data */
-			bytecount = foefs_write(current_fp, FOE_DATA_SIZE, rec.b.data); /* FIXME add error check */
-
-			/* The last package is recognized by not fully filled data field. */
-			if (bytecount < FOE_DATA_SIZE) {
+			bytecount = foefs_write(current_fp, size-FOE_HEADER_SIZE/*FOE_DATA_SIZE*/, rec.b.data); /* FIXME add error check */
+			if (bytecount < 0) {
+				printstr("[DEBUG FOE] error writing file: "); printhexln(-1*bytecount);
 				state = FOE_STATE_IDLE;
-			}
+				replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
+				foefs_close(current_fp);
+				ret = 1;
+			} else {
+				printstr("[DEBUG FOE] Wrote data packet, bytes written: "); printintln(bytecount);
 
-			/* FIXME sadly the ACK response isn't recognized by SOEM at the moment */
-			#if 0
-			replySize = make_reply(FOE_ACK, rec.a.packetnumber, null, 0);
-			ret = 1;
-			#else
-			ret = 0;
-			#endif
+				/* The last package is recognized by not fully filled data field. */
+				if (bytecount < FOE_DATA_SIZE) {
+					state = FOE_STATE_IDLE;
+					printstr("[DEBUG FOE] wrote file\n");
+					foefs_close(current_fp);
+				}
+
+				/* FIXME sadly the ACK response isn't recognized by SOEM at the moment */
+				#if 0
+				replySize = make_reply(FOE_ACK, rec.a.packetnumber, null, 0);
+				ret = 1;
+				#else
+				ret = 0;
+				#endif
+			}
 			break;
 
 		case FOE_ERROR:
@@ -217,12 +234,14 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 			ret = 1;
 			break;
 
+#if 1 /* FIXME temporarily deactivated */
 		default:
 			state = FOE_STATE_IDLE;
 			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
 			foefs_close(current_fp);
 			ret = 1;
 			break;
+#endif
 		}
 		break;
 
