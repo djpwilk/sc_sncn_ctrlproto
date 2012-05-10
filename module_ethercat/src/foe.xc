@@ -25,11 +25,16 @@ static foemsg_t parse(uint16_t msg[], unsigned size)
 	m.opcode = msg[k++]&0xff;
 	tmp = (uint32_t)msg[k+1];
 	m.a.packetnumber = ((tmp&0xffff)<<16)|(msg[k]&0xff);
-	k++;
+	k+=2;
 
-	for (i=0; i<(FOE_DATA_SIZE/2) && i<size; i+=2) {
+	for (i=0; i<FOE_DATA_SIZE && k<size; i+=2, k++) {
 		m.b.data[i] = (unsigned char)(msg[k]&0xff);
 		m.b.data[i+1] = (unsigned char)((msg[k]>>8)&0xff);
+	}
+
+	/* pad the data buffer */
+	for (;i<FOE_DATA_SIZE; i++) {
+		m.b.data[i] = 0x00;
 	}
 
 	return m;
@@ -63,9 +68,7 @@ static unsigned int make_reply(unsigned type, uint32_t a, char ?data[], unsigned
 		}
 	}
 
-	if (data_size > 0) {
-		resize += k;
-	}
+	resize += data_size;
 
 	return resize;
 }
@@ -131,16 +134,18 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 					replySize = make_reply(FOE_ERROR, FOE_ERR_NOTFOUND, "File not found", 14);
 				} else {
 					/* prepare first data package */
-					dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data); /* FIXME should work with reference here */
-					/* FIXME if dataSize < FOE_DATA_SIZE this is the last packet, if a ACK is expected everything is fine and
-					 * no further action must be taken, if a ACK could be ommited, i have to check state here.
-					 */
-					if (dataSize < 0) { /* read returns a error */
+					dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data);
+
+					if (dataSize < 0) { /* read returns error */
 						state = FOE_STATE_IDLE;
 						replySize = make_reply(FOE_ERROR, -1*dataSize, "File not found", 14);
 					} else {
 						packetNumber++;
 						replySize = make_reply(FOE_DATA, packetNumber, data, dataSize);
+						if (replySize < FOE_DATA_SIZE) {
+							state = FOE_STATE_IDLE;
+							packetNumber = 0;
+						}
 					}
 				}
 				ret = 1;
@@ -205,7 +210,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		switch (rec.opcode) {
 		case FOE_DATA: /* FIXME if !"mailbox full" then the last package is received */
 			/* handle data */
-			bytecount = foefs_write(current_fp, size-FOE_HEADER_SIZE/*FOE_DATA_SIZE*/, rec.b.data); /* FIXME add error check */
+			bytecount = foefs_write(current_fp, (size*2)-FOE_HEADER_SIZE/*FOE_DATA_SIZE*/, rec.b.data); /* FIXME add error check */
 			if (bytecount < 0) {
 				state = FOE_STATE_IDLE;
 				replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
@@ -311,7 +316,7 @@ unsigned foe_get_reply(uint16_t data[])
 		data[k++] = (reply.b.data[i]&0xff) | ((tmp<<8)&0xff00);
 	}
 
-	return replySize;
+	return k;
 }
 
 int foe_request(uint16_t data[])
