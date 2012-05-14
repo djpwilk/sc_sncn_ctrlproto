@@ -65,22 +65,25 @@ int foefs_read(int fh, int size, char b[])
 {
 	int read=0;
 	int readSize = 0;
+	int i;
 
 	if (fh != filesystem.fh) {
 		return -FOE_ERR_NOACCESS;
 	}
 
-	if (size>filesystem.size) {
-		readSize = filesystem.size;
+	if (size>(filesystem.size-filesystem.currentpos)) {
+		readSize = filesystem.size-filesystem.currentpos;
 	} else {
 		readSize = size;
 	}
 
-	for (read=filesystem.currentpos; read<readSize; read++) {
-		b[read] = filesystem.bytes[read];
+	for (i=0, read=filesystem.currentpos; i<readSize; i++, read++) {
+		b[i] = filesystem.bytes[read];
 	}
 
-	return read;
+	filesystem.currentpos += readSize;
+
+	return readSize;
 }
 
 /*
@@ -103,7 +106,7 @@ int foefs_write(int fh, int size, char b[])
 		return -FOE_ERR_ILLEGAL;
 	}
 
-	for (i=filesystem.currentpos; i<size; i++, writecount++) {
+	for (writecount=0, i=filesystem.currentpos; writecount<size; i++, writecount++) {
 		filesystem.bytes[i] = b[writecount];
 	}
 

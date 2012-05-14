@@ -381,6 +381,15 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 	return error;
 }
 
+/* Send mailbox packet
+ *
+ * start_address  start address of memory area of mailbox
+ * max_size       maximum size of mailbox memory area
+ * type           type of mailbox message
+ * buffer[]       buffer to copy to mailbox memory area
+ * sendsize       size of mailbox data in words
+ * return AL_NO_ERROR or AL_ERROR
+ */
 static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int type,
 					uint16_t buffer[], uint16_t sendsize)
 {
@@ -388,7 +397,7 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 	uint16_t temp = 0;
 	unsigned int pos = 0;
 	unsigned int i = 0;
-	uint16_t size = max_size/2;
+	uint16_t size = max_size/2; /* max_size in bytes, size in words */
 	uint16_t sent = 0;
 
 	struct _ec_mailbox_header h;
@@ -943,7 +952,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				}
 
 				if (foe_request(out_buffer) == 1) {
-					foe_get_reply(out_buffer);
+					out_size = foe_get_reply(out_buffer);
 					pending_mailbox=1;
 				}
 				break;

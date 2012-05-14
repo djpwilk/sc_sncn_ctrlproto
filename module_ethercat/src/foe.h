@@ -41,7 +41,7 @@
 #define FOE_MAX_DATA_SIZE  512
 
 #define FOE_HEADER_SIZE    6
-#define FOE_MAX_MSGSIZE    256
+#define FOE_MAX_MSGSIZE    122
 #define FOE_DATA_SIZE      (FOE_MAX_MSGSIZE-FOE_HEADER_SIZE)
 
 typedef struct {
@@ -75,6 +75,13 @@ int foe_close(void);
  * @return 0 no error, 1 no error, reply pending, <0 error
  */
 int foe_parse_packet(uint16_t msg[], unsigned size);
+
+/**
+ * @brief Get reply packet
+ *
+ * @param data  data field (16 bit)
+ * @return word count of data field
+ */
 unsigned foe_get_reply(uint16_t data[]);
 
 int foe_request(uint16_t data[]);

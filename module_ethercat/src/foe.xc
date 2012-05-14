@@ -94,7 +94,8 @@ static int handle_write_state()
 	return nextState;
 }
 
-/* public function */
+/* public functions */
+
 int foe_init(void)
 {
 	state = FOE_STATE_IDLE;
@@ -116,7 +117,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 	int ret = -1;
 	unsigned char data[FOE_MAX_MSGSIZE];
 	int dataSize = 0;
-	uint32_t packetNumber = 0;
+	static uint32_t packetNumber = 0;
 	int bytecount = 0;
 
 	foemsg_t rec = parse(msg, size);
@@ -134,15 +135,16 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 					replySize = make_reply(FOE_ERROR, FOE_ERR_NOTFOUND, "File not found", 14);
 				} else {
 					/* prepare first data package */
-					dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data);
+					dataSize = foefs_read(current_fp, 116/*FOE_DATA_SIZE*/, data);
 
 					if (dataSize < 0) { /* read returns error */
 						state = FOE_STATE_IDLE;
 						replySize = make_reply(FOE_ERROR, -1*dataSize, "File not found", 14);
 					} else {
-						packetNumber++;
+						packetNumber = 1;
 						replySize = make_reply(FOE_DATA, packetNumber, data, dataSize);
-						if (replySize < FOE_DATA_SIZE) {
+						packetNumber++;
+						if (/*data*/replySize < 116/*FOE_DATA_SIZE*/) { /* this is infact the 'mailbox full' size. */
 							state = FOE_STATE_IDLE;
 							packetNumber = 0;
 						}
@@ -182,26 +184,30 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		case FOE_ACK:
 			/* prepare next pacakge or end */
 			dataSize = foefs_read(current_fp, FOE_DATA_SIZE, data);
-			packetNumber++;
 			replySize = make_reply(FOE_DATA, packetNumber, data, dataSize);
+			packetNumber++;
+			if (dataSize < FOE_DATA_SIZE) {
+				state = FOE_STATE_IDLE;
+				packetNumber = 0;
+			}
+			ret = 1;
 			break;
 
 		case FOE_ERROR:
 			/* abort transmission */
 			state = FOE_STATE_IDLE;
 			current_fp = foefs_close(current_fp);
-			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */
-			ret = 1;
+			replySize = make_reply(FOE_UNUSED, 0, null, 0); /* clear reply package */ /* FIXME shouldn't a error message constructed? */
+			ret = 0;
+			printstr("Errornous reply while in FOE_STATE_READ\n");
 			break;
 
-#if 0 /* FIXME temporarily deactivated */
 		default:
 			state = FOE_STATE_IDLE;
 			current_fp = foefs_close(current_fp);
 			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
 			ret = 1;
 			break;
-#endif
 		}
 		break;
 
@@ -210,7 +216,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 		switch (rec.opcode) {
 		case FOE_DATA: /* FIXME if !"mailbox full" then the last package is received */
 			/* handle data */
-			bytecount = foefs_write(current_fp, (size*2)-FOE_HEADER_SIZE/*FOE_DATA_SIZE*/, rec.b.data); /* FIXME add error check */
+			bytecount = foefs_write(current_fp, (size*2)-FOE_HEADER_SIZE, rec.b.data); /* FIXME add error check */
 			if (bytecount < 0) {
 				state = FOE_STATE_IDLE;
 				replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
@@ -219,18 +225,15 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 			} else {
 
 				/* The last package is recognized by not fully filled data field. */
-				if (bytecount < FOE_DATA_SIZE) {
+				/* FIXME sadly the ACK response isn't recognized by SOEM at the moment */
+				if (bytecount < FOE_DATA_SIZE) { /* FIXME here lies the rabbit !!! */
 					state = FOE_STATE_IDLE;
 					current_fp = foefs_close(current_fp);
+					ret = 0; /* FIXME the last packet ACK isn't recognized by SOEM */
+				} else {
+					replySize = make_reply(FOE_ACK, rec.a.packetnumber, null, 0);
+					ret = 1;
 				}
-
-				/* FIXME sadly the ACK response isn't recognized by SOEM at the moment */
-				#if 0
-				replySize = make_reply(FOE_ACK, rec.a.packetnumber, null, 0);
-				ret = 1;
-				#else
-				ret = 0;
-				#endif
 			}
 			break;
 
@@ -242,14 +245,12 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 			ret = 1;
 			break;
 
-#if 1 /* FIXME temporarily deactivated */
 		default:
 			state = FOE_STATE_IDLE;
 			replySize = make_reply(FOE_ERROR, FOE_ERR_UNDEF, "Missing Reply", 13);
 			current_fp = foefs_close(current_fp);
 			ret = 1;
 			break;
-#endif
 		}
 		break;
 
