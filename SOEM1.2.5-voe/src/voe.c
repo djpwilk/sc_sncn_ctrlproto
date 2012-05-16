@@ -66,16 +66,21 @@ int slave_testfoe(uint16 slave)
 	int err = 0;
 	int i;
 
-	int psize = 64; /* exact size of EC_MACFOEDATA, which is not exported... */
+	int psize = 1000; /* exact size of EC_MACFOEDATA, which is not exported... */
 	unsigned char *p = (unsigned char *)malloc(psize * sizeof(unsigned char));;
 
-#if 1
+#if 0
 	for (i=0; i<(psize/4); i+=4) {
 		p[i] = 0x46;
 		p[i+1] = 0x6f;
 		p[i+2] = 0x6f;
 		p[i+3] = 0x21;
 	}
+#else
+	FILE *f = fopen("test", "r");
+	psize = fread(p, 1, psize, f);
+	fclose(f);
+	printf("Read file, now transmitting %d bytes\n", psize);
 #endif
 
 #if 0
@@ -91,7 +96,7 @@ int slave_testfoe(uint16 slave)
 
 	/* Attention, psize has side effects, give max size, receive received things */
 	printf("Writing FOE file request\n");
-	int ret = ec_FOEwrite(slave, "test", 0, psize, (void *)p, 5000000/*EC_TIMEOUTTXM+1000*/);
+	int ret = ec_FOEwrite(slave, "test", 0, psize/4, (void *)p, 5000000/*EC_TIMEOUTTXM+1000*/);
 
 	printf("return value of write: %d\n", ret);
 
@@ -101,6 +106,12 @@ int slave_testfoe(uint16 slave)
 	int ppsize = psize/4;
 	ret = ec_FOEread(slave, "test", 0, &ppsize, (void *)p, 5000000);
 	printf("return value of read: %d\n", ret);
+
+	printf("Received: ");
+	for (i=0; i<ppsize; i++) {
+		printf(" %c", p[i]);
+	}
+	printf("\n");
 #endif
 
 	free(p);
