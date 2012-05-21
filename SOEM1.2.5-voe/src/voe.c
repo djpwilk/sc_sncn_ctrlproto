@@ -27,6 +27,7 @@
 #include "ethercatprint.h"
 
 #define MBX_VOE_TYPE  0xF
+#define READDUMMYTEST   0
 
 #define MAX_MBXDATALENGTH  0x200 /* this size is copied from ethercatcoe.c */
 
@@ -69,21 +70,14 @@ int slave_testfoe(uint16 slave)
 	int psize = 1000; /* exact size of EC_MACFOEDATA, which is not exported... */
 	unsigned char *p = (unsigned char *)malloc(psize * sizeof(unsigned char));;
 
-#if 0
+#if READDUMMYTEST
 	for (i=0; i<(psize/4); i+=4) {
 		p[i] = 0x46;
 		p[i+1] = 0x6f;
 		p[i+2] = 0x6f;
 		p[i+3] = 0x21;
 	}
-#else
-	FILE *f = fopen("test", "r");
-	psize = fread(p, 1, psize, f);
-	fclose(f);
-	printf("Read file, now transmitting %d bytes\n", psize);
-#endif
 
-#if 0
 	void *vp = (void *)p;
 	int voidsize = sizeof(vp);
 	printf("[DEBUG %s]", __func__);
@@ -91,8 +85,12 @@ int slave_testfoe(uint16 slave)
 		printf(" %x", *(vp+i));
 	}
 	printf("\n");
+#else
+	FILE *f = fopen("test", "r");
+	psize = fread(p, 1, psize, f);
+	fclose(f);
+	printf("Read file, now transmitting %d bytes\n", psize);
 #endif
-
 
 	/* Attention, psize has side effects, give max size, receive received things */
 	printf("Writing FOE file request\n");
