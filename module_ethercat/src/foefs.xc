@@ -14,6 +14,17 @@
 foefile_t filesystem;
 unsigned freespace;
 
+static int copy_fname(char src[], char dest[], unsigned size)
+{
+	int i;
+
+	for (i=0; i<size; i++) {
+		dest[i] = src[i];
+	}
+
+	return i;
+}
+
 /* application interface (public) */
 
 /* FIXME check if file exists, than check mode */
@@ -25,6 +36,10 @@ int foefs_open(char filename[], int mode)
 
 	if ((mode == MODE_RO) && (strncmp(filename, filesystem.name, MAX_FNAME) != 0)) {
 		return -FOE_ERR_NOTFOUND;
+	}
+
+	if ((mode == MODE_RW) && (strncmp(filename, filesystem.name, MAX_FNAME)) != 0) {
+		copy_fname(filename, filesystem.name, MAX_FNAME);
 	}
 
 	/* is file already open, and/or currently in use */
@@ -42,27 +57,33 @@ int foefs_open(char filename[], int mode)
 int foefs_close(int fh)
 {
 	filesystem.fh = 0;
+	filesystem.currentpos = 0;
 	return filesystem.fh;
 }
 
 int foefs_read(int fh, int size, char b[])
 {
-	int readcount = 0;
+	int read=0;
+	int readSize = 0;
 	int i;
 
 	if (fh != filesystem.fh) {
 		return -FOE_ERR_NOACCESS;
 	}
 
-	if (filesystem.size < filesystem.currentpos + size) {
-		return -FOE_ERR_ILLEGAL;
+	if (size>(filesystem.size-filesystem.currentpos)) {
+		readSize = filesystem.size-filesystem.currentpos;
+	} else {
+		readSize = size;
 	}
 
-	for (i=filesystem.currentpos; i<size; i++, readcount++) {
-		b[readcount] = filesystem.bytes[i];
+	for (i=0, read=filesystem.currentpos; i<readSize; i++, read++) {
+		b[i] = filesystem.bytes[read];
 	}
 
-	return readcount;
+	filesystem.currentpos += readSize;
+
+	return readSize;
 }
 
 /*
@@ -85,7 +106,7 @@ int foefs_write(int fh, int size, char b[])
 		return -FOE_ERR_ILLEGAL;
 	}
 
-	for (i=filesystem.currentpos; i<size; i++, writecount++) {
+	for (writecount=0, i=filesystem.currentpos; writecount<size; i++, writecount++) {
 		filesystem.bytes[i] = b[writecount];
 	}
 
