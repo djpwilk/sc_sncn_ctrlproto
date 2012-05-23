@@ -4,8 +4,10 @@
  * Author: Frank Jeschke <jeschke@fjes.de>
  */
 
-#include <xtcp.h>
+//#include <xtcp.h>
 #include <uip.h>
+
+#define MAX_ETHERNET_FRAME   1024   /* FIXME What is the max number of bytes in a ehternet frame? */
 
 enum eSendState {
 	IDLE,
@@ -15,6 +17,17 @@ enum eSendState {
 };
 
 static enum eSendState sendstate;
+
+struct _ethernet_packet {
+	unsigned char ethernet_fame[MAX_ETHERNET_FRAME];
+	int readytosend;
+	unsigned usedsize;
+	unsigned currentpos;
+};
+
+/* FIXME should I really store a complete of 3 ethernet packets??? */
+static struct _ethernet_packet ethernet_packet_rx[3];
+static struct _ethernet_packet ethernet_packet_tx[3];
 
 static int check_received(chanend eoe_rx)
 {
@@ -34,7 +47,7 @@ static int check_received(chanend eoe_rx)
 			eoe_rx :> tmp;
 			buffer[received] = tmp;
 		}
-		break
+		break;
 
 	default:
 		break;
