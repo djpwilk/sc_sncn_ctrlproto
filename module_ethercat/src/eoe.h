@@ -30,8 +30,8 @@
 #define MAX_EOE_DATA                 512 /* FIXME put correct value here */
 
 #define EOE_STATE_IDLE               0
-#define EOE_STATE_REC_FRAGMENT       1
-#define EOE_STATE_REC_LAST_FRAGMENT  2
+#define EOE_STATE_RX_FRAGMENT        1
+#define EOE_STATE_RX_LAST_FRAGMENT   2
 #define EOE_STATE_TX_FRAGMENT        3
 
 /* another try/test with bit field sizes: */
@@ -98,4 +98,9 @@ struct _eoe_parm_filter {
 
 
 void eoe_init(void);
+
+/* convention channels:
+ * - eoe_rx: everything from master
+ * - eoe_tx: everything to master
+ */
 int eoe_handler(chanend eoe_rx, chanend eoe_tx);

@@ -9,14 +9,7 @@
 
 #define MAX_ETHERNET_FRAME   1522   /* Max. number of bytes within a ethernet frame. FIXME couldn't it be less? */
 
-enum eSendState {
-	IDLE,
-	READY,
-	SEND,
-	STOP
-};
-
-static enum eSendState sendstate;
+static int sendstate;
 
 struct _ethernet_packet {
 	unsigned char ethernet_fame[MAX_ETHERNET_FRAME];
@@ -59,18 +52,19 @@ static int check_received(chanend eoe_rx)
 static int check_send(chanend eoe_tx)
 {
 	int err = -1;
+
 	switch (sendstate) {
-	case IDLE:
+	case EOE_STATE_IDLE:
 		err = 0; /* nothing to do */
 		break;
 
-	case READY:
+	case EOE_STATE_RX_FRAGMENT:
 		break;
 
-	case SEND:
+	case EOE_STATE_RX_LAST_FRAGMENT:
 		break;
 
-	case STOP:
+	case EOE_STATE_TX_FRAGMENT:
 		break;
 
 	default:
