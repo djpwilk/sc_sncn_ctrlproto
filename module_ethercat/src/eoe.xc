@@ -7,7 +7,7 @@
 //#include <xtcp.h>
 #include <uip.h>
 
-#define MAX_ETHERNET_FRAME   1024   /* FIXME What is the max number of bytes in a ehternet frame? */
+#define MAX_ETHERNET_FRAME   1522   /* Max. number of bytes within a ethernet frame. FIXME couldn't it be less? */
 
 enum eSendState {
 	IDLE,
