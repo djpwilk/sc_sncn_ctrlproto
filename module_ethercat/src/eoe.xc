@@ -32,7 +32,7 @@ static struct _ethernet_packet ethernet_packet_tx[3];
 static int check_received(chanend eoe_rx)
 {
 	unsigned tmp;
-	unsigned expect;
+	unsigned expected;
 	unsigned received = 0;
 	int rbytes = 0;
 
@@ -56,7 +56,7 @@ static int check_received(chanend eoe_rx)
 	return rbytes;
 }
 
-static int check_send(eoe_tx)
+static int check_send(chanend eoe_tx)
 {
 	int err = -1;
 	switch (sendstate) {
@@ -81,7 +81,7 @@ static int check_send(eoe_tx)
 	return err;
 }
 
-void eoe_init(void)
+int eoe_init(void)
 {
 	sendstate = IDLE;
 	return 0;
