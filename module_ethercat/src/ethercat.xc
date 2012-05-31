@@ -334,7 +334,8 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		switch (h.type) {
 		case EOE_PACKET:
 			//printstr("DEBUG ethercat: received EOE packet.\n");
-			ecat_send_handler(c_eoe, buffer, wordCount);
+			//ecat_send_handler(c_eoe, buffer, wordCount);
+			eoe_rx_handler(buffer, wordCount);
 			break;
 
 		case COE_PACKET:
@@ -805,6 +806,8 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	int pending_mailbox = 0; /* no mailbox to send */
 
 	foemsg_t foeMessage;
+
+	eoe_init(c_eoe_r, c_eoe_s);
 
 	EC_CS_SET();
 	while (1) {
