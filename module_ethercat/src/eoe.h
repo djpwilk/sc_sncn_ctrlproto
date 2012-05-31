@@ -37,7 +37,7 @@
 /* another try/test with bit field sizes: */
 
 struct _eoe_packet {
-	/* eoe header */
+	/* eoe header FIXME option: merge chuncks of 16 bits into this as header, make makros to check individual fields */
 	unsigned type            :4;
 	unsigned port            :4;  /* 0x00 (no spec. port) - 0x0f */
 	unsigned lastFragment    :1;  /* 0 - at least one frame follows, 1 - last packet */
@@ -103,4 +103,4 @@ void eoe_init(void);
  * - eoe_rx: everything from master
  * - eoe_tx: everything to master
  */
-int eoe_handler(chanend eoe_rx, chanend eoe_tx);
+int eoe_rx_handler(uint16_t msg[], unsigned size);

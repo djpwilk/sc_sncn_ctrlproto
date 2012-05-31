@@ -5,14 +5,21 @@
  */
 
 //#include <xtcp.h>
-#include <uip.h>
+//#include <uip.h>
+#include "eoe.h"
 
 #define MAX_ETHERNET_FRAME   1522   /* Max. number of bytes within a ethernet frame. FIXME couldn't it be less? */
+
+struct {
+	int state;
+	int rx_buffer;  ///< index of used rx buffer
+	int tx_buffer;  ///< index of used tx buffer
+} eoe_state;
 
 static int sendstate;
 
 struct _ethernet_packet {
-	unsigned char ethernet_fame[MAX_ETHERNET_FRAME];
+	unsigned char frame[MAX_ETHERNET_FRAME];
 	int readytosend;
 	unsigned usedsize;
 	unsigned currentpos;
@@ -21,6 +28,19 @@ struct _ethernet_packet {
 /* FIXME should I really store a complete of 3 ethernet packets??? */
 static struct _ethernet_packet ethernet_packet_rx[3];
 static struct _ethernet_packet ethernet_packet_tx[3];
+
+static void reset_ethernet_packet(struct _ethernet_packet ep)
+{
+	int i;
+
+	for (i=0; i<MAX_ETHERNET_FRAME; i++) {
+		ep.frame[i]=0;
+	}
+
+	ep.readytosend=0;
+	ep.usedsize=0;
+	ep.currentpos=0;
+}
 
 static int check_received(chanend eoe_rx)
 {
@@ -75,22 +95,48 @@ static int check_send(chanend eoe_tx)
 	return err;
 }
 
-int eoe_init(void)
+int eoe_init(chanend eoe_rx, chanend eoe_tx)
 {
-	sendstate = IDLE;
+	sendstate = EOE_STATE_IDLE;
+
+	eoe_state.state = EOE_STATE_IDLE;
+	reset_ethernet_packet(ethernet_packet_rx);
+	reset_ethernet_packet(ethernet_packet_tx);
+
 	return 0;
 }
 
-int eoe_handler(chanend eoe_rx, chanend eoe_tx)
+int eoe_tx_handler(uint16_t msg[], unsigned size)
 {
-	int ret = 0;
-
-	while (1) {
-		/* make the work */
-		ret = check_received(eoe_rx);
-		ret = check_send(eoe_tx);
+	switch (eoe_state.state) {
+	case EOE_STAT_IDLE:
+		break;
+	case EOE_STATE_RX_FRAGMENT
+		break;
+	case EOE_STATE_RX_LAST_FRAGMENT:
+		break;
+	case EOE_STATE_TX_FRAGMENT:
+		break;
 	}
 
 	return 0;
+}
+
+int eoe_rx_handler(uint16_t msg[], unsigned size)
+{
+	int ret = 0;
+
+	switch (eoe_state.state) {
+	case EOE_STAT_IDLE:
+		break;
+	case EOE_STATE_RX_FRAGMENT
+		break;
+	case EOE_STATE_RX_LAST_FRAGMENT:
+		break;
+	case EOE_STATE_TX_FRAGMENT:
+		break;
+	}
+
+	return ret;
 }
 
