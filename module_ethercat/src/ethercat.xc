@@ -940,7 +940,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				break;
 
 			case c_foe_r :> otmp :
-				printstr("DEBUG: receive FoE command (e.g. fetch filename)\n");
+				printstr("DEBUG: receive FoE command (e.g. file access)\n");
+				foe_app_request(otmp, c_foe_r);
+				#if 0
 				out_size = otmp&0xffff;
 				//printstr("DEBUG: read: "); printhexln(out_size);
 				//printstr("> ");
@@ -950,11 +952,13 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 					out_buffer[i] = otmp&0xffff;
 					//printhex(out_buffer[i]);
 				}
+				foe_command = otmp;
 
 				if (foe_request(out_buffer) == 1) {
 					out_size = foe_get_reply(out_buffer);
 					pending_mailbox=1;
 				}
+				#endif
 				break;
 
 			default:

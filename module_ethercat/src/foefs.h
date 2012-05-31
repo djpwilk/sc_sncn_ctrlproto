@@ -8,6 +8,8 @@
  * provide a reserved are in RAM to hold a simple filesystem.
  */
 
+#ifndef FOEFS_H
+#define FOEFS_H
 
 #define BLKSZ      10000
 #define MAX_FNAME  10
@@ -115,3 +117,5 @@ int foefs_format(void);
  * @return Number of available bytes.
  */
 int foefs_free(void);
+
+#endif /* FOEFS_H */

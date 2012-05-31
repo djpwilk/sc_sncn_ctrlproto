@@ -6,6 +6,7 @@
 #include <xs1.h>
 #include <print.h>
 
+#include "foe_chan.h"
 #include "foefs.h"
 #include "foe.h"
 
@@ -350,6 +351,85 @@ int foe_request(uint16_t data[])
 		break;
 	default:
 		printstr("Error invalid request\n");
+		break;
+	}
+
+	return 0;
+}
+
+/* foe channel communication to application */
+
+/* This is a simple adaption of the default file operations above in channel communications */
+int foe_app_request(int command, chanend comm)
+{
+	int fh=0;
+	int i=0;
+	int otmp;
+	int size;
+	char filename[MAX_FNAME];
+	union {
+		int inbuffer[BLKSZ/2]; /* FIXME try to reduce amount of stored memory */
+		char inbufc[BLKSZ];
+	} inp;
+
+	switch (command) {
+	/* a file name is terminated with '\0' */
+	case FOE_FILE_OPEN:
+		while (otmp != '\0') {
+			comm :> inp.inbuffer[i];
+			i++;
+		}
+		inp.inbuffer[i] = '\0';
+		for (i=0; i<MAX_FNAME && inp.inbuffer[i]!='\0'; i++) {
+			filename[i] = (char)inp.inbuffer[i];
+		}
+		filename[i] = '\0';
+
+		fh = foefs_open(filename, MODE_RW); /* there is currently no distinction between read-only and read-write mode */
+		if (fh>0) {
+			comm <: FOE_FILE_ACK;
+		} else {
+			comm <: FOE_FILE_ERROR;
+		}
+		break;
+
+	case FOE_FILE_READ:
+		comm :> otmp;
+		size = foefs_read(fh, otmp, inp.inbufc);
+
+		comm <: FOE_FILE_DATA;
+		for (i=0; i<size; i++) {
+			comm <: inp.inbufc[i];
+		}
+
+		break;
+
+	case FOE_FILE_WRITE: /* FIXME writing to a file is currently unsuported */
+		comm :> otmp;
+		i=0;
+
+		while (i<otmp) {
+			comm :> otmp;
+			i++;
+		}
+
+		comm <: FOE_FILE_ERROR;
+		break;
+
+	case FOE_FILE_CLOSE:
+		foefs_close(fh);
+		comm <: FOE_FILE_ACK;
+		break;
+
+	case FOE_FILE_SEEK:
+		comm :> otmp;
+		foefs_seek(fh, otmp, SEEK_SET);
+		comm <: FOE_FILE_ACK;
+		break;
+
+	case FOE_FILE_FREE: /* removes file and resets filesystem */
+		foefs_format();
+		comm <: FOE_FILE_ACK;
 		break;
 	}
 

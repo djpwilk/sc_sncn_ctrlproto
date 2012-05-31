@@ -85,3 +85,15 @@ int foe_parse_packet(uint16_t msg[], unsigned size);
 unsigned foe_get_reply(uint16_t data[]);
 
 int foe_request(uint16_t data[]);
+
+/**
+ * @brief This funciton is called by ecat_handler()
+ *
+ * Here a channel commmunication abstraction is realized to allow applications
+ * to access the file within the filesystem without the need for shared memory.
+ *
+ * @param command  The command issued by the caller
+ * @param comm     the communication channel to transfer data forth and back.
+ * @param 0 on success, otherwise error.
+ */
+int foe_app_request(int command, chanend comm);

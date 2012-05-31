@@ -7,6 +7,8 @@
 #ifndef ETHERCAT_H
 #define ETHERCAT_H
 
+#include "foe_chan.h"
+
 #include <stdint.h>
 
 enum EC_MailboxProtocolTypes {

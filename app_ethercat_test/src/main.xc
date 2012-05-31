@@ -13,6 +13,9 @@
 #include <ethercat.h>
 #include <foefs.h>
 
+//#include <uip.h>
+//#include <xtcp.h>
+
 #define MAX_BUFFER_SIZE   1024
 
 on stdcore[1] : out port ledBlue = LED_BLUE;
@@ -38,8 +41,8 @@ static void get_file(chanend foe_out, char filename[])
 }
 
 /* example consumer */
-static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eoe_out,
-			chanend foe_in, chanend foe_out/*, chanend pdo_in, chanend pdo_out*/)
+static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eoe_out
+			/*, chanend foe_in, chanend foe_out, chanend pdo_in, chanend pdo_out*/)
 {
 	timer t;
 	const unsigned int delay = 10;
@@ -98,6 +101,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			}
 			break;
 
+#if 0
 		case foe_in :> tmp :
 			size = (uint16_t)(tmp&0xffff);
 			count=0;
@@ -166,6 +170,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			}
 
 			break;
+#endif
 
 #if 0
 		case pdo_out :> tmp :
@@ -229,6 +234,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			outType = -1;
 			break;
 
+#if 0 /* FIXME this resides in check_file() */
 		case FOE_PACKET:
 			count=0;
 			//printstr("DEBUG send FoE packet\n");
@@ -240,8 +246,96 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			outBuffer[0] = 0;
 			outType = -1; /* FIXME set correct define */
 			break;
-
+#endif
 		default:
+			break;
+		}
+
+		t :> time;
+		t when timerafter(time+delay) :> void;
+	}
+}
+
+/* The following functions are a simple example on how to use the channel
+ * abstraction to the file access system.
+ * If a file is available it is read by check_file_access() and the filesystem
+ * becomes formated for the next file.
+ *
+ * No storage is done here and only the functionality is tested.
+ */
+#define BUFFER_SIZE   1024
+
+static void check_file_access(chanend foe_comm)
+{
+	int buffer[BUFFER_SIZE];
+	unsigned i=0;
+	int ctmp;
+
+	foe_comm <: FOE_FILE_READ;
+	foe_comm <: BUFFER_SIZE;
+
+	foe_comm :> ctmp;
+	switch (ctmp) {
+	case FOE_FILE_DATA:
+		foe_comm :> ctmp;
+		for (i=0; i<ctmp; i++) {
+			foe_comm :> buffer[i];
+		}
+		break;
+
+	case FOE_FILE_ERROR:
+		printstr("[check_file_access()] error is returned\n");
+		break;
+
+	default:
+		printstr("[check_file_access()] Unexpected reply\n");
+		break;
+	}
+
+	foe_comm <: FOE_FILE_FREE;
+	foe_comm :> ctmp;
+	switch (ctmp) {
+	case FOE_FILE_ACK:
+		printstr("[check_file_access()] filesystem is clear again\n");
+		break;
+	case FOE_FILE_ERROR:
+		printstr("[check_file_access()] error during filesystem clean up\n");
+		break;
+	default:
+		printstr("[check_file_access()] unknon return value\n");
+		break;
+	}
+}
+
+static void check_file(chanend foe_comm, chanend foe_signal)
+{
+	timer t;
+	unsigned time = 0;
+	unsigned delay = 100000;
+	char name[] = "test";
+	unsigned i;
+	int ctmp;
+
+	while (1) {
+		/* check if a file is present, FIXME: this could be realized by the signaling channel! */
+		foe_comm <: FOE_FILE_OPEN;
+		i=0;
+		do {
+			foe_comm <: name[i];
+			i++;
+		} while (name[i] != '\0');
+
+		foe_comm :> ctmp;
+		switch (ctmp) {
+		case FOE_FILE_ERROR:
+			printstr("Error file is not ready\n");
+			break;
+		case FOE_FILE_ACK:
+			/* File is ready read it and print to std. out */
+			check_file_access(foe_comm);
+			break;
+		default:
+			printstr("Unknown state returned\n");
 			break;
 		}
 
@@ -343,7 +437,11 @@ int main(void) {
 		}
 
 		on stdcore[0] : {
-			consumer(coe_in, coe_out, eoe_in, eoe_out, foe_in, foe_out/*, pdo_in, pdo_out*/);
+			consumer(coe_in, coe_out, eoe_in, eoe_out  /*, foe_in, foe_out, pdo_in, pdo_out*/);
+		}
+
+		on stdcore[1] : {
+			check_file(foe_in, foe_out);
 		}
 
 		/*
