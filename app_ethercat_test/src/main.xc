@@ -270,6 +270,7 @@ static void check_file_access(chanend foe_comm)
 	char buffer[BUFFER_SIZE];
 	unsigned i=0;
 	int ctmp;
+	unsigned size;
 
 	foe_comm <: FOE_FILE_READ;
 	foe_comm <: BUFFER_SIZE;
@@ -278,10 +279,14 @@ static void check_file_access(chanend foe_comm)
 	switch (ctmp) {
 	case FOE_FILE_DATA:
 		foe_comm :> ctmp;
-		for (i=0; i<ctmp; i++) {
+		printstr("[DEBUG FOE] file transfered:\n"); /* DEBUG */
+		size = (unsigned int)ctmp;
+		for (i=0; i<size; i++) {
 			foe_comm :> ctmp;
 			buffer[i] = (char)ctmp;
+			printhex(buffer[i]); /* DEBUG */
 		}
+		printstr("\n");
 		break;
 
 	case FOE_FILE_ERROR:
@@ -293,6 +298,7 @@ static void check_file_access(chanend foe_comm)
 		break;
 	}
 
+	/* clean up file system to permit next foe transfere */
 	foe_comm <: FOE_FILE_FREE;
 	foe_comm :> ctmp;
 	switch (ctmp) {
@@ -314,16 +320,20 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 	unsigned time = 0;
 	unsigned delay = 100000;
 	char name[] = "test";
-	unsigned i;
+	unsigned i=0;
 	int ctmp;
+
+	/* wait some time until ethercat handler is ready */
+	t :> time;
+	t when timerafter(time+delay) :> void;
 
 	while (1) {
 		/* check if a file is present, FIXME: this could be realized by the signaling channel! */
 		foe_comm <: FOE_FILE_OPEN;
-		i=0;
+		i=-1;
 		do {
-			foe_comm <: name[i];
 			i++;
+			foe_comm <: (int)name[i];
 		} while (name[i] != '\0');
 
 		foe_comm :> ctmp;
@@ -442,7 +452,7 @@ int main(void) {
 		}
 
 		on stdcore[1] : {
-			check_file(foe_in, foe_out);
+			check_file(foe_out, foe_in);
 		}
 
 		/*

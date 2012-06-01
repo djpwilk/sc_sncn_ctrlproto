@@ -360,27 +360,25 @@ int foe_request(uint16_t data[])
 /* foe channel communication to application */
 
 /* This is a simple adaption of the default file operations above in channel communications */
-int foe_file_access(int command, chanend comm)
+int foe_file_access(chanend comm, int command)
 {
-	int fh=0;
+	static int fh=0;
 	int i=0;
-	int otmp;
-	int size;
+	int otmp=0;
+	int size=0;
 	char filename[MAX_FNAME];
-	union {
-		int inbuffer[BLKSZ/2]; /* FIXME try to reduce amount of stored memory */
-		char inbufc[BLKSZ];
-	} inp;
+	//int inbuffer[BLKSZ/2]; /* FIXME try to reduce amount of stored memory */
+	char inbufc[BLKSZ];
 
+printstr("DEBUG foe_file_access(): file access handling\n");
 	switch (command) {
 	/* a file name is terminated with '\0' */
 	case FOE_FILE_OPEN:
-		while (otmp != '\0') {
+		do {
 			comm :> otmp;
 			filename[i] = (char)otmp;
 			i++;
-		}
-		filename[i] = '\0';
+		} while (otmp != '\0');
 
 		fh = foefs_open(filename, MODE_RW); /* there is currently no distinction between read-only and read-write mode */
 
@@ -393,11 +391,12 @@ int foe_file_access(int command, chanend comm)
 
 	case FOE_FILE_READ:
 		comm :> otmp;
-		size = foefs_read(fh, otmp, inp.inbufc);
+		size = foefs_read(fh, otmp, inbufc);
 
 		comm <: FOE_FILE_DATA;
+		comm <: size;
 		for (i=0; i<size; i++) {
-			comm <: inp.inbufc[i];
+			comm <: (int)inbufc[i];
 		}
 
 		break;

@@ -99,4 +99,4 @@ int foe_request(uint16_t data[]);
  * @param comm     the communication channel to transfer data forth and back.
  * @param 0 on success, otherwise error.
  */
-int foe_file_access(int command, chanend comm);
+int foe_file_access(chanend comm, int command);
