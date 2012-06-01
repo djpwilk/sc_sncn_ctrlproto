@@ -87,6 +87,11 @@ int slave_testfoe(uint16 slave)
 	printf("\n");
 #else
 	FILE *f = fopen("test", "r");
+	if (f==NULL) {
+		fprintf(stderr, "Error, couldn't open file for reading\n");
+		return 1;
+	}
+
 	psize = fread(p, 1, psize, f);
 	fclose(f);
 	printf("Read file, now transmitting %d bytes\n", psize);
