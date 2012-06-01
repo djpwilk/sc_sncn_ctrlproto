@@ -87,6 +87,11 @@ int slave_testfoe(uint16 slave)
 	printf("\n");
 #else
 	FILE *f = fopen("test", "r");
+	if (f==NULL) {
+		fprintf(stderr, "Error, couldn't open file for reading\n");
+		return 1;
+	}
+
 	psize = fread(p, 1, psize, f);
 	fclose(f);
 	printf("Read file, now transmitting %d bytes\n", psize);
@@ -94,14 +99,14 @@ int slave_testfoe(uint16 slave)
 
 	/* Attention, psize has side effects, give max size, receive received things */
 	printf("Writing FOE file request\n");
-	int ret = ec_FOEwrite(slave, "test", 0, psize/4, (void *)p, 5000000/*EC_TIMEOUTTXM+1000*/);
+	int ret = ec_FOEwrite(slave, "test", 0, psize, (void *)p, 5000000/*EC_TIMEOUTTXM+1000*/);
 
 	printf("return value of write: %d\n", ret);
 
 #if 1
 	memset(p, 0, psize);
 	printf("(Re-)Reading file 'test'\n");
-	int ppsize = psize/4;
+	int ppsize = psize;
 	ret = ec_FOEread(slave, "test", 0, &ppsize, (void *)p, 5000000);
 	printf("return value of read: %d\n", ret);
 
