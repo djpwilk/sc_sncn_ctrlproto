@@ -376,16 +376,14 @@ int foe_app_request(int command, chanend comm)
 	/* a file name is terminated with '\0' */
 	case FOE_FILE_OPEN:
 		while (otmp != '\0') {
-			comm :> inp.inbuffer[i];
+			comm :> otmp;
+			filename[i] = (char)otmp;
 			i++;
-		}
-		inp.inbuffer[i] = '\0';
-		for (i=0; i<MAX_FNAME && inp.inbuffer[i]!='\0'; i++) {
-			filename[i] = (char)inp.inbuffer[i];
 		}
 		filename[i] = '\0';
 
 		fh = foefs_open(filename, MODE_RW); /* there is currently no distinction between read-only and read-write mode */
+
 		if (fh>0) {
 			comm <: FOE_FILE_ACK;
 		} else {

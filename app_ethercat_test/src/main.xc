@@ -267,7 +267,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 
 static void check_file_access(chanend foe_comm)
 {
-	int buffer[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE];
 	unsigned i=0;
 	int ctmp;
 
@@ -279,7 +279,8 @@ static void check_file_access(chanend foe_comm)
 	case FOE_FILE_DATA:
 		foe_comm :> ctmp;
 		for (i=0; i<ctmp; i++) {
-			foe_comm :> buffer[i];
+			foe_comm :> ctmp;
+			buffer[i] = (char)ctmp;
 		}
 		break;
 
