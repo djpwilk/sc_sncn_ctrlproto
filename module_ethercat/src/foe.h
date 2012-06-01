@@ -92,8 +92,11 @@ int foe_request(uint16_t data[]);
  * Here a channel commmunication abstraction is realized to allow applications
  * to access the file within the filesystem without the need for shared memory.
  *
+ * @see foe_chan.h
+ * for a list of available channel commands
+ *
  * @param command  The command issued by the caller
  * @param comm     the communication channel to transfer data forth and back.
  * @param 0 on success, otherwise error.
  */
-int foe_app_request(int command, chanend comm);
+int foe_file_access(int command, chanend comm);

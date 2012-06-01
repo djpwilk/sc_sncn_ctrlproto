@@ -941,7 +941,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 			case c_foe_r :> otmp :
 				printstr("DEBUG: receive FoE command (e.g. file access)\n");
-				foe_app_request(otmp, c_foe_r);
+				foe_file_access(otmp, c_foe_r);
 				#if 0
 				out_size = otmp&0xffff;
 				//printstr("DEBUG: read: "); printhexln(out_size);

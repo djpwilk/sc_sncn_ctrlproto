@@ -360,7 +360,7 @@ int foe_request(uint16_t data[])
 /* foe channel communication to application */
 
 /* This is a simple adaption of the default file operations above in channel communications */
-int foe_app_request(int command, chanend comm)
+int foe_file_access(int command, chanend comm)
 {
 	int fh=0;
 	int i=0;
