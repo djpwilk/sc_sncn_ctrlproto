@@ -321,13 +321,22 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 	unsigned delay = 100000;
 	char name[] = "test";
 	unsigned i=0;
-	int ctmp;
+	int ctmp=0;
+	int notification=0;
 
 	/* wait some time until ethercat handler is ready */
 	t :> time;
 	t when timerafter(time+delay) :> void;
 
 	while (1) {
+		foe_signal :> notification;
+
+		if (notification != FOE_FILE_READY) {
+			t :> time;
+			t when timerafter(time+delay) :> void;
+			continue;
+		}
+
 		/* check if a file is present, FIXME: this could be realized by the signaling channel! */
 		foe_comm <: FOE_FILE_OPEN;
 		i=-1;
@@ -341,10 +350,12 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 		case FOE_FILE_ERROR:
 			printstr("Error file is not ready\n");
 			break;
+
 		case FOE_FILE_ACK:
 			/* File is ready read it and print to std. out */
 			check_file_access(foe_comm);
 			break;
+
 		default:
 			printstr("Unknown state returned\n");
 			break;

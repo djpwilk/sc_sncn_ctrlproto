@@ -38,4 +38,7 @@
 #define FOE_FILE_ERROR     21
 #define FOE_FILE_DATA      22
 
+/* control commands */
+#define FOE_FILE_READY     30
+
 #endif /* FOE_CHAN_H */

@@ -111,6 +111,7 @@ int foefs_write(int fh, int size, char b[])
 	}
 
 	filesystem.size += writecount;
+	freespace = 0;
 
 	return writecount;
 }
@@ -159,10 +160,6 @@ int foefs_format()
 int foefs_remove(int fh)
 {
 	int i=0;
-
-	if (freespace > 0) {
-		freespace--;
-	}
 
 	filesystem.fh = 0;
 	filesystem.size = 0;

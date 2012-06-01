@@ -113,7 +113,7 @@ int foe_close(void)
 }
 
 /* FIXME add handling of FOE_BUSY packages */
-int foe_parse_packet(uint16_t msg[], unsigned size)
+int foe_parse_packet(chanend foe_signal, uint16_t msg[], unsigned size)
 {
 	int ret = -1;
 	unsigned char data[FOE_MAX_MSGSIZE];
@@ -231,6 +231,7 @@ int foe_parse_packet(uint16_t msg[], unsigned size)
 					state = FOE_STATE_IDLE;
 					current_fp = foefs_close(current_fp);
 					ret = 0; /* FIXME the last packet ACK isn't recognized by SOEM */
+					foe_signal <: FOE_FILE_READY;
 				} else {
 					replySize = make_reply(FOE_ACK, rec.a.packetnumber, null, 0);
 					ret = 1;
