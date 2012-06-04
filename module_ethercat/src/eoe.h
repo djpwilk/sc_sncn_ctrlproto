@@ -8,7 +8,17 @@
  * - get EoE header and check package
  * - forward ethernet resp. tcp/ip packet to application resp. module to handle
  *   these.
+ *
+ * Note:
+ * The header parameter port isn't supported (currently). As far as I get it
+ * this would requiere a total of 15 different ports which lead to 15 distinct
+ * ethernet package buffers. This would lead in a severe memory consumption.
  */
+
+#ifndef EOE_H
+#define EOE_H
+
+#include <stdint.h>
 
 /* FIXME check ETG for packet type numbers */
 #define EOE_INIT_REQ                 0x02
@@ -103,4 +113,8 @@ void eoe_init(void);
  * - eoe_rx: everything from master
  * - eoe_tx: everything to master
  */
-int eoe_rx_handler(uint16_t msg[], unsigned size);
+int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size);
+
+int eoe_tx_handler(uint16_t msg[], unsigned size);
+
+#endif /* EOE_H */
