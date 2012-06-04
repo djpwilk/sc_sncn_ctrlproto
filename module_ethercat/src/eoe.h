@@ -46,30 +46,6 @@
 
 /* another try/test with bit field sizes: */
 
-struct _eoe_packet {
-	/* eoe header FIXME option: merge chuncks of 16 bits into this as header, make makros to check individual fields */
-	unsigned type            :4;
-	unsigned port            :4;  /* 0x00 (no spec. port) - 0x0f */
-	unsigned lastFragment    :1;  /* 0 - at least one frame follows, 1 - last packet */
-	unsigned timeAppended    :1;  /* 0 no time appended 1 - timestamp appended after data section */
-	unsigned timeRequest     :1;  /* 0 no timestamp request, 1 timestamp request */
-	unsigned reserved        :5;  /* reseverved 0x00 */
-	unsigned fragmentNumber  :6;  /* 0 if type = INIT_REQ, 0x01 - 0x2f  for type FRAGMET_REQ */
-	union {
-		unsigned complete:6;
-		unsigned offset  :6; /* 6-bit */
-	} a;
-	unsigned frameNumber     :4; /* 4-bit - number of the ethernet frame */
-	/* data section */
-	union {
-		unsigned char data[MAX_EOE_DATA];
-		struct _eoe_data sdata;
-		struct _eoe_parameter param;
-		struct _eoe_param_filter param_filter;
-	} b;                         /* ommited if, type is EOE_INIT_RSP */
-	uint32_t timestamp;          /* optional */
-};
-
 struct _eoe_data {
 	unsigned char dst_mac[6];
 	unsigned char src_mac[6];
@@ -79,15 +55,24 @@ struct _eoe_data {
 	unsigned char padding[MAX_EOE_DATA-18];
 };
 
-/* FIXME check size! */
+struct _eoe_param_filter {
+	char mac_filter_count;
+	char eac_filter_mask;
+	char reservedb;
+	char inhibit_bcast;
+	char reserved; /* 8 bit reserved data, necessary? */
+	unsigned char maclist[6*16];       /* each entry is 6 bytes long, and max 2^4=16 entries */
+	unsigned char listfilter[6*16];
+};
+
 struct _eoe_parameter {
-	unsigned mac_included         :1;
-	unsigned ip_included          :1;
-	unsigned subnetmasq_included  :1;
-	unsigned gateway_included     :1;
-	unsigned dns_server_included  :1;
-	unsigned dns_name_included    :1;
-	unsigned reserved             :26;
+	char mac_included;
+	char ip_included;
+	char subnetmasq_included;
+	char gateway_included;
+	char dns_server_included;
+	char dns_name_included;
+	char reserved[26]; /* really needed here? */
 	unsigned char mac[6];
 	unsigned char ip[4];
 	unsigned char subnet[4];
@@ -96,14 +81,28 @@ struct _eoe_parameter {
 	char dns_name[32];
 };
 
-struct _eoe_parm_filter {
-	unsigned mac_filter_count     :4;
-	unsigned eac_filter_mask      :2;
-	unsigned reserved             :1;
-	unsigned inhibit_bcast        :1;
-	unsigned reserved             :8;
-	unsigned char maclist[6*16];       /* each entry is 6 bytes long, and max 2^4=16 entries */
-	unsigned char listfilter[6*16];
+struct _eoe_packet {
+	/* eoe header FIXME option: merge chuncks of 16 bits into this as header, make makros to check individual fields */
+	char type;            /* 4 */
+	char eport;           /* 4 0x00 (no spec. port) - 0x0f */
+	char lastFragment;    /* 1 0 - at least one frame follows, 1 - last packet */
+	char timeAppended;    /* 1 0 no time appended 1 - timestamp appended after data section */
+	char timeRequest;     /* 1 0 no timestamp request, 1 timestamp request */
+	char reserved;        /* 5 reseverved 0x00 */
+	char fragmentNumber;  /* 6 0 if type = INIT_REQ, 0x01 - 0x2f  for type FRAGMET_REQ */
+	union {
+		char complete;
+		char offset;
+	} a;
+	char frameNumber; /* 4-bit - number of the ethernet frame */
+	/* data section */
+	union {
+		unsigned char data[MAX_EOE_DATA];
+		struct _eoe_data sdata;
+		struct _eoe_parameter param;
+		struct _eoe_param_filter param_filter;
+	} b;                         /* ommited if, type is EOE_INIT_RSP */
+	uint32_t timestamp;          /* optional */
 };
 
 
