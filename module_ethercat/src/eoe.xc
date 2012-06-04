@@ -9,6 +9,7 @@
 #include "eoe.h"
 
 #define MAX_ETHERNET_FRAME   1522   /* Max. number of bytes within a ethernet frame. FIXME couldn't it be less? */
+#define MAX_ETHERNET_BUFFER  2
 
 struct {
 	int state;
@@ -17,6 +18,8 @@ struct {
 } eoe_state;
 
 static int sendstate;
+static int used_rx_buffer;
+static int used_tx_buffer;
 
 struct _ethernet_packet {
 	unsigned char frame[MAX_ETHERNET_FRAME];
@@ -25,9 +28,9 @@ struct _ethernet_packet {
 	unsigned currentpos;
 };
 
-/* FIXME should I really store a complete of 3 ethernet packets??? */
-static struct _ethernet_packet ethernet_packet_rx[3];
-static struct _ethernet_packet ethernet_packet_tx[3];
+/* FIXME should I really store a complete of 2 ethernet packets??? */
+static struct _ethernet_packet ethernet_packet_rx[MAX_ETHERNET_BUFFER];
+static struct _ethernet_packet ethernet_packet_tx[MAX_ETHERNET_BUFFER];
 
 static void reset_ethernet_packet(struct _ethernet_packet ep)
 {
@@ -42,7 +45,7 @@ static void reset_ethernet_packet(struct _ethernet_packet ep)
 	ep.currentpos=0;
 }
 
-static int check_received(chanend eoe_rx)
+static int check_received(chanend eoe_rx) /* !!! */
 {
 	unsigned tmp;
 	unsigned expected;
@@ -69,7 +72,7 @@ static int check_received(chanend eoe_rx)
 	return rbytes;
 }
 
-static int check_send(chanend eoe_tx)
+static int check_send(chanend eoe_tx) /* !!! */
 {
 	int err = -1;
 
@@ -95,23 +98,28 @@ static int check_send(chanend eoe_tx)
 	return err;
 }
 
-int eoe_init(chanend eoe_rx, chanend eoe_tx)
+void eoe_init(void)
 {
+	int i;
+
 	sendstate = EOE_STATE_IDLE;
+	used_rx_buffer = 0;
+	used_tx_buffer = 0;
 
 	eoe_state.state = EOE_STATE_IDLE;
-	reset_ethernet_packet(ethernet_packet_rx);
-	reset_ethernet_packet(ethernet_packet_tx);
 
-	return 0;
+	for (i=0; i<MAX_ETHERNET_BUFFER; i++) {
+		reset_ethernet_packet(ethernet_packet_rx[i]);
+		reset_ethernet_packet(ethernet_packet_tx[i]);
+	}
 }
 
 int eoe_tx_handler(uint16_t msg[], unsigned size)
 {
 	switch (eoe_state.state) {
-	case EOE_STAT_IDLE:
+	case EOE_STATE_IDLE:
 		break;
-	case EOE_STATE_RX_FRAGMENT
+	case EOE_STATE_RX_FRAGMENT:
 		break;
 	case EOE_STATE_RX_LAST_FRAGMENT:
 		break;
@@ -122,18 +130,32 @@ int eoe_tx_handler(uint16_t msg[], unsigned size)
 	return 0;
 }
 
-int eoe_rx_handler(uint16_t msg[], unsigned size)
+int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 {
 	int ret = 0;
+	int type;
+	int eport;
+
 
 	switch (eoe_state.state) {
-	case EOE_STAT_IDLE:
+	case EOE_STATE_IDLE:
+		//parse_packet(msg, size);
+		type = (msg[0]>>4)&0x0f;
+		eport = msg[0]&0x0f;
+
 		break;
-	case EOE_STATE_RX_FRAGMENT
+
+	case EOE_STATE_RX_FRAGMENT:
 		break;
+
 	case EOE_STATE_RX_LAST_FRAGMENT:
 		break;
+
 	case EOE_STATE_TX_FRAGMENT:
+		ret = 1; /* currently in rx state so no TX allowed */
+		break;
+
+	default: /* Error if unknown state is set */
 		break;
 	}
 
