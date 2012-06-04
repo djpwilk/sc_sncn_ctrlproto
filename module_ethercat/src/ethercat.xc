@@ -8,6 +8,7 @@
 #include "alstate.h"
 #include "foefs.h"
 #include "foe.h"
+#include "eoe.h"
 
 #include <platform.h>
 #include <xs1.h>
@@ -335,7 +336,7 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		case EOE_PACKET:
 			//printstr("DEBUG ethercat: received EOE packet.\n");
 			//ecat_send_handler(c_eoe, buffer, wordCount);
-			eoe_rx_handler(buffer, wordCount);
+			eoe_rx_handler(c_eoe, buffer, wordCount);
 			break;
 
 		case COE_PACKET:
@@ -807,7 +808,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 	foemsg_t foeMessage;
 
-	eoe_init(c_eoe_r, c_eoe_s);
+	eoe_init();
 
 	EC_CS_SET();
 	while (1) {
