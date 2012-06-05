@@ -114,6 +114,18 @@ void eoe_init(void);
  */
 int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size);
 
-int eoe_tx_handler(uint16_t msg[], unsigned size);
+int eoe_tx_handler(chanend eoe,  unsigned size);
+
+/**
+ * @brief Get reply package, with max size for ethercat data.
+ */
+unsigned eoe_get_reply(uint16_t msg[]);
+
+/**
+ * @brief Check if more chunks are present for transfere.
+ *
+ * @return 0 if no more chunks to transfere, 1 otherwise
+ */
+int eoe_check_chunks(void);
 
 #endif /* EOE_H */
