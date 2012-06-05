@@ -123,6 +123,7 @@ static uint8_t pdiError;
 
 static int packet_pending; /* indicate packet ready for sending to master */
 static int foeReplyPending;
+static int eoeReplyPending;
 
 /**
  * @brief send packages to the connected channel endpoint.
@@ -771,6 +772,7 @@ int ecat_init(void)
 	foefs_init();
 	foe_init();
 	foeReplyPending=0;
+	eoeReplyPending=0;
 
 	return 0;
 }
@@ -932,15 +934,19 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				pending_mailbox=1;
 				break;
 
-			case c_eoe_r :> otmp :
+			case c_eoe_r :> otmp : /* FIXME how to decide end of packet??? */
 				printstr("DEBUG: processing outgoing EoE packets\n");
+				/*
 				out_size = otmp&0xffff;
 				out_type = EOE_PACKET;
 				for (i=0; i<out_size; i++) {
 					c_eoe_r :> otmp;
-					out_buffer[i] = otmp&0xffff;
+					out_buffer[i] = otmp&0xffff; / * should use ethernet package/frame with byte wise announcement * /
 				}
 				pending_mailbox=1;
+				 */
+				eoe_tx_handler(c_eoe_r, otmp); /* FIXME check if otmp surly holds the packet size */
+				eoeReplyPending = 1;
 				break;
 
 			case c_foe_r :> otmp :
@@ -975,6 +981,13 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				out_type = FOE_PACKET;
 				pending_mailbox = 1;
 				foeReplyPending = 0;
+			}
+
+			if (pending_mailbox != 1 && eoeReplyPending == 1) {
+				out_size = eoe_get_reply(out_buffer);
+				out_type = EOE_PACKET;
+				pending_mailbox = 1;
+				eoeReplyPending = eoe_check_chunks(); /* Check if there are still chunks to transfere */
 			}
 		}
 
