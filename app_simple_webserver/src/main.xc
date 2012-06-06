@@ -9,7 +9,7 @@
 #include "getmac.h"
 #include "ethernet_server.h"
 
-// Ethernet Ports
+// Ethernet Ports FIXME: make them virtual!
 on stdcore[2]: port otp_data = XS1_PORT_32B; // OTP_DATA_PORT
 on stdcore[2]: out port otp_addr = XS1_PORT_16C; // OTP_ADDR_PORT
 on stdcore[2]: port otp_ctrl = XS1_PORT_16D; // OTP_CTRL_PORT
@@ -17,6 +17,7 @@ on stdcore[2]: port otp_ctrl = XS1_PORT_16D; // OTP_CTRL_PORT
 
 on stdcore[2]: clock clk_smi = XS1_CLKBLK_5;
 
+/* FIXME the mii is in fact the thercat device, remove this from usage */
 on stdcore[2]: mii_interface_t mii =
 {
 	XS1_CLKBLK_1,
@@ -61,6 +62,7 @@ int main(void) {
 			ethernet_getmac_otp(otp_data, otp_addr, otp_ctrl,
 					(mac_address, char[]));
 
+			/* FIXME Though, phy isn't really needed */
 			phy_init(clk_smi,
 #ifdef PORT_ETH_RST_N
 					p_mii_resetn,
