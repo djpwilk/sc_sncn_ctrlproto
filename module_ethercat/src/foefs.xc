@@ -111,6 +111,7 @@ int foefs_write(int fh, int size, char b[])
 	}
 
 	filesystem.size += writecount;
+	filesystem.currentpos += writecount;
 	freespace = 0;
 
 	return writecount;
@@ -122,6 +123,7 @@ int foefs_seek(int fh, int offset, int whence)
 		return -FOE_ERR_NOACCESS;
 	}
 
+	/* FIXME add check if offset will be set after end of file */
 	switch (whence) {
 	case SEEK_SET:
 		filesystem.currentpos = offset;
