@@ -62,7 +62,7 @@ int main(void) {
 			ethernet_getmac_otp(otp_data, otp_addr, otp_ctrl,
 					(mac_address, char[]));
 
-			/* FIXME Though, phy isn't really needed */
+			/* FIXME the phy is provided in software by the ethercat EoE handler */
 			phy_init(clk_smi,
 #ifdef PORT_ETH_RST_N
 					p_mii_resetn,
