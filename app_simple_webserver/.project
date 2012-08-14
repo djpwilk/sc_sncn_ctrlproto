@@ -2,7 +2,7 @@
 <projectDescription>
 	<name>app_simple_webserver</name>
 	<comment></comment>
-	<projects> <project></project>  <project></project>  <project></project>  
+	<projects> <project></project>  <project></project>  <project></project>  <project></project>                                     
 	</projects>
 	<buildSpec>
 		<buildCommand>
