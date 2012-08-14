@@ -123,9 +123,10 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 
 	parse_packet(msg, size, inpacket);
 
+	/* FIXME check packet time, if too large abort transmission? * /
 	if (inpacket.timeAppended == 1) {
-		/* FIXME check packet time, if too large abort transmission? */
 	}
+	 */
 
 	switch (eoe_state.state) {
 	case EOE_STATE_IDLE:

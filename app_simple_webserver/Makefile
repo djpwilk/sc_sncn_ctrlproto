@@ -4,15 +4,11 @@
 
 TARGET = C22
 
-BASE_DIR = .
-
-VERBOSE = 1
-
 # The APP_NAME variable determines the name of the final .xe file. It should
 # not include the .xe postfix. If left blank the name will default to 
 # the project name
 
-APP_NAME = app_ethercat_test
+APP_NAME = httpserver
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:
@@ -22,26 +18,23 @@ APP_NAME = app_ethercat_test
 # If the variable XCC_MAP_FLAGS is set it overrides the flags passed to 
 # xcc for the final link (mapping) stage.
 
-XCC_FLAGS = -g
+XCC_FLAGS = -O3 -save-temps -g -report -Xmapper --map -Xmapper MAPFILE -DEOE_TRANSMISSION
 
 # The USED_MODULES variable lists other module used by the application. 
+USED_MODULES = module_xtcp module_ethernet module_locks module_ethercat
 
-USED_MODULES = module_ethernet module_xtcp module_ethercat module_locks
+# This uses the tcp mac filtering in module_xtcp
+USE_XTCP_MAC_CUSTOM_FILTER=1
 
-AUTO_ECLIPSE = 0
 
 #=============================================================================
 # The following part of the Makefile includes the common build infrastructure
 # for compiling XMOS applications. You should not need to edit below here.
 
+XMOS_MAKE_PATH ?= ..
+include $(XMOS_MAKE_PATH)/module_xmos_common/build/Makefile.common
 
-# Use the main Makefile from module_xmos_common
-include $(BASE_DIR)/../module_xmos_common/build/Makefile.common
 
-# The final target of the build. This is usually dependent on a binary file
-# in the $(BIN_DIR) directory e.g.
-#
-#  all : $(BIN_DIR)/my_app.xe
 
 all: $(BIN_DIR)/$(APP_NAME).xe
 	@echo Build Complete
