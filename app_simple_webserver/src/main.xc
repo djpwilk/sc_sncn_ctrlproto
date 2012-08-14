@@ -8,37 +8,8 @@
 #include "xhttpd.h"
 #include "getmac.h"
 #include "ethernet_server.h"
+#include "ethercat.h"
 
-// Ethernet Ports FIXME: make them virtual!
-on stdcore[2]: port otp_data = XS1_PORT_32B; // OTP_DATA_PORT
-on stdcore[2]: out port otp_addr = XS1_PORT_16C; // OTP_ADDR_PORT
-on stdcore[2]: port otp_ctrl = XS1_PORT_16D; // OTP_CTRL_PORT
-
-
-on stdcore[2]: clock clk_smi = XS1_CLKBLK_5;
-
-/* FIXME the mii is in fact the thercat device, remove this from usage */
-on stdcore[2]: mii_interface_t mii =
-{
-	XS1_CLKBLK_1,
-	XS1_CLKBLK_2,
-
-	PORT_ETH_RXCLK,
-	PORT_ETH_RXER,
-	PORT_ETH_RXD,
-	PORT_ETH_RXDV,
-
-	PORT_ETH_TXCLK,
-	PORT_ETH_TXEN,
-	PORT_ETH_TXD,
-};
-
-#ifdef PORT_ETH_RST_N
-on stdcore[2]: out port p_mii_resetn = PORT_ETH_RST_N;
-on stdcore[2]: smi_interface_t smi = {PORT_ETH_MDIO, PORT_ETH_MDC, 0};
-#else
-on stdcore[2]: smi_interface_t smi = {PORT_ETH_RST_N_MDIO, PORT_ETH_MDC, 1};
-#endif
 
 // IP Config - change this to suit your network.  Leave with all
 // 0 values to use DHCP
@@ -52,32 +23,44 @@ xtcp_ipconfig_t ipconfig = {
 int main(void) {
 	chan mac_rx[1], mac_tx[1], xtcp[1], connect_status;
 
+	/* ethercat channels */
+        chan coe_in;   ///< CAN from module_ethercat to consumer
+        chan coe_out;  ///< CAN from consumer to module_ethercat
+        chan eoe_in;   ///< Ethernet from module_ethercat to consumer
+        chan eoe_out;  ///< Ethernet from consumer to module_ethercat
+        chan foe_in;   ///< File from module_ethercat to consumer
+        chan foe_out;  ///< File from consumer to module_ethercat
+        chan pdo_in;
+        chan pdo_out;
+
 	par
 	{
+		/* the ethercat thread */
+		on stdcore[0]:
+		{
+                        ecat_init();
+                        ecat_handler(coe_out, coe_in, eoe_out, eoe_in, foe_out, foe_in, pdo_out, pdo_in);
+		}
+
 		// The ethernet server
-		on stdcore[2]:
+		on stdcore[1]:
 		{
 			int mac_address[2];
 
+#if 0 /* FIXME otp data should be set somewhere else */
 			ethernet_getmac_otp(otp_data, otp_addr, otp_ctrl,
 					(mac_address, char[]));
-
-			/* FIXME the phy is provided in software by the ethercat EoE handler */
-			phy_init(clk_smi,
-#ifdef PORT_ETH_RST_N
-					p_mii_resetn,
-#else
-					null,
 #endif
-					smi, mii);
 
-			ethernet_server(mii, mac_address,
-					mac_rx, 1, mac_tx, 1, smi,
+
+			ethernet_server(/*mii,*/ eoe_in, eoe_out,
+					mac_address,
+					mac_rx, 1, mac_tx, 1, null,
 					connect_status);
 		}
 
 		// The TCP/IP server thread
-		on stdcore[3]: uip_server(mac_rx[0], mac_tx[0],
+		on stdcore[1]: uip_server(mac_rx[0], mac_tx[0],
 				xtcp, 1, ipconfig,
 				connect_status);
 
@@ -85,5 +68,6 @@ int main(void) {
 		on stdcore[0]: xhttpd(xtcp[0]);
 
 	}
+
 	return 0;
 }
