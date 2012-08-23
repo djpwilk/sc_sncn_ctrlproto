@@ -14,10 +14,22 @@
 // IP Config - change this to suit your network.  Leave with all
 // 0 values to use DHCP
 xtcp_ipconfig_t ipconfig = {
-		{ 0, 0, 0, 0 }, // ip address (eg 192,168,0,2)
-		{ 0, 0, 0, 0 }, // netmask (eg 255,255,255,0)
-		{ 0, 0, 0, 0 } // gateway (eg 192,168,0,1)
+		{ 192,168,0,2 }, // ip address (eg 192,168,0,2)
+		{ 255,255,255,0 }, // netmask (eg 255,255,255,0)
+		{ 192,168,0,1 } // gateway (eg 192,168,0,1)
 };
+
+void ethernet_getmac_dummy(char mac[])
+{
+	mac[0] = 0xde;
+	mac[1] = 0xaf;
+	mac[2] = 0xbe;
+	mac[3] = 0xef;
+	mac[4] = 0xde;
+	mac[5] = 0xaf;
+	mac[6] = 0xbe;
+	mac[7] = 0xef;
+}
 
 // Program entry point
 int main(void) {
@@ -50,6 +62,8 @@ int main(void) {
 #if 0 /* FIXME otp data should be set somewhere else */
 			ethernet_getmac_otp(otp_data, otp_addr, otp_ctrl,
 					(mac_address, char[]));
+#else
+			ethernet_getmac_dummy((mac_address, char[]));
 #endif
 
 
