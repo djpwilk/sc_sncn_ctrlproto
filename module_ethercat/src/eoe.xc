@@ -98,6 +98,38 @@ void eoe_init(void)
 
 int eoe_tx_handler(chanend eoe, unsigned size)
 {
+	/* read eoe channel
+	 * until complete package is finished
+	 * if no RX is in progress split package and successivly send the chunks
+	 */
+	unsigned otmp;
+	unsigned pos = 0;
+	unsigned current = 0; /* FIXME to make use of input buffer rxCurrent and txCurrent should be globals */
+
+	while (pos<MAX_ETHERNET_FRAME && pos<size) {
+		select  {
+		case eoe :> otmp :
+			eoe :> otmp;
+			ethernet_packet_tx[current].frame[pos++] = otmp&0xff;
+			ethernet_packet_tx[current].frame[pos++] = (otmp>>8)&0xff;
+			break;
+
+		default:
+			/* no packet waiting in transfere channel */
+			return 0;
+			break;
+		}
+	}
+
+	/* construct ethercat packet */
+	ethernet_packet_tx[current].ready = 1;
+	ethernet_packet_tx[current].size = size;
+	ethernet_packet_tx[current].currentpos = 0;
+	ethernet_packet_tx[current].nextFragment = 0;
+
+	return 1;
+
+/*
 	switch (eoe_state.state) {
 	case EOE_STATE_IDLE:
 		break;
@@ -108,8 +140,7 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 	case EOE_STATE_TX_FRAGMENT:
 		break;
 	}
-
-	return 0;
+ */
 }
 
 int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
