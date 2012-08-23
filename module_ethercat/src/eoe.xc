@@ -42,7 +42,7 @@ static void reset_ethernet_packet(struct _ethernet_packet ep)
 		ep.frame[i]=0;
 	}
 
-	ep.readytosend=0;
+	ep.ready=0;
 	ep.size=0;
 	ep.currentpos=0;
 	ep.nextFragment=0;
@@ -84,6 +84,7 @@ void eoe_init(void)
 	int i;
 
 	sendstate = EOE_STATE_IDLE;
+	tx_packet_ready = 0;
 	used_rx_buffer = 0;
 	used_tx_buffer = 0;
 
@@ -170,6 +171,12 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 
 #define MAX_EOE_SIZE   256
 
+int eoe_tx_ready(void)
+{
+	return tx_packet_ready;
+}
+
+/* FIXME rename eoe_get_reply() -> eoe_get_tx_packet() */
 unsigned eoe_get_reply(uint16_t msg[])
 {
 	int i;
@@ -198,7 +205,7 @@ unsigned eoe_get_reply(uint16_t msg[])
 	//unsigned startidx = ethernet_packet_tx[0].currentpos;
 
 	/* build send packet */
-	msg[k] = ep.type & ep.eport & ep.lastFragment & ep.timeAppended & ep.timeRequest;
+	msg[k] = (ep.type & (ep.eport<<4)) & (ep.lastFragment & (ep.timeAppended<<1) & (ep.timeRequest<<2))<<8;
 
 	for (i=0; i<MAX_EOE_SIZE; i+=2, k++) {
 		tmp = ep.b.data[i+1] & 0x00ff;

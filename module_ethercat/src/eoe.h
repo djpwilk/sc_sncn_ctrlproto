@@ -117,6 +117,11 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size);
 int eoe_tx_handler(chanend eoe,  unsigned size);
 
 /**
+ * @brief check if a tx packet is ready for transmission.
+ */
+int eoe_tx_ready(void)
+
+/**
  * @brief Get reply package, with max size for ethercat data.
  */
 unsigned eoe_get_reply(uint16_t msg[]);
