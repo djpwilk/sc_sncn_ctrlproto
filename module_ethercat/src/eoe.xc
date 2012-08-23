@@ -4,13 +4,11 @@
  * Author: Frank Jeschke <jeschke@fjes.de>
  */
 
-//#include <xtcp.h>
-//#include <uip.h>
 #include "eoe.h"
 
 #include <print.h>
 
-#define MAX_ETHERNET_FRAME   1522   /* Max. number of bytes within a ethernet frame. FIXME couldn't it be less? */
+#define MAX_ETHERNET_FRAME   1522   /* Max. number of bytes within a ethernet frame. FIXME without VLAN it's only 1518 */
 #define MAX_ETHERNET_BUFFER  1
 
 struct {
@@ -22,16 +20,17 @@ struct {
 static int sendstate;
 static int used_rx_buffer;
 static int used_tx_buffer;
+static int tx_packet_ready;
 
 struct _ethernet_packet {
-	unsigned char frame[MAX_ETHERNET_FRAME];
-	int readytosend;
-	unsigned size;
-	unsigned currentpos;
-	unsigned nextFragment;
+	unsigned char frame[MAX_ETHERNET_FRAME]; ///< package payload
+	int ready;                               ///< this packet is ready for transmission
+	unsigned size;                           ///< payload size of this package
+	unsigned currentpos;                     ///< current position of read
+	unsigned nextFragment;                   ///< fragment counter (starts with 0)
 };
 
-/* FIXME should I really store a complete of 2 ethernet packets??? */
+/* FIXME should I really butther the rx/tx ethernet packets??? */
 static struct _ethernet_packet ethernet_packet_rx[MAX_ETHERNET_BUFFER];
 static struct _ethernet_packet ethernet_packet_tx[MAX_ETHERNET_BUFFER];
 
@@ -178,9 +177,9 @@ unsigned eoe_get_reply(uint16_t msg[])
 	unsigned tmp;
 	unsigned length;
 	struct _eoe_packet ep;
+
 	ep.type = EOE_FRAGMENT_REQ;
 	ep.eport = 0; /* FIXME check port usage */
-
 	ep.lastFragment = 0;
 	ep.timeAppended = 0;
 	ep.timeRequest = 0;
