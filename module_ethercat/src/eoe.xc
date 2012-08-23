@@ -128,19 +128,6 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 	ethernet_packet_tx[current].nextFragment = 0;
 
 	return 1;
-
-/*
-	switch (eoe_state.state) {
-	case EOE_STATE_IDLE:
-		break;
-	case EOE_STATE_RX_FRAGMENT:
-		break;
-	case EOE_STATE_RX_LAST_FRAGMENT:
-		break;
-	case EOE_STATE_TX_FRAGMENT:
-		break;
-	}
- */
 }
 
 int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
