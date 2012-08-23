@@ -191,7 +191,7 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 
 int eoe_tx_ready(void)
 {
-	return tx_packet_ready;
+	return ethernet_packet_tx[current].ready;
 }
 
 /* FIXME rename eoe_get_reply() -> eoe_get_tx_packet() */
