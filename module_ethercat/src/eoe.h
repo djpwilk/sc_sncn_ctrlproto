@@ -114,6 +114,11 @@ void eoe_init(void);
  */
 int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size);
 
+/**
+ * @brief  Get tx packet from mii handler
+ *
+ * @return 0 if packet is not ready, 1 if tx packet is ready
+ */
 int eoe_tx_handler(chanend eoe,  unsigned size);
 
 /**
