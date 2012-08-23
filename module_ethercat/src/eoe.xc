@@ -195,21 +195,27 @@ int eoe_tx_ready(void)
 }
 
 /* FIXME rename eoe_get_reply() -> eoe_get_tx_packet() */
+/* FIXME add last segment check and clear buffer after last segment */
 unsigned eoe_get_reply(uint16_t msg[])
 {
 	int i;
 	int k=0;
 	unsigned tmp;
-	unsigned length;
+	unsigned length=0;
 	struct _eoe_packet ep;
 
+	if (ethernet_packet_tx[0].ready == 0) {
+		return length;
+	}
+
+	/* construct header */
 	ep.type = EOE_FRAGMENT_REQ;
 	ep.eport = 0; /* FIXME check port usage */
 	ep.lastFragment = 0;
-	ep.timeAppended = 0;
+	ep.timeAppended = 0; /* depends on mii TX_TIMESTAMP_END_OF_PACKET */
 	ep.timeRequest = 0;
 	ep.reserved = 0x00;
-	ep.fragmentNumber = 0;
+	//ep.fragmentNumber = 0;
 	ep.fragmentNumber = ethernet_packet_tx[0].nextFragment & 0x2f;
 	ethernet_packet_tx[0].nextFragment += 1; /* FIXME if last fragment the nextFragment field should be 0 and ethernet_packet_tx should be cleared */
 
@@ -218,19 +224,22 @@ unsigned eoe_get_reply(uint16_t msg[])
 		ethernet_packet_tx[0].currentpos += 1;
 	}
 
-	length = i;
-
 	//unsigned startidx = ethernet_packet_tx[0].currentpos;
 
 	/* build send packet */
+	/* FIXME fix header construction */
 	msg[k] = (ep.type & (ep.eport<<4)) & (ep.lastFragment & (ep.timeAppended<<1) & (ep.timeRequest<<2))<<8;
+	length = 2*k;
 
-	for (i=0; i<MAX_EOE_SIZE; i+=2, k++) {
+	for (i=ethernet_packet_tx[0].currentpos; i<MAX_EOE_SIZE; i+=2, k++) {
 		tmp = ep.b.data[i+1] & 0x00ff;
 		msg[k] = (tmp<<8) & ep.b.data[i]&0xff;
 	}
 
-	return 0;
+	length += 2*k;
+	ethernet_packet_tx[0].currentpos += i;
+
+	return length;
 }
 
 int eoe_check_chunks(void)
