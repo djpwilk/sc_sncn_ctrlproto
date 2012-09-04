@@ -21,6 +21,7 @@ static int sendstate;
 static int used_rx_buffer;
 static int used_tx_buffer;
 static int tx_packet_ready;
+static const unsigned current = 0; /* FIXME to make use of input buffer rxCurrent and txCurrent should be globals */
 
 struct _ethernet_packet {
 	unsigned char frame[MAX_ETHERNET_FRAME]; ///< package payload
@@ -104,7 +105,6 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 	 */
 	unsigned otmp;
 	unsigned pos = 0;
-	unsigned current = 0; /* FIXME to make use of input buffer rxCurrent and txCurrent should be globals */
 
 	while (pos<MAX_ETHERNET_FRAME && pos<size) {
 		select  {

@@ -126,7 +126,7 @@ int eoe_tx_handler(chanend eoe,  unsigned size);
  *
  * @return 0 if packet is not ready, 1 if it is.
  */
-int eoe_tx_ready(void)
+int eoe_tx_ready(void);
 
 /**
  * @brief Get reply package, with max size for ethercat data.
