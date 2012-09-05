@@ -235,7 +235,7 @@ unsigned eoe_get_reply(uint16_t msg[])
 	ep.fragmentNumber = ethernet_packet_tx[0].nextFragment & 0x2f;
 	ethernet_packet_tx[0].nextFragment += 1; /* FIXME if last fragment the nextFragment field should be 0 and ethernet_packet_tx should be cleared */
 
-	if (ethernet_packet_tx[0].currentpos + EOE_MAX_DATA_SIZE >= ethernet_packet_tx[0]size) {
+	if ((ethernet_packet_tx[0].currentpos + EOE_MAX_DATA_SIZE) >= ethernet_packet_tx[0].size) {
 		ep.lastFragment = 1;
 	} else {
 		ep.lastFragment = 0;
