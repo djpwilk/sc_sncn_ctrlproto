@@ -156,15 +156,15 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 		if (inpacket.type == EOE_INIT_REQ) {
 			/* do something with the request! */
 			eoe_state.state = EOE_STATE_RX_FRAGMENT;
+
+			for (i=0; i<size && i<MAX_EOE_DATA; i++) {
+				ethernet_packet_rx[0].frame[ethernet_packet_rx[0].currentpos] = inpacket.b.data[i];
+			}
 		}
 		break;
 
 	case EOE_STATE_RX_FRAGMENT:
 		if (inpacket.type == EOE_FRAGMENT_REQ) {
-			if (inpacket.lastFragment == 1) {
-				eoe_state.state = EOE_STATE_RX_LAST_FRAGMENT;
-			}
-
 			for (i=0; i<size && i<MAX_EOE_DATA; i++) {
 				ethernet_packet_rx[0].frame[ethernet_packet_rx[0].currentpos] = inpacket.b.data[i];
 			}
@@ -228,7 +228,6 @@ unsigned eoe_get_reply(uint16_t msg[])
 	/* construct header */
 	ep.type = EOE_FRAGMENT_REQ;
 	ep.eport = 0; /* FIXME check port usage */
-	ep.lastFragment = 0;
 	ep.timeAppended = 0; /* depends on mii TX_TIMESTAMP_END_OF_PACKET */
 	ep.timeRequest = 0;
 	ep.reserved = 0x00;
