@@ -945,8 +945,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				}
 				pending_mailbox=1;
 				 */
-				eoe_tx_handler(c_eoe_r, otmp); /* FIXME check if otmp surly holds the packet size */
-				//eoeReplyPending = 1;
+				eoeReplyPending = eoe_tx_handler(c_eoe_r, otmp); /* FIXME check if otmp surly holds the packet size */
 				break;
 
 			case c_foe_r :> otmp :
