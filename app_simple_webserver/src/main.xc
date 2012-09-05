@@ -4,6 +4,7 @@
 // LICENSE.txt and at <http://github.xcore.com/>
 
 #include <platform.h>
+#include <print.h>
 #include "uip_server.h"
 #include "xhttpd.h"
 #include "getmac.h"
@@ -14,10 +15,98 @@
 // IP Config - change this to suit your network.  Leave with all
 // 0 values to use DHCP
 xtcp_ipconfig_t ipconfig = {
-		{ 0, 0, 0, 0 }, // ip address (eg 192,168,0,2)
-		{ 0, 0, 0, 0 }, // netmask (eg 255,255,255,0)
-		{ 0, 0, 0, 0 } // gateway (eg 192,168,0,1)
+		{ 192,168,0,2 }, // ip address (eg 192,168,0,2)
+		{ 255,255,255,0 }, // netmask (eg 255,255,255,0)
+		{ 192,168,0,1 } // gateway (eg 192,168,0,1)
 };
+
+void ethernet_getmac_dummy(char mac[])
+{
+	mac[0] = 0xde;
+	mac[1] = 0xaf;
+	mac[2] = 0xbe;
+	mac[3] = 0xef;
+	mac[4] = 0xde;
+	mac[5] = 0xaf;
+	mac[6] = 0xbe;
+	mac[7] = 0xef;
+}
+
+#define MAX_BUFFER_SIZE   1024
+
+/* example consumer */
+static void consumer(chanend coe_in, chanend coe_out)
+{
+	timer t;
+	const unsigned int delay = 10;
+	unsigned int time = 0;
+
+	unsigned int inBuffer[MAX_BUFFER_SIZE];
+	unsigned int outBuffer[MAX_BUFFER_SIZE];
+	unsigned int tmp = 0;
+	unsigned int size = 0;
+	unsigned count = 0;
+	unsigned int outType = -1; /* FIXME set with define */
+	unsigned outSize;
+
+	unsigned int foePacketNbr = 0;
+	int i;
+
+	for (i=0; i<MAX_BUFFER_SIZE; i++) {
+		inBuffer[i] = 0;
+		outBuffer[i] = 0;
+	}
+
+	while (1) {
+		/* Receive data */
+		select {
+		case coe_in :> tmp :
+			inBuffer[0] = tmp&0xffff;
+			printstr("[APP] Received COE packet\n");
+			count=0;
+
+			while (count < inBuffer[0]) {
+				coe_in :> tmp;
+				inBuffer[count+1] = tmp&0xffff;
+				count++;
+			}
+
+#if 0
+			/* Reply with abort initiate download sequence */
+			outType = COE_PACKET;
+			outBuffer[0] = 5;
+			outBuffer[1] = 0x2000;
+			outBuffer[2] = 0x0080;
+			outBuffer[3] = 0x001c;
+			outBuffer[4] = 0x0000;
+			outBuffer[5] = 0x0601;
+#endif
+			break;
+
+		}
+
+		/* send data */
+		switch (outType /*outBuffer[0]*/) {
+		case COE_PACKET:
+			count=0;
+			//printstr("[APP DEBUG] send CoE packet\n");
+			outSize = outBuffer[0]+1;
+			while (count<outSize) {
+				coe_out <: outBuffer[count];
+				count++;
+			}
+			outBuffer[0] = 0;
+			outType = -1;
+			break;
+
+		default:
+			break;
+		}
+
+		t :> time;
+		t when timerafter(time+delay) :> void;
+	}
+}
 
 // Program entry point
 int main(void) {
@@ -50,6 +139,8 @@ int main(void) {
 #if 0 /* FIXME otp data should be set somewhere else */
 			ethernet_getmac_otp(otp_data, otp_addr, otp_ctrl,
 					(mac_address, char[]));
+#else
+			ethernet_getmac_dummy((mac_address, char[]));
 #endif
 
 
@@ -67,6 +158,7 @@ int main(void) {
 		// The webserver thread
 		on stdcore[0]: xhttpd(xtcp[0]);
 
+		on stdcore[2]: consumer(coe_in, coe_out); /* Dummy consumer to catch up CoE init package */
 	}
 
 	return 0;
