@@ -4,6 +4,7 @@
 // LICENSE.txt and at <http://github.xcore.com/>
 
 #include <platform.h>
+#include <print.h>
 #include "uip_server.h"
 #include "xhttpd.h"
 #include "getmac.h"
