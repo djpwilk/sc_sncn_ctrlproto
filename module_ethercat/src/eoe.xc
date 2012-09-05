@@ -11,6 +11,10 @@
 #define MAX_ETHERNET_FRAME   1522   /* Max. number of bytes within a ethernet frame. FIXME without VLAN it's only 1518 */
 #define MAX_ETHERNET_BUFFER  1
 
+#define EOE_MAX_HEADER_SIZE  4
+#define EOE_MAX_MSG_SIZE     122
+#define EOE_MAX_DATA_SIZE    (EOE_MAX_MSG_SIZE-EOE_MAX_HEADER_SIZE)
+
 struct {
 	int state;
 	int rx_buffer;  ///< index of used rx buffer
@@ -163,6 +167,15 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 			for (i=0; i<size && i<MAX_EOE_DATA; i++) {
 				ethernet_packet_rx[0].frame[ethernet_packet_rx[0].currentpos] = inpacket.b.data[i];
 			}
+
+			if (inpacket.lastFragment == 1) {
+				for (i=0; i<ethernet_packet_rx[0].size; i++) {
+					eoe <: (int)ethernet_packet_rx[0].frame[i];
+				}
+
+				eoe_state.state = EOE_STATE_IDLE/*RX_LAST_FRAGMENT*/;
+				reset_ethernet_packet(ethernet_packet_rx[0]);
+			}
 		}
 		break;
 
@@ -187,8 +200,6 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 	return ret;
 }
 
-#define MAX_EOE_SIZE   256
-
 int eoe_tx_ready(void)
 {
 	return ethernet_packet_tx[current].ready;
@@ -200,7 +211,7 @@ unsigned eoe_get_reply(uint16_t msg[])
 {
 	int i;
 	int k=0;
-	unsigned tmp;
+	unsigned tmpl, tmph;
 	unsigned length=0;
 	struct _eoe_packet ep;
 
@@ -219,9 +230,10 @@ unsigned eoe_get_reply(uint16_t msg[])
 	ep.fragmentNumber = ethernet_packet_tx[0].nextFragment & 0x2f;
 	ethernet_packet_tx[0].nextFragment += 1; /* FIXME if last fragment the nextFragment field should be 0 and ethernet_packet_tx should be cleared */
 
-	for (i=0; i<MAX_EOE_SIZE && ethernet_packet_tx[0].currentpos < ethernet_packet_tx[0].size; i++) {
-		ep.b.data[i] = ethernet_packet_tx[0].frame[ethernet_packet_tx[0].currentpos];
-		ethernet_packet_tx[0].currentpos += 1;
+	if (ethernet_packet_tx[0].currentpos + EOE_MAX_DATA_SIZE >= ethernet_packet_tx[0]size) {
+		ep.lastFragment = 1;
+	} else {
+		ep.lastFragment = 0;
 	}
 
 	//unsigned startidx = ethernet_packet_tx[0].currentpos;
@@ -231,9 +243,10 @@ unsigned eoe_get_reply(uint16_t msg[])
 	msg[k] = (ep.type & (ep.eport<<4)) & (ep.lastFragment & (ep.timeAppended<<1) & (ep.timeRequest<<2))<<8;
 	length = 2*k;
 
-	for (i=ethernet_packet_tx[0].currentpos; i<MAX_EOE_SIZE; i+=2, k++) {
-		tmp = ep.b.data[i+1] & 0x00ff;
-		msg[k] = (tmp<<8) & ep.b.data[i]&0xff;
+	for (i=ethernet_packet_tx[0].currentpos; i<EOE_MAX_DATA_SIZE && i<(ethernet_packet_tx[0].size-ethernet_packet_tx[0].currentpos); i+=2, k++) {
+		tmpl = ethernet_packet_tx[0].frame[i];
+		tmph = ethernet_packet_tx[0].frame[i+1];
+		msg[k] = (tmph<<8)&0xff00 | tmpl&0xff;
 	}
 
 	length += 2*k;
