@@ -134,6 +134,7 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 	return 1;
 }
 
+/* FIXME check if it is possible to push packet segments directly to mii */
 int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 {
 	int ret = 0;
@@ -179,20 +180,25 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 		}
 		break;
 
+#if 0
 	case EOE_STATE_RX_LAST_FRAGMENT:
 		/* last fragment is received, push ethernet frame to ethernet mii */
 		for (i=0; i<ethernet_packet_rx[0].size; i++) { /* */
 			eoe <: (int)ethernet_packet_rx[0].frame[i];
 		}
 		break;
+#endif
 
+#if 0/* since there are two separate buffer for rx and tx this state isn't necessary */
 	case EOE_STATE_TX_FRAGMENT:
 		ret = 1; /* currently in tx state so no RX allowed */
 		printstr("[WARN eoe_rx_handler()] Concurrency race occured\n");
 		break;
+#endif
 
 	default: /* Error if unknown state is set */
 		printstr("[ERROR eoe_rx_handler()] Reached unknown state, try to recover\n");
+		eoe_state.state = EOE_STATE_IDLE;
 		reset_ethernet_packet(ethernet_packet_rx[0]);
 		break;
 	}
