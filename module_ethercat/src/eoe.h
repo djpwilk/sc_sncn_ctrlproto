@@ -37,7 +37,7 @@
 #define EOE_RESULT_NOIPSUPPORT       0x0000
 #define EOE_RESULT_NOFILTERSUPPORT   0x0000
 
-#define MAX_ETHERNET_FRAME   1522   /* Max. number of bytes within a ethernet frame. FIXME without VLAN it's only 1518 */
+#define MAX_ETHERNET_FRAME   1522  /* Max. number of bytes within a ethernet frame. FIXME without VLAN it's only 1518 */
 #define MAX_ETHERNET_BUFFER  1
 
 #define EOE_MAX_HEADER_SIZE  4

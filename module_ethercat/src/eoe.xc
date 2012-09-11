@@ -105,6 +105,7 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 	unsigned otmp;
 	unsigned pos = 0;
 
+	printstr("[DEBUG EOE TX] working eoe_tx_handler()\n");
 	while (pos<MAX_ETHERNET_FRAME && pos<size) {
 		select  {
 		case eoe :> otmp :
@@ -129,7 +130,7 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 	return 1;
 }
 
-/* FIXME check if it is possible to push packet segments directly to mii */
+/* FIXME refactor to push packet segments directly to mii */
 int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 {
 	int ret = 0;
@@ -163,8 +164,19 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 			ethernet_packet_rx[0].currentpos = rxoffset+packetSize;
 			ethernet_packet_rx[0].size += packetSize;
 
+			/**/
+			printstr("[DEBUG EOE RX - idle] working eoe_rx_handler(");
+			printint(eoe_state.state);
+			printstr(")\n");
+			printstr("[DEBUG EOE RX - idle] Working Frame No. ");
+			printintln(inpacket.frameNumber);
+			printstr("[DEBUG EOE RX - idle] Working Fragment No. ");
+			printintln(inpacket.fragmentNumber);
+			printstr("[DEBUG EOE RX - idle] Frame finished? ");
+			printintln(inpacket.lastFragment);
+			//*/
+
 			if (inpacket.lastFragment == 1) {
-				printstr("[DEBUG] received everything, delegate to mii\n");
 				for (i=0; i<ethernet_packet_rx[0].size; i++) {
 					tmp = ethernet_packet_rx[0].frame[i];
 					i++;
@@ -189,8 +201,19 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 			ethernet_packet_rx[0].currentpos = rxoffset+packetSize;
 			ethernet_packet_rx[0].size += packetSize;
 
+			/**/
+			printstr("[DEBUG EOE RX - frag] working eoe_rx_handler(");
+			printint(eoe_state.state);
+			printstr(")\n");
+			printstr("[DEBUG EOE RX - frag] Working Frame No. ");
+			printintln(inpacket.frameNumber);
+			printstr("[DEBUG EOE RX - frag] Working Fragment No. ");
+			printintln(inpacket.fragmentNumber);
+			printstr("[DEBUG EOE RX - frag] Frame finished? ");
+			printintln(inpacket.lastFragment);
+			//*/
+
 			if (inpacket.lastFragment == 1) {
-				printstr("[DEBUG] received everything, delegate to mii\n");
 				for (i=0; i<ethernet_packet_rx[0].size; i++) {
 					tmp = ethernet_packet_rx[0].frame[i];
 					i++;
