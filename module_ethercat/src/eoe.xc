@@ -46,34 +46,36 @@ static void reset_ethernet_packet(struct _ethernet_packet ep)
 	ep.nextFragment=0;
 }
 
-static int parse_packet(uint16_t msg[], unsigned size, struct _eoe_packet ep)
+static int parse_packet(uint16_t msg[], unsigned size, struct _eoe_packet &ep)
 {
-	int i;
-	unsigned dataLength = size;
+	int i=0, k=0;
+	unsigned dataLength = 2*size; /* size is word count, dataLength is byte count! */
 
-	ep.type = (msg[0]>>4)&0x0f;
-	ep.eport = msg[0]&0x0f;
-	ep.lastFragment = (msg[1]>>8)&0x01;
-	ep.timeAppended = (msg[1]>>7)&0x01;
-	ep.timeRequest = (msg[1]>>6)&0x01;
-	ep.fragmentNumber = msg[2]&0x2f;
-	ep.a.offset = /* upper two bits of msg[2] and some bits of msg[3] */
-	ep.frameNumber = /* 4 bits of msg[3] */
+	ep.type = (char)(msg[0]&0x000f);
+	ep.eport = (char)((msg[0]&0x00f0)>>4);
 
-	dataLength = size-4;
+	ep.lastFragment = (char)((msg[0]>>8)&0x01);
+	ep.timeAppended = (char)((msg[0]>>9)&0x01);
+	ep.timeRequest = (char)((msg[0]>>10)&0x01);
+	ep.fragmentNumber = (char)(msg[1]&0x2f);
+	ep.a.offset = (char)((msg[1]>>6)&0x2f);
+	ep.frameNumber = (char)((msg[1]>>12)&0x0f);
+
+	dataLength -= 4;
 	if (ep.timeAppended == 1) {
 		dataLength -= 4;
 	}
 
-	for (i=4; i<dataLength && i<size; i++) {
-		ep.b.data[i-4] = msg[i];
+	for (i=2, k=0; k<dataLength && i<size; i++, k+=2) {
+		ep.b.data[k] = (char)msg[i]&0xff;
+		ep.b.data[k+1] = (char)((msg[i]>>8)&0xff);
 	}
 
 	if (ep.timeAppended == 1) {
 		ep.timestamp = ((uint32_t)msg[i]<<24) && ((uint32_t)msg[i+1]<<16) && ((uint32_t)msg[i+2]<<8) && msg[i+3]; /* FIXME check for quirks */
 	}
 
-	return 0;
+	return k;
 }
 
 
@@ -133,11 +135,14 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 	int ret = 0;
 	int type;
 	int eport;
-	unsigned i;
+	unsigned i, k;
+	unsigned rxoffset;
+	unsigned packetSize;
+	unsigned tmp;
 
 	struct _eoe_packet inpacket;
 
-	parse_packet(msg, size, inpacket);
+	packetSize = parse_packet(msg, size, inpacket);
 
 	/* FIXME check packet time, if too large abort transmission? * /
 	if (inpacket.timeAppended == 1) {
@@ -146,25 +151,51 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 
 	switch (eoe_state.state) {
 	case EOE_STATE_IDLE:
-		if (inpacket.type == EOE_INIT_REQ) {
+		if (inpacket.type == EOE_INIT_REQ || inpacket.type == EOE_FRAGMENT_REQ) {
 			/* do something with the request! */
 			eoe_state.state = EOE_STATE_RX_FRAGMENT;
 
-			for (i=0; i<size && i<MAX_EOE_DATA; i++) {
-				ethernet_packet_rx[0].frame[ethernet_packet_rx[0].currentpos] = inpacket.b.data[i];
+			rxoffset = ethernet_packet_rx[0].currentpos;
+			for (i=0; i<packetSize && i<MAX_EOE_DATA; i++) {
+				ethernet_packet_rx[0].frame[rxoffset+i] = inpacket.b.data[i];
+			}
+
+			ethernet_packet_rx[0].currentpos = rxoffset+packetSize;
+			ethernet_packet_rx[0].size += packetSize;
+
+			if (inpacket.lastFragment == 1) {
+				printstr("[DEBUG] received everything, delegate to mii\n");
+				for (i=0; i<ethernet_packet_rx[0].size; i++) {
+					tmp = ethernet_packet_rx[0].frame[i];
+					i++;
+					tmp |= ((unsigned)ethernet_packet_rx[0].frame[i]<<8)&0xff00;
+					eoe <: tmp;
+				}
+
+				eoe_state.state = EOE_STATE_IDLE;
+				reset_ethernet_packet(ethernet_packet_rx[0]);
 			}
 		}
 		break;
 
 	case EOE_STATE_RX_FRAGMENT:
 		if (inpacket.type == EOE_FRAGMENT_REQ) {
-			for (i=0; i<size && i<MAX_EOE_DATA; i++) {
-				ethernet_packet_rx[0].frame[ethernet_packet_rx[0].currentpos] = inpacket.b.data[i];
+			rxoffset = ethernet_packet_rx[0].currentpos;
+			for (i=0; i<packetSize && i<MAX_EOE_DATA; i++) {
+				ethernet_packet_rx[0].frame[rxoffset+i] = inpacket.b.data[i];
 			}
 
+			ethernet_packet_rx[0].currentpos = rxoffset+packetSize;
+			ethernet_packet_rx[0].size += packetSize;
+
 			if (inpacket.lastFragment == 1) {
+				printstr("[DEBUG] received everything, delegate to mii\n");
 				for (i=0; i<ethernet_packet_rx[0].size; i++) {
-					eoe <: (int)ethernet_packet_rx[0].frame[i];
+					tmp = ethernet_packet_rx[0].frame[i];
+					i++;
+					tmp |= ((unsigned)ethernet_packet_rx[0].frame[i]<<8)&0xff00;
+					eoe <: tmp;
+					//eoe <: (int)ethernet_packet_rx[0].frame[i];
 				}
 
 				eoe_state.state = EOE_STATE_IDLE/*RX_LAST_FRAGMENT*/;
