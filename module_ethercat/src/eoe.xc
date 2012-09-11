@@ -8,13 +8,6 @@
 
 #include <print.h>
 
-#define MAX_ETHERNET_FRAME   1522   /* Max. number of bytes within a ethernet frame. FIXME without VLAN it's only 1518 */
-#define MAX_ETHERNET_BUFFER  1
-
-#define EOE_MAX_HEADER_SIZE  4
-#define EOE_MAX_MSG_SIZE     122
-#define EOE_MAX_DATA_SIZE    (EOE_MAX_MSG_SIZE-EOE_MAX_HEADER_SIZE)
-
 struct {
 	int state;
 	int rx_buffer;  ///< index of used rx buffer
