@@ -117,6 +117,7 @@ int main(void) {
         chan coe_out;  ///< CAN from consumer to module_ethercat
         chan eoe_in;   ///< Ethernet from module_ethercat to consumer
         chan eoe_out;  ///< Ethernet from consumer to module_ethercat
+	chan eoe_sig;  ///< Signals from EtherCAT to Ethernet MII
         chan foe_in;   ///< File from module_ethercat to consumer
         chan foe_out;  ///< File from consumer to module_ethercat
         chan pdo_in;
@@ -128,7 +129,7 @@ int main(void) {
 		on stdcore[0]:
 		{
                         ecat_init();
-                        ecat_handler(coe_out, coe_in, eoe_out, eoe_in, foe_out, foe_in, pdo_out, pdo_in);
+                        ecat_handler(coe_out, coe_in, eoe_out, eoe_in, eoe_sig, foe_out, foe_in, pdo_out, pdo_in);
 		}
 
 		// The ethernet server
@@ -144,7 +145,7 @@ int main(void) {
 #endif
 
 
-			ethernet_server(/*mii,*/ eoe_in, eoe_out,
+			ethernet_server(eoe_sig, eoe_in, eoe_out,
 					mac_address,
 					mac_rx, 1, mac_tx, 1, null,
 					connect_status);

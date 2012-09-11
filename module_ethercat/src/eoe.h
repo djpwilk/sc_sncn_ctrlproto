@@ -119,7 +119,7 @@ void eoe_init(void);
  * - eoe_rx: everything from master
  * - eoe_tx: everything to master
  */
-int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size);
+int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size);
 
 /**
  * @brief  Get tx packet from mii handler

@@ -50,7 +50,7 @@ struct _ec_mailbox_header {
  * @param c_pdo_s read packets to send as File
  */
 void ecat_handler(chanend c_coe_r, chanend c_coe_s,
-			chanend c_eoe_r, chanend c_eoe_s,
+			chanend c_eoe_r, chanend c_eoe_s, chanend c_eoe_sig,
 			chanend c_foe_r, chanend c_foe_s,
 			chanend c_pdo_r, chanend c_pdo_s);
 

@@ -245,7 +245,7 @@ static unsigned int ecat_write_block(uint16_t addr, uint16_t len, uint16_t buf[]
 
 /* FIXME check if split up in ecat_read_buffer() and ecat_read_mailbox() makes sense. */
 static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
-				chanend c_coe, chanend c_eoe, chanend c_foe, chanend c_pdo)
+				chanend c_coe, chanend c_eoe, chanend c_eoe_sig, chanend c_foe, chanend c_pdo)
 {
 	const uint8_t mailboxHeaderLength = 3; /* words */
 	uint16_t buffer[MAX_BUFFER_SIZE];
@@ -337,8 +337,8 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		case EOE_PACKET:
 			//printstr("DEBUG ethercat: received EOE packet.\n");
 			//ecat_send_handler(c_eoe, buffer, wordCount);
-			printstr("[DEBUG] EoE packet received\n");
-			eoe_rx_handler(c_eoe, buffer, wordCount);
+			//printstr("[DEBUG] EoE packet received\n");
+			eoe_rx_handler(c_eoe, c_eoe_sig, buffer, wordCount);
 			break;
 
 		case COE_PACKET:
@@ -784,7 +784,7 @@ int ecat_reset(void)
 }
 
 void ecat_handler(chanend c_coe_r, chanend c_coe_s,
-			chanend c_eoe_r, chanend c_eoe_s,
+			chanend c_eoe_r, chanend c_eoe_s, chanend c_eoe_sig,
 			chanend c_foe_r, chanend c_foe_s,
 			chanend c_pdo_r, chanend c_pdo_s)
 {
@@ -851,7 +851,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				case SYNCM_BUFFER_MODE_READ:
 					if ((manager[i].status & 0x01) == 1) { /* read buffer is accessible, buffer was successfully written */
 						packet_error = ecat_process_packet(manager[i].address, manager[i].size, SYNCM_BUFFER_MODE,
-									c_coe_s, c_eoe_s, c_foe_s, c_pdo_s);
+									c_coe_s, c_eoe_s, c_eoe_sig, c_foe_s, c_pdo_s);
 					}
 					break;
 
@@ -877,7 +877,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 						//printhexln(manager[i].address);
 						//printhexln(manager[i].size);
 						packet_error = ecat_process_packet(manager[i].address, manager[i].size, SYNCM_MAILBOX_MODE,
-									c_coe_s, c_eoe_s, c_foe_s, c_pdo_s);
+									c_coe_s, c_eoe_s, c_eoe_sig, c_foe_s, c_pdo_s);
 					}
 					break;
 

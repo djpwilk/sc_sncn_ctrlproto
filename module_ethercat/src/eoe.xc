@@ -130,7 +130,7 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 }
 
 /* FIXME check if it is possible to push packet segments directly to mii */
-int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
+int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 {
 	int ret = 0;
 	int type;
@@ -172,6 +172,7 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 					eoe <: tmp;
 				}
 
+				sig <: 1;
 				eoe_state.state = EOE_STATE_IDLE;
 				reset_ethernet_packet(ethernet_packet_rx[0]);
 			}
@@ -198,6 +199,7 @@ int eoe_rx_handler(chanend eoe, uint16_t msg[], unsigned size)
 					//eoe <: (int)ethernet_packet_rx[0].frame[i];
 				}
 
+				sig <: 1;
 				eoe_state.state = EOE_STATE_IDLE/*RX_LAST_FRAGMENT*/;
 				reset_ethernet_packet(ethernet_packet_rx[0]);
 			}
