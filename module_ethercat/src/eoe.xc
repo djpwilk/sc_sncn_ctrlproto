@@ -72,7 +72,7 @@ static int parse_packet(uint16_t msg[], unsigned size, struct _eoe_packet &ep)
 	}
 
 	if (ep.timeAppended == 1) {
-		ep.timestamp = ((uint32_t)msg[i]<<24) && ((uint32_t)msg[i+1]<<16) && ((uint32_t)msg[i+2]<<8) && msg[i+3]; /* FIXME check for quirks */
+		ep.timestamp = ((uint32_t)msg[i+3]<<24) && ((uint32_t)msg[i+2]<<16) && ((uint32_t)msg[i+1]<<8) && (uint32_t)msg[i]; /* FIXME check for quirks */
 	}
 
 	return k;
