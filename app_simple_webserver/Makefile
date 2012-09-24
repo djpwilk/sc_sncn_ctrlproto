@@ -31,8 +31,13 @@ USE_XTCP_MAC_CUSTOM_FILTER=1
 # The following part of the Makefile includes the common build infrastructure
 # for compiling XMOS applications. You should not need to edit below here.
 
+#XMOS_MAKE_PATH ?= ..
+#include $(XMOS_MAKE_PATH)/module_xmos_common/build/Makefile.common
+
+# Since XDE 11.11.0 the xcommon module is included into XDE, so use this
 XMOS_MAKE_PATH ?= ..
-include $(XMOS_MAKE_PATH)/module_xmos_common/build/Makefile.common
+include $(XMOS_MAKE_PATH)/xcommon/module_xcommon/build/Makefile.common
+
 
 
 
