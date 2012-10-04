@@ -150,6 +150,7 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 	}
 	 */
 
+	/* FIXME states don't make any sense here */
 	switch (eoe_state.state) {
 	case EOE_STATE_IDLE:
 		if (inpacket.type == EOE_INIT_REQ || inpacket.type == EOE_FRAGMENT_REQ) {
@@ -157,6 +158,17 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 			eoe_state.state = EOE_STATE_RX_FRAGMENT;
 
 			rxoffset = ethernet_packet_rx[0].currentpos;
+			if (rxoffset+packetSize >= MAX_ETHERNET_FRAME) {
+				printstr("[DEBUG EOE_XC] Error, ethernet frame too big.\nThe first 10 bytes: ");
+				for (i=0; i<10; i++) {
+					printhex(ethernet_packet_rx.frame[i]);
+					printstr(" ");
+				}
+				printstr("\n");
+
+				return -1;
+			}
+
 			for (i=0; i<packetSize && i<MAX_EOE_DATA; i++) {
 				ethernet_packet_rx[0].frame[rxoffset+i] = inpacket.b.data[i];
 			}
@@ -164,7 +176,7 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 			ethernet_packet_rx[0].currentpos = rxoffset+packetSize;
 			ethernet_packet_rx[0].size += packetSize;
 
-			/**/
+			/** /
 			printstr("[DEBUG EOE RX - idle] working eoe_rx_handler(");
 			printint(eoe_state.state);
 			printstr(")\n");
@@ -174,7 +186,7 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 			printintln(inpacket.fragmentNumber);
 			printstr("[DEBUG EOE RX - idle] Frame finished? ");
 			printintln(inpacket.lastFragment);
-			//*/
+			// */
 
 			if (inpacket.lastFragment == 1) {
 				for (i=0; i<ethernet_packet_rx[0].size; i++) {
@@ -194,6 +206,17 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 	case EOE_STATE_RX_FRAGMENT:
 		if (inpacket.type == EOE_FRAGMENT_REQ) {
 			rxoffset = ethernet_packet_rx[0].currentpos;
+			if (rxoffset+packetSize >= MAX_ETHERNET_FRAME) {
+				printstr("[DEBUG EOE_XC] Error, ethernet frame too big.\nThe first 10 bytes: ");
+				for (i=0; i<10; i++) {
+					printhex(ethernet_packet_rx.frame[i]);
+					printstr(" ");
+				}
+				printstr("\n");
+
+				return -1;
+			}
+
 			for (i=0; i<packetSize && i<MAX_EOE_DATA; i++) {
 				ethernet_packet_rx[0].frame[rxoffset+i] = inpacket.b.data[i];
 			}
@@ -201,7 +224,7 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 			ethernet_packet_rx[0].currentpos = rxoffset+packetSize;
 			ethernet_packet_rx[0].size += packetSize;
 
-			/**/
+			/** /
 			printstr("[DEBUG EOE RX - frag] working eoe_rx_handler(");
 			printint(eoe_state.state);
 			printstr(")\n");
@@ -211,7 +234,7 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 			printintln(inpacket.fragmentNumber);
 			printstr("[DEBUG EOE RX - frag] Frame finished? ");
 			printintln(inpacket.lastFragment);
-			//*/
+			// */
 
 			if (inpacket.lastFragment == 1) {
 				for (i=0; i<ethernet_packet_rx[0].size; i++) {
