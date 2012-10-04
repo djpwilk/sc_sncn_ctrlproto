@@ -332,6 +332,8 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 
 		offset = start+(mailboxHeaderLength*2);
 		ecat_read_block(offset, packetWords-mailboxHeaderLength/*wordCount*/, buffer);  // read mailbox data
+			/* FIXME should read wordCount (== h.length/2) from EC mailbox memory area */
+			/* FIXME check return vlaue (== wordCount) */
 
 		switch (h.type) {
 		case EOE_PACKET:
