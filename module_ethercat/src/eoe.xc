@@ -140,28 +140,154 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 	unsigned rxoffset;
 	unsigned packetSize;
 	unsigned tmp;
+	static char lastRecFragment = 0; /* last received fragment number - resets to 0 if new ethernet frame starts */
+	static char currentFrameNumber = -1; /* current number of the eternet frame. */
+	/* static char receiveFrame = 0; / * we receive frame */
 
 	struct _eoe_packet inpacket;
 
 	packetSize = parse_packet(msg, size, inpacket);
+
+	/* FIXME when is a duplicate fragment send??? This is not necessary a
+	 * error, it could result in a not acknoledged packet, but there is no
+	 * such ack! */
+	if (inpacket.fragmentNumber == lastRecFragment) {
+		//printstr("[DEBUG ERR eoe.xc] Received duplicate Fragment\n");
+		/*
+		lastRecFragment = 0;
+		currentFrameNumber = 0;
+		reset_ethernet_packet(ethernet_packet_rx[0]);
+		 */
+		return -1;
+	}
+
+	if (inpacket.fragmentNumber < lastRecFragment) {
+		//printstr("[DEBUG ERR eoe.xc] Malicious Fragment\n");
+		lastRecFragment = 0;
+		currentFrameNumber = 0;
+		reset_ethernet_packet(ethernet_packet_rx[0]); /* FIXME make a reset function */
+		return -1;
+	}
+
+	lastRecFragment = inpacket.fragmentNumber;
+
+	if (currentFrameNumber == -1) { /* a new ethernet frame has started */
+		currentFrameNumber = inpacket.frameNumber;
+	}
+
+	/* check if ethernet frames are in order */
+	if (inpacket.frameNumber != currentFrameNumber) {
+		//printstr("[DEBUG ERR eoe.xc] Errornous packet received\n");
+		lastRecFragment = 0;
+		currentFrameNumber = 0;
+		reset_ethernet_packet(ethernet_packet_rx[0]); /* FIXME make a reset function */
+		return -1;
+	}
 
 	/* FIXME check packet time, if too large abort transmission? * /
 	if (inpacket.timeAppended == 1) {
 	}
 	 */
 
+	/* FIXME handle optional SET_IP_PARAMETER (0x02) and SET_ADDRESS_FILTER (0x04) ??? */
+	switch (inpacket.type) {
+	//case EOE_INIT_REQ: /* remove this, because maybe this is not handled correctly by IgH Master! -> EOE_IP_PARAM_REQ */
+	case EOE_FRAGMENT_REQ:
+	//if (inpacket.type == EOE_INIT_REQ || inpacket.type == EOE_FRAGMENT_REQ) 
+		rxoffset = ethernet_packet_rx[0].currentpos;
+		if (rxoffset+packetSize >= MAX_ETHERNET_FRAME) {
+			printstr("[DEBUG EOE_XC] Error, ethernet frame too big.\nThe first 10 bytes: ");
+			for (i=0; i<10; i++) {
+				printhex(ethernet_packet_rx[0].frame[i]);
+				printstr(" ");
+			}
+			printstr("\n");
+
+			lastRecFragment = 0;
+			currentFrameNumber = 0;
+			reset_ethernet_packet(ethernet_packet_rx[0]);
+
+			return -1;
+		}
+
+		for (i=0; i<packetSize && i<MAX_EOE_DATA; i++) {
+			ethernet_packet_rx[0].frame[rxoffset+i] = inpacket.b.data[i];
+		}
+
+		ethernet_packet_rx[0].currentpos = rxoffset+packetSize;
+		ethernet_packet_rx[0].size += packetSize;
+
+		/** /
+		printstr("[DEBUG EOE RX - frag] working eoe_rx_handler(");
+		printint(eoe_state.state);
+		printstr(")\n");
+		printstr("[DEBUG EOE RX - frag] Working Frame No. ");
+		printintln(inpacket.frameNumber);
+		printstr("[DEBUG EOE RX - frag] Working Fragment No. ");
+		printintln(inpacket.fragmentNumber);
+		printstr("[DEBUG EOE RX - frag] Frame finished? ");
+		printintln(inpacket.lastFragment);
+		// */
+
+		if (inpacket.lastFragment == 1) {
+			for (i=0; i<ethernet_packet_rx[0].size; i++) {
+				tmp = ethernet_packet_rx[0].frame[i];
+				i++;
+				tmp |= ((unsigned)ethernet_packet_rx[0].frame[i]<<8)&0xff00;
+				eoe <: tmp;
+				//eoe <: (int)ethernet_packet_rx[0].frame[i];
+			}
+
+			sig <: 1;
+			eoe_state.state = EOE_STATE_IDLE/*RX_LAST_FRAGMENT*/;
+			reset_ethernet_packet(ethernet_packet_rx[0]);
+			currentFrameNumber = -1;
+			lastRecFragment = 0;
+			printstr("[DEBUG EOE RX] last fragment received\n");
+		}
+		break;
+	case EOE_IP_PARAM_REQ:
+	default:
+		printstr("[DEBUG ERROR] Packet of type 0x");
+		printhex(inpacket.type);
+		printstr(" not supported\n");
+		break;
+	}
+
+	return ret;
+
+	/* FIXME below is the old state based received 
+	 *
+	 * Accroding to ETG1000_5_S_R_V1i0i2_EcatALServices.pdf every EoE
+	 * communication is initiated by a Initiate_EoE.req
+	 * This implies, every valid EoE communication is stated with such a
+	 * packet, all other packets could be ignored.
+	 * 
+	 * The question arise, does the IgH master also handles packets this way?
+	 */
+#if 0
 	/* FIXME states don't make any sense here */
+	/* State machine
+	 * IDLE -> RX_FRAGMENT -> IDLE
+	 *      ^               ^ lastFrame==1 || error
+	 *      ` lastFrame==0 && no error
+	 *
+	 * IDLE -> IDLE
+	 *      ^ lasFrame == 1 || error
+	 *
+	 * This nice model is obsoleted because IgH Master don't support the Initiate_EoE.req (0x02) packet!
+	 */
 	switch (eoe_state.state) {
 	case EOE_STATE_IDLE:
-		if (inpacket.type == EOE_INIT_REQ || inpacket.type == EOE_FRAGMENT_REQ) {
+		if (inpacket.type == EOE_INIT_REQ /*|| inpacket.type == EOE_FRAGMENT_REQ*/) {
 			/* do something with the request! */
 			eoe_state.state = EOE_STATE_RX_FRAGMENT;
 
 			rxoffset = ethernet_packet_rx[0].currentpos;
 			if (rxoffset+packetSize >= MAX_ETHERNET_FRAME) {
-				printstr("[DEBUG EOE_XC] Error, ethernet frame too big.\nThe first 10 bytes: ");
+				printstr("[DEBUG EOE_XC] Error, init ethernet frame too big.\nThe first 10 bytes: ");
 				for (i=0; i<10; i++) {
-					printhex(ethernet_packet_rx.frame[i]);
+					printhex(ethernet_packet_rx[0].frame[i]);
 					printstr(" ");
 				}
 				printstr("\n");
@@ -199,6 +325,8 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 				sig <: 1;
 				eoe_state.state = EOE_STATE_IDLE;
 				reset_ethernet_packet(ethernet_packet_rx[0]);
+				currentFrameNumber = -1;
+				lastRecFragment = 0;
 			}
 		}
 		break;
@@ -209,7 +337,7 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 			if (rxoffset+packetSize >= MAX_ETHERNET_FRAME) {
 				printstr("[DEBUG EOE_XC] Error, ethernet frame too big.\nThe first 10 bytes: ");
 				for (i=0; i<10; i++) {
-					printhex(ethernet_packet_rx.frame[i]);
+					printhex(ethernet_packet_rx[0].frame[i]);
 					printstr(" ");
 				}
 				printstr("\n");
@@ -248,6 +376,8 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 				sig <: 1;
 				eoe_state.state = EOE_STATE_IDLE/*RX_LAST_FRAGMENT*/;
 				reset_ethernet_packet(ethernet_packet_rx[0]);
+				currentFrameNumber = -1;
+				lastRecFragment = 0;
 			}
 		}
 		break;
@@ -276,6 +406,7 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 	}
 
 	return ret;
+#endif
 }
 
 int eoe_tx_ready(void)
