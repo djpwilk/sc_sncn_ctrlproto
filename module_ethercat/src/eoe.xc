@@ -187,13 +187,12 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 	/* FIXME check packet time, if too large abort transmission? * /
 	if (inpacket.timeAppended == 1) {
 	}
-	 */
+	// */
 
 	/* FIXME handle optional SET_IP_PARAMETER (0x02) and SET_ADDRESS_FILTER (0x04) ??? */
 	switch (inpacket.type) {
 	//case EOE_INIT_REQ: /* remove this, because maybe this is not handled correctly by IgH Master! -> EOE_IP_PARAM_REQ */
 	case EOE_FRAGMENT_REQ:
-	//if (inpacket.type == EOE_INIT_REQ || inpacket.type == EOE_FRAGMENT_REQ) 
 		rxoffset = ethernet_packet_rx[0].currentpos;
 		if (rxoffset+packetSize >= MAX_ETHERNET_FRAME) {
 			printstr("[DEBUG EOE_XC] Error, ethernet frame too big.\nThe first 10 bytes: ");
@@ -217,7 +216,7 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 		ethernet_packet_rx[0].currentpos = rxoffset+packetSize;
 		ethernet_packet_rx[0].size += packetSize;
 
-		/** /
+		/* DEBUG * /
 		printstr("[DEBUG EOE RX - frag] working eoe_rx_handler(");
 		printint(eoe_state.state);
 		printstr(")\n");
