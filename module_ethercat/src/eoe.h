@@ -21,7 +21,7 @@
 #include <stdint.h>
 
 /* FIXME check ETG for packet type numbers */
-#define EOE_INIT_REQ                 0x02
+#define EOE_INIT_REQ                 0x02 /* FIXME similar to EOE_IP_PARAM_REQ !!! */
 #define EOE_INIT_RSP                 0x03
 #define EOE_FRAGMENT_REQ             0x00
 

@@ -323,7 +323,7 @@ unsigned eoe_get_reply(uint16_t msg[])
 	for (i=ethernet_packet_tx[0].currentpos; i<EOE_MAX_DATA_SIZE && i<(ethernet_packet_tx[0].size-ethernet_packet_tx[0].currentpos); i+=2, k++) {
 		tmpl = ethernet_packet_tx[0].frame[i];
 		tmph = ethernet_packet_tx[0].frame[i+1];
-		msg[k] = (tmph<<8)&0xff00 | tmpl&0xff;
+		msg[k] = ((tmph<<8)&0xff00) | (tmpl&0xff);
 	}
 
 	length += 2*k;
