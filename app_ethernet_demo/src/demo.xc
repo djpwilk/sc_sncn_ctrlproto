@@ -480,7 +480,7 @@ int main()
         //eth_phy_reset(eth_rst);
         //smi_init(smi);
         //eth_phy_config(1, smi);
-        ethernet_server(mii, /* FIXME substitue mii with eoe_out and eoe_in (fj) */
+        ethernet_server(eoe_sig, eoe_in, eoe_out,
                         null,
                         mac_address,
                         rx, 1,
