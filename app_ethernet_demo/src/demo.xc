@@ -30,7 +30,7 @@
 // If you have a board with the xscope xlink enabled (e.g. the XC-2) then
 // change this define to 0, make sure you also remove the -lxscope from
 // the build flags in the Makefile
-#define USE_XSCOPE 1
+#define USE_XSCOPE 0
 
 
 #if USE_XSCOPE
@@ -49,9 +49,9 @@ void xscope_user_init(void) {
 // The intializers are taken from the ethernet_board_support.h header for
 // XMOS dev boards. If you are using a different board you will need to
 // supply explicit port structure intializers for these values
-smi_interface_t smi = ETHERNET_DEFAULT_SMI_INIT;
-mii_interface_t mii = ETHERNET_DEFAULT_MII_INIT;
-ethernet_reset_interface_t eth_rst = ETHERNET_DEFAULT_RESET_INTERFACE_INIT;
+//smi_interface_t smi = ETHERNET_DEFAULT_SMI_INIT;
+//mii_interface_t mii = ETHERNET_DEFAULT_MII_INIT;
+//ethernet_reset_interface_t eth_rst = ETHERNET_DEFAULT_RESET_INTERFACE_INIT;
 
 //::ip_address_define
 // NOTE: YOU MAY NEED TO REDEFINE THIS TO AN IP ADDRESS THAT WORKS
