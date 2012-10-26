@@ -42,8 +42,8 @@ void xscope_user_init(void) {
 
 // Port Definitions
 
-// These ports are for accessing the OTP memory
-on ETHERNET_DEFAULT_TILE: otp_ports_t otp_ports = OTP_PORTS_INITIALIZER;
+// These ports are for accessing the OTP memory - FIXME OTP isn't used currently (fj)
+//on ETHERNET_DEFAULT_TILE: otp_ports_t otp_ports = OTP_PORTS_INITIALIZER;
 
 // Here are the port definitions required by ethernet
 // The intializers are taken from the ethernet_board_support.h header for
@@ -56,7 +56,7 @@ ethernet_reset_interface_t eth_rst = ETHERNET_DEFAULT_RESET_INTERFACE_INIT;
 //::ip_address_define
 // NOTE: YOU MAY NEED TO REDEFINE THIS TO AN IP ADDRESS THAT WORKS
 // FOR YOUR NETWORK
-#define OWN_IP_ADDRESS {192, 168, 1, 178}
+#define OWN_IP_ADDRESS {192, 168, 0, 23}
 //::
 
 
@@ -364,21 +364,123 @@ void demo(chanend tx, chanend rx)
   }
 }
 
+static void ethernet_getmac_dummy(char mac[])
+{
+	mac[0] = 0xde;
+	mac[1] = 0xaf;
+	mac[2] = 0xbe;
+	mac[3] = 0xef;
+	mac[4] = 0xde;
+	mac[5] = 0xaf;
+}
+
+static void consumer(chanend coe_in, chanend coe_out)
+{
+	timer t;
+	const unsigned int delay = 10;
+	unsigned int time = 0;
+
+	unsigned int inBuffer[MAX_BUFFER_SIZE];
+	unsigned int outBuffer[MAX_BUFFER_SIZE];
+	unsigned int tmp = 0;
+	unsigned int size = 0;
+	unsigned count = 0;
+	unsigned int outType = -1; /* FIXME set with define */
+	unsigned outSize;
+
+	unsigned int foePacketNbr = 0;
+	int i;
+
+	for (i=0; i<MAX_BUFFER_SIZE; i++) {
+		inBuffer[i] = 0;
+		outBuffer[i] = 0;
+	}
+
+	while (1) {
+		/* Receive data */
+		select {
+		case coe_in :> tmp :
+			inBuffer[0] = tmp&0xffff;
+			printstr("[APP] Received COE packet\n");
+			count=0;
+
+			while (count < inBuffer[0]) {
+				coe_in :> tmp;
+				inBuffer[count+1] = tmp&0xffff;
+				count++;
+			}
+
+#if 0
+			/* Reply with abort initiate download sequence */
+			outType = COE_PACKET;
+			outBuffer[0] = 5;
+			outBuffer[1] = 0x2000;
+			outBuffer[2] = 0x0080;
+			outBuffer[3] = 0x001c;
+			outBuffer[4] = 0x0000;
+			outBuffer[5] = 0x0601;
+#endif
+			break;
+
+		}
+
+		/* send data */
+		switch (outType /*outBuffer[0]*/) {
+		case COE_PACKET:
+			count=0;
+			//printstr("[APP DEBUG] send CoE packet\n");
+			outSize = outBuffer[0]+1;
+			while (count<outSize) {
+				coe_out <: outBuffer[count];
+				count++;
+			}
+			outBuffer[0] = 0;
+			outType = -1;
+			break;
+
+		default:
+			break;
+		}
+
+		t :> time;
+		t when timerafter(time+delay) :> void;
+	}
+}
+
 int main()
 {
   chan rx[1], tx[1];
 
+        chan coe_in;   ///< CAN from module_ethercat to consumer
+        chan coe_out;  ///< CAN from consumer to module_ethercat
+        chan eoe_in;   ///< Ethernet from module_ethercat to consumer
+        chan eoe_out;  ///< Ethernet from consumer to module_ethercat
+        chan eoe_sig;  ///< Signals from EtherCAT to Ethernet MII
+        chan foe_in;   ///< File from module_ethercat to consumer
+        chan foe_out;  ///< File from consumer to module_ethercat
+        chan pdo_in;
+        chan pdo_out;
+
   par
     {
+	//::ethercat
+                on stdcore[0]:
+                {
+                        ecat_init();
+                        ecat_handler(coe_out, coe_in, eoe_out, eoe_in, eoe_sig, foe_out, foe_in, pdo_out, pdo_in);
+                }
+
+	//::
       //::ethernet
-      on ETHERNET_DEFAULT_TILE:
+      on stdcore[1]:
       {
         char mac_address[6];
-        otp_board_info_get_mac(otp_ports, 0, mac_address);
-        eth_phy_reset(eth_rst);
-        smi_init(smi);
-        eth_phy_config(1, smi);
-        ethernet_server(mii,
+        //otp_board_info_get_mac(otp_ports, 0, mac_address);
+	ethernet_getmac_dummy(mac_address);
+        //eth_phy_reset(eth_rst);
+        //smi_init(smi);
+        //eth_phy_config(1, smi);
+        ethernet_server(mii, /* FIXME substitue mii with eoe_out and eoe_in (fj) */
                         null,
                         mac_address,
                         rx, 1,
@@ -387,8 +489,12 @@ int main()
       //::
 
       //::demo
-      on ETHERNET_DEFAULT_TILE : demo(tx[0], rx[0]);
+      on stdcore[1] : demo(tx[0], rx[0]);
       //::
+
+	//::dummyconsumer
+	on stdcore[2]: consumer(coe_in, coe_out); /* Dummy consumer to catch up CoE init package */
+	//::
     }
 
 	return 0;
