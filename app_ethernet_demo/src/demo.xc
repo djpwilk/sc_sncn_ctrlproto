@@ -23,9 +23,10 @@
 #include <stdlib.h>
 #include "otp_board_info.h"
 #include "ethernet.h"
-#include "ethernet_board_support.h"
+//#include "ethernet_board_support.h"
 #include "checksum.h"
 #include "xscope.h"
+#include "ethercat.h"
 
 // If you have a board with the xscope xlink enabled (e.g. the XC-2) then
 // change this define to 0, make sure you also remove the -lxscope from
@@ -322,7 +323,14 @@ void demo(chanend tx, chanend rx)
   unsigned int txbuf[1600/4];
   
   //::get-macaddr
-  mac_get_macaddr(tx, own_mac_addr);
+  //mac_get_macaddr(tx, own_mac_addr);
+  /* FIXME this function is pretty obfuscatet atm. Until I understand the function the dummy here is used. */
+  own_mac_addr[0] = 0xDE;
+  own_mac_addr[1] = 0xDE;
+  own_mac_addr[2] = 0xDE;
+  own_mac_addr[3] = 0xDE;
+  own_mac_addr[4] = 0xDE;
+  own_mac_addr[5] = 0xDE;
   //::
 
   //::setup-filter
@@ -360,6 +368,9 @@ void demo(chanend tx, chanend rx)
         mac_tx(tx, txbuf, nbytes, ETH_BROADCAST);
         printstr("ICMP response sent\n");
       }
+      else {
+		printstr("Don't know which response to send\n");
+      }
   //::
   }
 }
@@ -373,6 +384,8 @@ static void ethernet_getmac_dummy(char mac[])
 	mac[4] = 0xde;
 	mac[5] = 0xaf;
 }
+
+#define MAX_BUFFER_SIZE   1024
 
 static void consumer(chanend coe_in, chanend coe_out)
 {
@@ -449,53 +462,52 @@ static void consumer(chanend coe_in, chanend coe_out)
 
 int main()
 {
-  chan rx[1], tx[1];
+	chan rx[1], tx[1];
 
-        chan coe_in;   ///< CAN from module_ethercat to consumer
-        chan coe_out;  ///< CAN from consumer to module_ethercat
-        chan eoe_in;   ///< Ethernet from module_ethercat to consumer
-        chan eoe_out;  ///< Ethernet from consumer to module_ethercat
-        chan eoe_sig;  ///< Signals from EtherCAT to Ethernet MII
-        chan foe_in;   ///< File from module_ethercat to consumer
-        chan foe_out;  ///< File from consumer to module_ethercat
-        chan pdo_in;
-        chan pdo_out;
+	chan coe_in;   ///< CAN from module_ethercat to consumer
+	chan coe_out;  ///< CAN from consumer to module_ethercat
+	chan eoe_in;   ///< Ethernet from module_ethercat to consumer
+	chan eoe_out;  ///< Ethernet from consumer to module_ethercat
+	chan eoe_sig;  ///< Signals from EtherCAT to Ethernet MII
+	chan foe_in;   ///< File from module_ethercat to consumer
+	chan foe_out;  ///< File from consumer to module_ethercat
+	chan pdo_in;
+	chan pdo_out;
 
-  par
-    {
-	//::ethercat
-                on stdcore[0]:
-                {
-                        ecat_init();
-                        ecat_handler(coe_out, coe_in, eoe_out, eoe_in, eoe_sig, foe_out, foe_in, pdo_out, pdo_in);
-                }
+	par
+	{
+		//::ethercat
+		on stdcore[0]:
+		{
+			ecat_init();
+			ecat_handler(coe_out, coe_in, eoe_out, eoe_in, eoe_sig, foe_out, foe_in, pdo_out, pdo_in);
+		}
+		//::
 
-	//::
-      //::ethernet
-      on stdcore[1]:
-      {
-        char mac_address[6];
-        //otp_board_info_get_mac(otp_ports, 0, mac_address);
-	ethernet_getmac_dummy(mac_address);
-        //eth_phy_reset(eth_rst);
-        //smi_init(smi);
-        //eth_phy_config(1, smi);
-        ethernet_server(eoe_sig, eoe_in, eoe_out,
-                        null,
-                        mac_address,
-                        rx, 1,
-                        tx, 1);
-      }
-      //::
+		//::ethernet
+		on stdcore[1]:
+		{
+			char mac_address[6];
+			//otp_board_info_get_mac(otp_ports, 0, mac_address);
+			ethernet_getmac_dummy(mac_address);
+			//eth_phy_reset(eth_rst);
+			//smi_init(smi);
+			//eth_phy_config(1, smi);
+			ethernet_server(eoe_sig, eoe_in, eoe_out,
+					mac_address,
+					rx, 1,
+					tx, 1);
+		}
+		//::
 
-      //::demo
-      on stdcore[1] : demo(tx[0], rx[0]);
-      //::
+		//::demo
+		on stdcore[1] : demo(tx[0], rx[0]);
+		//::
 
-	//::dummyconsumer
-	on stdcore[2]: consumer(coe_in, coe_out); /* Dummy consumer to catch up CoE init package */
-	//::
-    }
+		//::dummyconsumer
+		on stdcore[2]: consumer(coe_in, coe_out); /* Dummy consumer to catch up CoE init package */
+		//::
+	}
 
 	return 0;
 }

@@ -18,12 +18,14 @@ APP_NAME =
 # If the variable XCC_MAP_FLAGS is set it overrides the flags passed to
 # xcc for the final link (mapping) stage.
 
-XCC_FLAGS_full = -g -report -DCONFIG_FULL -lxscope -save-temps
-XCC_FLAGS_lite = -g -report -DCONFIG_LITE -lxscope -save-temps
+#XCC_FLAGS_full = -g -report -DCONFIG_FULL -lxscope -save-temps
+#XCC_FLAGS_lite = -g -report -DCONFIG_LITE -lxscope -save-temps
+XCC_FLAGS_full = -g -report -DCONFIG_FULL -save-temps
+#XCC_FLAGS_lite = -g -report -DCONFIG_LITE -save-temps
 
 # The USED_MODULES variable lists other module used by the application. 
 
-USED_MODULES = module_ethernet module_otp_board_info
+USED_MODULES = module_ethercat module_ethernet module_otp_board_info
 
 #=============================================================================
 # The following part of the Makefile includes the common build infrastructure
