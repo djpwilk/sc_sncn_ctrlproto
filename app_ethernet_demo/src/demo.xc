@@ -347,12 +347,12 @@ void demo(chanend tx, chanend rx)
 		unsigned int nbytes;
 		mac_rx(rx, (rxbuf,char[]), nbytes, src_port);
 		printstr("[DEBUG demo()] mac_rx() returned.\n");
-	#ifdef CFIG_LITE
+#ifdef CFIG_LITE
 		if (!is_broadcast((rxbuf,char[])) && !is_mac_addr((rxbuf,char[]), own_mac_addr))
 			continue;
 		if (mac_custom_filter(rxbuf) != 0x1)
 			continue;
-	#endif
+#endif
 
 
 		//::arp_packet_check
