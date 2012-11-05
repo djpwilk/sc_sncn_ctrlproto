@@ -319,60 +319,60 @@ int is_valid_icmp_packet(const unsigned char rxbuf[], int nbytes)
 
 void demo(chanend tx, chanend rx)
 {
-  unsigned int rxbuf[1600/4];
-  unsigned int txbuf[1600/4];
-  
-  //::get-macaddr
-  //mac_get_macaddr(tx, own_mac_addr);
-  /* FIXME this function is pretty obfuscatet atm. Until I understand the function the dummy here is used. */
-  own_mac_addr[0] = 0xDE;
-  own_mac_addr[1] = 0xDE;
-  own_mac_addr[2] = 0xDE;
-  own_mac_addr[3] = 0xDE;
-  own_mac_addr[4] = 0xDE;
-  own_mac_addr[5] = 0xDE;
-  //::
+	unsigned int rxbuf[1600/4];
+	unsigned int txbuf[1600/4];
+	
+	//::get-macaddr
+	//mac_get_macaddr(tx, own_mac_addr);
+	/* FIXME this function is pretty obfuscatet atm. Until I understand the function the dummy here is used. */
+	own_mac_addr[0] = 0xDE;
+	own_mac_addr[1] = 0xDE;
+	own_mac_addr[2] = 0xDE;
+	own_mac_addr[3] = 0xDE;
+	own_mac_addr[4] = 0xDE;
+	own_mac_addr[5] = 0xDE;
+	//::
 
-  //::setup-filter
+	//::setup-filter
 #ifdef CONFIG_FULL
-  mac_set_custom_filter(rx, 0x1);
+	mac_set_custom_filter(rx, 0x1);
 #endif
-  //::
-  printstr("Test started\n");
+	//::
+	printstr("Test started\n");
 
-  //::mainloop
-  while (1)
-  {
-    unsigned int src_port;
-    unsigned int nbytes;
-    mac_rx(rx, (rxbuf,char[]), nbytes, src_port);
-#ifdef CONFIG_LITE
-    if (!is_broadcast((rxbuf,char[])) && !is_mac_addr((rxbuf,char[]), own_mac_addr))
-      continue;
-    if (mac_custom_filter(rxbuf) != 0x1)
-      continue;
-#endif
+	//::mainloop
+	while (1)
+	{
+		unsigned int src_port;
+		unsigned int nbytes;
+		mac_rx(rx, (rxbuf,char[]), nbytes, src_port);
+		printstr("[DEBUG demo()] mac_rx() returned.\n");
+	#ifdef CFIG_LITE
+		if (!is_broadcast((rxbuf,char[])) && !is_mac_addr((rxbuf,char[]), own_mac_addr))
+			continue;
+		if (mac_custom_filter(rxbuf) != 0x1)
+			continue;
+	#endif
 
 
-   //::arp_packet_check
-    if (is_valid_arp_packet((rxbuf,char[]), nbytes))
-      {
-        build_arp_response((rxbuf,char[]), txbuf, own_mac_addr);
-        mac_tx(tx, txbuf, nbytes, ETH_BROADCAST);
-        printstr("ARP response sent\n");
-      }
-  //::icmp_packet_check  
-    else if (is_valid_icmp_packet((rxbuf,char[]), nbytes))
-      {
-        build_icmp_response((rxbuf,char[]), (txbuf, unsigned char[]), own_mac_addr);
-        mac_tx(tx, txbuf, nbytes, ETH_BROADCAST);
-        printstr("ICMP response sent\n");
-      }
-      else {
-		printstr("Don't know which response to send\n");
-      }
-  //::
-  }
+		//::arp_packet_check
+		if (is_valid_arp_packet((rxbuf,char[]), nbytes)) {
+			build_arp_response((rxbuf,char[]), txbuf, own_mac_addr);
+			mac_tx(tx, txbuf, nbytes, ETH_BROADCAST);
+			printstr("ARP response sent\n");
+		}
+		//::icmp_packet_check
+		else if (is_valid_icmp_packet((rxbuf,char[]), nbytes))
+		{
+			build_icmp_response((rxbuf,char[]), (txbuf, unsigned char[]), own_mac_addr);
+			mac_tx(tx, txbuf, nbytes, ETH_BROADCAST);
+			printstr("ICMP response sent\n");
+		}
+		else {
+			printstr("Don't know which response to send\n");
+		}
+		//::
+	}
 }
 
 static void ethernet_getmac_dummy(char mac[])
