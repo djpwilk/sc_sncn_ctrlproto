@@ -106,20 +106,25 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 	/* read eoe channel
 	 * until complete package is finished
 	 * if no RX is in progress split package and successivly send the chunks
+	 *
+	 * size is given as number of 32-bit words
 	 */
 	unsigned otmp;
 	unsigned pos = 0;
 
-	printstr("[DEBUG EOE TX] working eoe_tx_handler()\n");
-	while (pos<MAX_ETHERNET_FRAME && pos<size) {
+	printstr("[DEBUG EOE TX] working eoe_tx_handler() rec. size: "); printintln(size);
+	while (pos<((MAX_ETHERNET_FRAME+3)/4) && pos<size) {
+#if 0
 		select  {
 		case eoe :> otmp :
+#endif
 			eoe :> otmp;
 			ethernet_packet_tx[current].f.framei[pos++] = otmp;
 			/*
 			ethernet_packet_tx[current].f.frameb[pos++] = otmp&0xff;
 			ethernet_packet_tx[current].f.frameb[pos++] = (otmp>>8)&0xff;
 			 */
+#if 0
 			break;
 
 		default:
@@ -127,13 +132,26 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 			return 0;
 			break;
 		}
+#endif
 	}
 
 	/* construct ethercat packet */
 	ethernet_packet_tx[current].ready = 1;
-	ethernet_packet_tx[current].size = size;
+	ethernet_packet_tx[current].size = size*4; /* set size as number of octets */
 	ethernet_packet_tx[current].currentpos = 0;
-	ethernet_packet_tx[current].nextFragment = 0;
+	ethernet_packet_tx[current].nextFragment = 0; /* FIXME */
+
+	/* this should catch every trailing words in the channel and dump them, until they are quit */
+	while (1) {
+		select {
+		case eoe :> otmp :
+			printstr("."); /* dump trailing packets */
+			break;
+		default:
+			return 1;
+			break;
+		}
+	}
 
 	return 1;
 }
@@ -197,7 +215,7 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 
 	/* FIXME handle optional SET_IP_PARAMETER (0x02) and SET_ADDRESS_FILTER (0x04) ??? */
 	switch (inpacket.type) {
-	//case EOE_INIT_REQ: /* remove this, because this is not handled correctly -> EOE_IP_PARAM_REQ is equal */
+	/*case EOE_INIT_REQ: / * remove this, because this is not handled correctly -> EOE_IP_PARAM_REQ is equal */
 	case EOE_FRAGMENT_REQ:
 		rxoffset = ethernet_packet_rx[0].currentpos;
 		if (rxoffset+packetSize >= MAX_ETHERNET_FRAME) {
@@ -223,7 +241,13 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 		ethernet_packet_rx[0].size += packetSize;
 
 		if (inpacket.lastFragment == 1) {
-			for (i=0; i<(ethernet_packet_rx[0].size+3)/4; i++) {
+			unsigned datalen = ethernet_packet_rx[0].size;
+
+			if (datalen<64) /* FIXME should be 60, but then 4 bytes are missing - guess: it's the missing FCS */
+				datalen=64;
+
+			//for (i=0; i<(ethernet_packet_rx[0].size+3)/4; i++) {
+			for (i=0; i<(datalen+3)/4; i++) {
 				eoe <: ethernet_packet_rx[0].f.framei[i];
 			}
 
@@ -278,9 +302,10 @@ unsigned eoe_get_reply(uint16_t msg[])
 	unsigned tmpl, tmph;
 	unsigned length=0;
 	struct _eoe_packet ep;
+	static unsigned ethCurrentFrame = 0;
 
 	if (ethernet_packet_tx[0].ready == 0) {
-		return length;
+		return 0;
 	}
 
 	/* construct header */
@@ -289,22 +314,40 @@ unsigned eoe_get_reply(uint16_t msg[])
 	ep.timeAppended = 0; /* depends on mii TX_TIMESTAMP_END_OF_PACKET */
 	ep.timeRequest = 0;
 	ep.reserved = 0x00;
+	ep.a.offset = 4; /* because 4 header bytes, after that the ethernet packet starts! */
 	//ep.fragmentNumber = 0;
 	ep.fragmentNumber = ethernet_packet_tx[0].nextFragment & 0x2f;
 	ethernet_packet_tx[0].nextFragment += 1; /* FIXME if last fragment the nextFragment field should be 0 and ethernet_packet_tx should be cleared */
+	ep.frameNumber = ethCurrentFrame;
+	ethCurrentFrame = (ethCurrentFrame<0xf) ? ethCurrentFrame+1 : 0; /* CurrentFrame is a 4 bit sequence counter */
 
-	if ((ethernet_packet_tx[0].currentpos + EOE_MAX_DATA_SIZE) >= ethernet_packet_tx[0].size) {
+	if (((ethernet_packet_tx[0].currentpos + EOE_MAX_DATA_SIZE) >= ethernet_packet_tx[0].size) ||
+		(ethernet_packet_tx[0].size < EOE_MAX_DATA_SIZE)) {
+		printstr("[DEBUG eoe.xc] +++ set last fragment\n");
 		ep.lastFragment = 1;
 	} else {
 		ep.lastFragment = 0;
+		ethernet_packet_tx[0].nextFragment++;
 	}
 
 	//unsigned startidx = ethernet_packet_tx[0].currentpos;
 
 	/* build send packet */
 	/* FIXME fix header construction */
-	msg[k] = (ep.type & (ep.eport<<4)) & (ep.lastFragment & (ep.timeAppended<<1) & (ep.timeRequest<<2))<<8;
-	length = 2*k;
+	//msg[k] = (ep.type & (ep.eport<<4)) & (ep.lastFragment & (ep.timeAppended<<1) & (ep.timeRequest<<2))<<8;
+	msg[0] = (ep.type&0x0f);
+	msg[0] |= (ep.eport<<4)&0xf0;
+	msg[0] |= (ep.lastFragment<<8)&0x100;
+	msg[0] |= (ep.timeAppended<<9)&0x200;
+	msg[0] |= (ep.timeRequest<<10)&0x400;
+	/* remaining 5 bit are reserved so 0, no need to set explicitly */
+	printstr("DEBUG first header word: "); printhexln(msg[0]);
+
+	msg[1] = ep.fragmentNumber&0x3f;
+	msg[1] |= (ep.a.offset<<6)&0xfc0;
+	msg[1] |= (ep.frameNumber<<12)&0xf000;
+
+	k=2;
 
 	for (i=ethernet_packet_tx[0].currentpos; i<EOE_MAX_DATA_SIZE && i<(ethernet_packet_tx[0].size-ethernet_packet_tx[0].currentpos); i+=2, k++) {
 		tmpl = ethernet_packet_tx[0].f.frameb[i];
@@ -312,7 +355,7 @@ unsigned eoe_get_reply(uint16_t msg[])
 		msg[k] = ((tmph<<8)&0xff00) | (tmpl&0xff);
 	}
 
-	length += 2*k;
+	length += i/*2*k*/;
 	ethernet_packet_tx[0].currentpos += i;
 
 	return length;

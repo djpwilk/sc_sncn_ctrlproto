@@ -368,9 +368,11 @@ void demo(chanend tx, chanend rx)
 			mac_tx(tx, txbuf, nbytes, ETH_BROADCAST);
 			printstr("ICMP response sent\n");
 		}
+#if 0 /* reduce debug output */
 		else {
 			printstr("Don't know which response to send\n");
 		}
+#endif
 		//::
 	}
 }

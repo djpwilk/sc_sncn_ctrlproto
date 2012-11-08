@@ -937,19 +937,12 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				pending_mailbox=1;
 				break;
 
-			case c_eoe_r :> otmp : /* FIXME how to decide end of packet??? */
-				printstr("DEBUG: processing outgoing EoE packets\n");
-				/*
-				out_size = otmp&0xffff;
-				out_type = EOE_PACKET;
-				for (i=0; i<out_size; i++) {
-					c_eoe_r :> otmp;
-					out_buffer[i] = otmp&0xffff; / * should use ethernet package/frame with byte wise announcement * /
+			case c_eoe_r :> otmp :
+				eoeReplyPending = eoe_tx_handler(c_eoe_r, otmp);
+				if (eoeReplyPending==1) {
+					printstr("[DEBUG EoE] packet waits for transmit\n");
+					//eoeReplyPending = 0; /* Disable the try to send the ethernet reply - to avoid crashing linux */
 				}
-				pending_mailbox=1;
-				 */
-				eoeReplyPending = eoe_tx_handler(c_eoe_r, otmp); /* FIXME check if otmp surly holds the packet size */
-				printstr("[DEBUG EoE] packet wait for transmit\n");
 				break;
 
 			case c_foe_r :> otmp :
@@ -976,7 +969,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 			default:
 				/* check if a eoe packet is reade to transmit */
-				eoeReplyPending = eoe_tx_ready();
+				//eoeReplyPending = eoe_tx_ready(); /* add this to use initiative tx of ethernet packets */
 				break;
 			}
 
