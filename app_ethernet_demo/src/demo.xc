@@ -72,6 +72,16 @@ unsigned char own_mac_addr[6];
 
 void demo(chanend tx, chanend rx);
 
+static void ethernet_getmac_dummy(char mac[])
+{
+	mac[0] = 0x00;
+	mac[1] = 0x50;
+	mac[2] = 0xC2;
+	mac[3] = 0xDE;
+	mac[4] = 0xDE;
+	mac[5] = 0xDE;
+}
+
 #pragma unsafe arrays
 int is_ethertype(unsigned char data[], unsigned char type[]){
 	int i = 12;
@@ -164,7 +174,7 @@ int is_valid_arp_packet(const unsigned char rxbuf[], int nbytes)
   if (rxbuf[12] != 0x08 || rxbuf[13] != 0x06)
     return 0;
 
-  printstr("ARP packet received\n");
+  //printstr("ARP packet received\n");
 
   if ((rxbuf, const unsigned[])[3] != 0x01000608)
   {
@@ -181,11 +191,23 @@ int is_valid_arp_packet(const unsigned char rxbuf[], int nbytes)
     printstr("Not a request\n");
     return 0;
   }
+  /* DEBUG * /
+  printstr("received IP: ");
+  printint(rxbuf[38+0]); printstr(".");
+  printint(rxbuf[38+1]); printstr(".");
+  printint(rxbuf[38+2]); printstr(".");
+  printint(rxbuf[38+3]); printstr("\n");
+  printstr("local IP: ");
+  printint(own_ip_addr[0]); printstr(".");
+  printint(own_ip_addr[1]); printstr(".");
+  printint(own_ip_addr[2]); printstr(".");
+  printint(own_ip_addr[3]); printstr("\n");
+  // */
   for (int i = 0; i < 4; i++)
   {
     if (rxbuf[38 + i] != own_ip_addr[i])
     {
-      printstr("Not for us\n");
+      //printstr("Not for us\n");
       return 0;
     }
   }
@@ -274,6 +296,8 @@ int is_valid_icmp_packet(const unsigned char rxbuf[], int nbytes)
   static const unsigned char own_ip_addr[4] = OWN_IP_ADDRESS;
   unsigned totallen;
 
+  if (rxbuf[12] != 0x08 || rxbuf[13] != 0x00) /* ICMP is a IP packet, so first check this */
+    return 0;
 
   if (rxbuf[23] != 0x01)
     return 0;
@@ -300,11 +324,11 @@ int is_valid_icmp_packet(const unsigned char rxbuf[], int nbytes)
   }
 
   totallen = byterev((rxbuf, const unsigned[])[4]) >> 16;
-  if (nbytes > 60 && nbytes != totallen + 14)
+  if (nbytes > 60 && nbytes != totallen + 12/*14*/)
   {
     printstr("Invalid size\n");
     printintln(nbytes);
-    printintln(totallen+14);
+    printintln(totallen+12/*14*/);
     return 0;
   }
   if (checksum_ip(rxbuf) != 0)
@@ -324,13 +348,7 @@ void demo(chanend tx, chanend rx)
 	
 	//::get-macaddr
 	//mac_get_macaddr(tx, own_mac_addr);
-	/* FIXME this function is pretty obfuscatet atm. Until I understand the function the dummy here is used. */
-	own_mac_addr[0] = 0xDE;
-	own_mac_addr[1] = 0xDE;
-	own_mac_addr[2] = 0xDE;
-	own_mac_addr[3] = 0xDE;
-	own_mac_addr[4] = 0xDE;
-	own_mac_addr[5] = 0xDE;
+	ethernet_getmac_dummy(own_mac_addr);
 	//::
 
 	//::setup-filter
@@ -346,7 +364,7 @@ void demo(chanend tx, chanend rx)
 		unsigned int src_port;
 		unsigned int nbytes;
 		mac_rx(rx, (rxbuf,char[]), nbytes, src_port);
-		printstr("[DEBUG demo()] mac_rx() returned.\n");
+		//printstr("[DEBUG demo()] mac_rx() returned.\n");
 #ifdef CFIG_LITE
 		if (!is_broadcast((rxbuf,char[])) && !is_mac_addr((rxbuf,char[]), own_mac_addr))
 			continue;
@@ -368,23 +386,8 @@ void demo(chanend tx, chanend rx)
 			mac_tx(tx, txbuf, nbytes, ETH_BROADCAST);
 			printstr("ICMP response sent\n");
 		}
-#if 0 /* reduce debug output */
-		else {
-			printstr("Don't know which response to send\n");
-		}
-#endif
 		//::
 	}
-}
-
-static void ethernet_getmac_dummy(char mac[])
-{
-	mac[0] = 0xde;
-	mac[1] = 0xaf;
-	mac[2] = 0xbe;
-	mac[3] = 0xef;
-	mac[4] = 0xde;
-	mac[5] = 0xaf;
 }
 
 #define MAX_BUFFER_SIZE   1024
@@ -475,6 +478,15 @@ int main()
 	chan foe_out;  ///< File from consumer to module_ethercat
 	chan pdo_in;
 	chan pdo_out;
+
+	/* FIXME this function is pretty obfuscatet atm. Until I understand the function the dummy here is used. * /
+	own_mac_addr[0] = 0x00;
+	own_mac_addr[1] = 0x50;
+	own_mac_addr[2] = 0xC2;
+	own_mac_addr[3] = 0xDE;
+	own_mac_addr[4] = 0xDE;
+	own_mac_addr[5] = 0xDE;
+	// */
 
 	par
 	{
