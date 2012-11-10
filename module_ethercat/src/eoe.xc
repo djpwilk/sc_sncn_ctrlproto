@@ -101,6 +101,7 @@ void eoe_init(void)
 	}
 }
 
+/* FIXME at least for transmission, build a 3 stage buffer (size: 3*1518 + overhead) */
 int eoe_tx_handler(chanend eoe, unsigned size)
 {
 	/* read eoe channel
@@ -112,7 +113,7 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 	unsigned otmp;
 	unsigned pos = 0;
 
-	printstr("[DEBUG EOE TX] working eoe_tx_handler() rec. size: "); printintln(size);
+	//printstr("[DEBUG EOE TX] working eoe_tx_handler() rec. size: "); printintln(size);
 	while (pos<((MAX_ETHERNET_FRAME+3)/4) && pos<size) {
 #if 0
 		select  {
@@ -140,18 +141,6 @@ int eoe_tx_handler(chanend eoe, unsigned size)
 	ethernet_packet_tx[current].size = size*4; /* set size as number of octets */
 	ethernet_packet_tx[current].currentpos = 0;
 	ethernet_packet_tx[current].nextFragment = 0; /* FIXME */
-
-	/* this should catch every trailing words in the channel and dump them, until they are quit */
-	while (1) {
-		select {
-		case eoe :> otmp :
-			printstr("."); /* dump trailing packets */
-			break;
-		default:
-			return 1;
-			break;
-		}
-	}
 
 	return 1;
 }
@@ -274,7 +263,6 @@ int eoe_rx_handler(chanend eoe, chanend sig, uint16_t msg[], unsigned size)
 			reset_ethernet_packet(ethernet_packet_rx[0]);
 			currentFrameNumber = -1;
 			lastRecFragment = -1;
-			//printstr("[DEBUG EOE RX] last fragment received\n");
 		}
 		break;
 	case EOE_IP_PARAM_REQ:
@@ -295,6 +283,12 @@ int eoe_tx_ready(void)
 
 /* FIXME rename eoe_get_reply() -> eoe_get_tx_packet() */
 /* FIXME add last segment check and clear buffer after last segment */
+/**
+ * @brief Get eoe reply
+ *
+ * @param msg[] reference to outgoing msg array
+ * @return Number of 16-bit words to send
+ */
 unsigned eoe_get_reply(uint16_t msg[])
 {
 	int i;
@@ -304,6 +298,7 @@ unsigned eoe_get_reply(uint16_t msg[])
 	struct _eoe_packet ep;
 	static unsigned ethCurrentFrame = 0;
 
+	//printstr("[DEBUG eoe_get_reply()] Building EoE reply\n");
 	if (ethernet_packet_tx[0].ready == 0) {
 		return 0;
 	}
@@ -323,7 +318,7 @@ unsigned eoe_get_reply(uint16_t msg[])
 
 	if (((ethernet_packet_tx[0].currentpos + EOE_MAX_DATA_SIZE) >= ethernet_packet_tx[0].size) ||
 		(ethernet_packet_tx[0].size < EOE_MAX_DATA_SIZE)) {
-		printstr("[DEBUG eoe.xc] +++ set last fragment\n");
+		//printstr("[DEBUG eoe.xc] +++ set last fragment\n");
 		ep.lastFragment = 1;
 	} else {
 		ep.lastFragment = 0;
@@ -341,7 +336,7 @@ unsigned eoe_get_reply(uint16_t msg[])
 	msg[0] |= (ep.timeAppended<<9)&0x200;
 	msg[0] |= (ep.timeRequest<<10)&0x400;
 	/* remaining 5 bit are reserved so 0, no need to set explicitly */
-	printstr("DEBUG first header word: "); printhexln(msg[0]);
+	//printstr("DEBUG first header word: "); printhexln(msg[0]);
 
 	msg[1] = ep.fragmentNumber&0x3f;
 	msg[1] |= (ep.a.offset<<6)&0xfc0;

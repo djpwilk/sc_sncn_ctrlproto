@@ -939,10 +939,11 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 			case c_eoe_r :> otmp :
 				eoeReplyPending = eoe_tx_handler(c_eoe_r, otmp);
+				/*
 				if (eoeReplyPending==1) {
 					printstr("[DEBUG EoE] packet waits for transmit\n");
-					//eoeReplyPending = 0; /* Disable the try to send the ethernet reply - to avoid crashing linux */
 				}
+				 */
 				break;
 
 			case c_foe_r :> otmp :
@@ -986,6 +987,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				out_type = EOE_PACKET;
 				pending_mailbox = 1;
 				eoeReplyPending = eoe_check_chunks(); /* Check if there are still chunks to transfere */
+				//printstr("[DEBUG EoE] more packets? eoeReplyPending="); printintln(eoeReplyPending);
 			}
 		}
 
