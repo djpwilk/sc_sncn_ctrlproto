@@ -309,7 +309,7 @@ unsigned eoe_get_reply(uint16_t msg[])
 	ep.timeAppended = 0; /* depends on mii TX_TIMESTAMP_END_OF_PACKET */
 	ep.timeRequest = 0;
 	ep.reserved = 0x00;
-	ep.a.offset = 4; /* because 4 header bytes, after that the ethernet packet starts! */
+	ep.a.offset = 0; /* is set below if current size is known! */
 	//ep.fragmentNumber = 0;
 	ep.fragmentNumber = ethernet_packet_tx[0].nextFragment & 0x2f;
 	ethernet_packet_tx[0].nextFragment += 1; /* FIXME if last fragment the nextFragment field should be 0 and ethernet_packet_tx should be cleared */
@@ -350,8 +350,15 @@ unsigned eoe_get_reply(uint16_t msg[])
 		msg[k] = ((tmph<<8)&0xff00) | (tmpl&0xff);
 	}
 
-	length += i/*2*k*/;
+	length += k; /* number of 16-bit words */
 	ethernet_packet_tx[0].currentpos += i;
+
+	/* fix offset field for real value */
+	ep.a.offset = (i+31)/32; /* number of bytes is used here */
+	msg[1] |= (ep.a.offset<<6)&0xfc0;
+
+	if (ep.lastFragment)
+		reset_ethernet_packet(ethernet_packet_tx[0]);
 
 	return length;
 }
