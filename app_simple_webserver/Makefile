@@ -21,7 +21,7 @@ APP_NAME = httpserver
 XCC_FLAGS = -O3 -save-temps -g -report -Xmapper --map -Xmapper MAPFILE -DEOE_TRANSMISSION
 
 # The USED_MODULES variable lists other module used by the application. 
-USED_MODULES = module_xtcp module_locks module_ethernet module_ethercat
+USED_MODULES = module_ethercat module_xtcp module_locks module_ethernet module_otp_board_info
 
 # This uses the tcp mac filtering in module_xtcp
 USE_XTCP_MAC_CUSTOM_FILTER=1
