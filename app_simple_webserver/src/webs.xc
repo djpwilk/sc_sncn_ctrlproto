@@ -22,7 +22,7 @@ xtcp_ipconfig_t ipconfig = {
 		{ 192,168,0,1 } // gateway (eg 192,168,0,1)
 };
 
-void ethernet_getmac_dummy(char mac[])
+static void ethernet_getmac_dummy(char mac[])
 {
 	mac[0] = 0x00;
 	mac[1] = 0xaf;
@@ -30,8 +30,6 @@ void ethernet_getmac_dummy(char mac[])
 	mac[3] = 0xef;
 	mac[4] = 0xde;
 	mac[5] = 0xaf;
-	mac[6] = 0xbe;
-	mac[7] = 0xef;
 }
 
 #define MAX_BUFFER_SIZE   1024
