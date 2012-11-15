@@ -236,11 +236,16 @@ int build_icmp_response(unsigned char rxbuf[], unsigned char txbuf[], const unsi
     {
       txbuf[30 + i] = rxbuf[26 + i];
     }
-  icmp_checksum = byterev((rxbuf, const unsigned[])[9]) >> 16;
+
+  // As far as I understood, the icmp_checksum has nothing to do with the received checksum (jes)
+  //icmp_checksum = byterev((rxbuf, const unsigned[])[9]) >> 16;
+  icmp_checksum = 0x0; /* start with all 0 */
   for (int i = 0; i < 4; i++)
     {
       txbuf[38 + i] = rxbuf[38 + i];
     }
+
+    // FIXME datalen is too large by 2 bytes
   totallen = byterev((rxbuf, const unsigned[])[4]) >> 16;
   datalen = totallen - 28;
   for (int i = 0; i < datalen; i++)
@@ -270,10 +275,30 @@ int build_icmp_response(unsigned char rxbuf[], unsigned char txbuf[], const unsi
   txbuf[34] = 0x00;
   txbuf[35] = 0x00;
 
-  icmp_checksum = (icmp_checksum + 0x0800);
-  icmp_checksum += icmp_checksum >> 16;
+// jes: calculate the checksum:
+  // jes: first set the checksum to 0 in the header:
+  icmp_checksum = 0;
   txbuf[36] = icmp_checksum >> 8;
   txbuf[37] = icmp_checksum & 0xFF;
+
+  // sum up the ICMP header
+  icmp_checksum += (unsigned)txbuf[34] | ((unsigned)txbuf[35]<<8); // should make 16-bit calculation
+  icmp_checksum += (unsigned)txbuf[36] | ((unsigned)txbuf[37]<<8); // should make 16-bit calculation
+  icmp_checksum += (unsigned)txbuf[38] | ((unsigned)txbuf[39]<<8); // should make 16-bit calculation
+  icmp_checksum += (unsigned)txbuf[40] | ((unsigned)txbuf[41]<<8); // should make 16-bit calculation
+
+// FIXME add checkk for odd number of bytes
+  // sum up the package content
+  for (int j=0; j<(datalen-2); j+=2) {
+  	icmp_checksum += (unsigned)txbuf[42+j] | ((unsigned)txbuf[42+j+1]<<8);
+  }
+
+  icmp_checksum = (icmp_checksum&0xffff) + (icmp_checksum>>16); // add carry bits
+  icmp_checksum = ~icmp_checksum; // one's complement
+
+  // set the freshly calculated checksum in the header (byte swap):
+  txbuf[37] = icmp_checksum >> 8;
+  txbuf[36] = icmp_checksum & 0xFF;
 
   while (ip_checksum >> 16)
   {
