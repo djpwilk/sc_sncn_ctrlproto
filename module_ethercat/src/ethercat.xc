@@ -785,6 +785,18 @@ int ecat_reset(void)
 	return -1;
 }
 
+/* FIXME change the chanends so the function declaration will look like this:
+ * void ecat_handler(chanend c_ecats_rx[], chanend c_ecats_tx[], chanend ?c_ecats_sig[], int numsignals);
+ *
+ * enum eChanNum {
+ *    CHAN_COE=0
+ *    ,CHAN_EOE
+ *    ,CHAN_FOE
+ *    ,CHAN_PDO
+ *    ,CHAN_VOE
+ * };
+ *
+ */
 void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			chanend c_eoe_r, chanend c_eoe_s, chanend c_eoe_sig,
 			chanend c_foe_r, chanend c_foe_s,
