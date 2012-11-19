@@ -146,7 +146,7 @@ int main(void) {
 		}
 
 		// The webserver thread
-		on stdcore[0]: xhttpd(xtcp[0]);
+		on stdcore[1]: xhttpd(xtcp[0]);
 
 		on stdcore[2]: consumer(coe_in, coe_out); /* Dummy consumer to catch up CoE init package */
 	}
