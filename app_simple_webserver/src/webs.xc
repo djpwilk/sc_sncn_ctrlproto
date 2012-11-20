@@ -138,11 +138,18 @@ int main(void) {
 		{
 			char mac_address[6];
 			ethernet_getmac_dummy(mac_address);
+#if XTCP_SEPARATE_MAC
+			ethernet_server(eoe_sig, eoe_in, eoe_out,
+					mac_address, mac_rx, 1, mac_tx, 1);
+			xtcp_server(mac_rx[0], mac_tx[0], xtcp, 1, ipconfig);
+#else
+#warning "using module_ethernet/lite"
 			ethernet_xtcp_server(mac_address,
 						eoe_sig, eoe_in, eoe_out,
 						ipconfig,
 						xtcp,
 						1);
+#endif
 		}
 
 		// The webserver thread

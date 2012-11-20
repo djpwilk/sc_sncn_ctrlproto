@@ -7,4 +7,6 @@
 // Remove this to prevent some information being displayed on the debug console
 #define XTCP_VERBOSE_DEBUG (1)
 
+// according to Thomas Gmeinder this should be sufficent to use module_ethernet/full
+#define XTCP_SEPARATE_MAC 1
 
