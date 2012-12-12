@@ -274,6 +274,7 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		ecat_read_block(start, wordCount, buffer);
 		ecat_send_handler(c_pdo, buffer, wordCount);
 
+#if 0 /* 2012-11-29 jes: disable echo foo */
 		/* FIXME: makeshift echo the buffer packet */
 		/* FIXME is it really necessary to echo the packet? */
 		for (i=0; i<8; i++) {
@@ -296,7 +297,7 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 			}
 		}
 		/* end buffer echo test */
-
+#endif
 		/* DEBUG print * /
 		printstr("DEBUG ecat_handler: ");
 		for (wc=0; wc<wordCount; wc++) {
@@ -879,13 +880,11 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 				case SYNCM_BUFFER_MODE_WRITE:
 					/* send packets pending? */
-					if (pending_buffer) {
+					if (pending_buffer == 1) {
 						printstr("Write Buffer SyncM: ");
 						printintln(i);
 						/* FIXME check return value */
-/* FIXME: disabled
 						ecat_write_block(manager[i].address, out_size, out_buffer);
-*/
 						pending_buffer=0;
 					}
 					break;
@@ -920,7 +919,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			ecat_write(AL_REG_STATUS_CODE, packet_error);
 
 			if (packet_error != AL_NO_ERROR) { /* FIXME implement valid error handling */
-				printstr("Packet error: 0x"); printhexln(packet_error);
+				//printstr("Packet error: 0x"); printhexln(packet_error);
 			}
 		}
 
@@ -988,6 +987,17 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				#endif
 				break;
 
+			case c_pdo_r :> otmp :
+				printstr("DEBUG: processing outgoing PDO packets\n");
+				out_size = otmp&0xffff;
+				out_type = 0/*ERROR_PACKET*/; // no mailbox packet, unused here!
+				for (i=0; i<out_size; i++) {
+					c_pdo_r :> otmp;
+					out_buffer[i] = otmp&0xffff;
+				}
+				pending_buffer=1;
+				break;
+
 			default:
 				/* check if a eoe packet is reade to transmit */
 				//eoeReplyPending = eoe_tx_ready(); /* add this to use initiative tx of ethernet packets */
@@ -1009,23 +1019,6 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				eoeReplyPending = eoe_check_chunks(); /* Check if there are still chunks to transfere */
 				//printstr("[DEBUG EoE] more packets? eoeReplyPending="); printintln(eoeReplyPending);
 			}
-		}
-
-		/* buffered things can be send anytime */
-		select {
-			case c_pdo_r :> otmp :
-				printstr("DEBUG: processing outgoing PDO packets\n");
-				out_size = otmp&0xffff;
-				out_type = ERROR_PACKET; // no mailbox packet, unused there!
-				for (i=0; i<out_size; i++) {
-					c_pdo_r :> otmp;
-					out_buffer[i] = otmp&0xffff;
-				}
-				pending_mailbox=1;
-				break;
-
-			default:
-				break;
 		}
 	}
 	EC_CS_UNSET();
