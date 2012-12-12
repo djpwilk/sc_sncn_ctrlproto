@@ -341,7 +341,11 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 			//printstr("DEBUG ethercat: received EOE packet.\n");
 			//ecat_send_handler(c_eoe, buffer, wordCount);
 			//printstr("[DEBUG] EoE packet received\n");
+#if ETHERCAT_HAS_EOE
 			eoe_rx_handler(c_eoe, c_eoe_sig, buffer, wordCount);
+#else
+			error = AL_MBX_EOE;
+#endif
 			break;
 
 		case COE_PACKET:
@@ -353,7 +357,11 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		case FOE_PACKET:
 			//printstr("DEBUG ethercat: received FOE packet, start processing.\n");
 			//ecat_send_handler(c_foe, buffer, wordCount);
+#ifdef ETHERCAT_HAS_FOE
 			foeReplyPending = foe_parse_packet(c_foe, buffer, wordCount);
+#else
+			error = AL_MBX_FOE;
+#endif
 			break;
 
 		case SOE_PACKET: /* ignored unsupported */
