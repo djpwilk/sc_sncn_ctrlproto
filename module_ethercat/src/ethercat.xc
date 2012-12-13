@@ -872,9 +872,31 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 				switch (manager[i].control&0x0f) {
 				case SYNCM_BUFFER_MODE_READ:
-					if ((manager[i].status & 0x01) == 1) { /* read buffer is accessible, buffer was successfully written */
-						packet_error = ecat_process_packet(manager[i].address, manager[i].size, SYNCM_BUFFER_MODE,
-									c_coe_s, c_eoe_s, c_eoe_sig, c_foe_s, c_pdo_s);
+					/* FIXME ugly hack to reduce probability of dead locks */
+					select {
+					case c_pdo_r :> otmp :
+						printstr("DEBUG: processing outgoing PDO packets\n");
+						out_size = otmp&0xffff;
+						out_type = 0; // no mailbox packet, unused here!
+						for (i=0; i<out_size; i++) {
+							c_pdo_r :> otmp;
+							out_buffer[i] = otmp&0xffff;
+						}
+
+						/* add padding */
+						for (; i<manager[i].size; i++) {
+							out_buffer[i] = 0x0;
+						}
+
+						pending_buffer=1;
+						break;
+
+					default:
+						if ((manager[i].status & 0x01) == 1) { /* read buffer is accessible, buffer was successfully written */
+							packet_error = ecat_process_packet(manager[i].address, manager[i].size, SYNCM_BUFFER_MODE,
+										c_coe_s, c_eoe_s, c_eoe_sig, c_foe_s, c_pdo_s);
+						}
+						break;
 					}
 					break;
 
@@ -987,6 +1009,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				#endif
 				break;
 
+#if 0
 			case c_pdo_r :> otmp :
 				printstr("DEBUG: processing outgoing PDO packets\n");
 				out_size = otmp&0xffff;
@@ -997,6 +1020,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				}
 				pending_buffer=1;
 				break;
+#endif
 
 			default:
 				/* check if a eoe packet is ready to transmit */
