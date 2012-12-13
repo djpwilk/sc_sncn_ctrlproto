@@ -999,7 +999,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				break;
 
 			default:
-				/* check if a eoe packet is reade to transmit */
+				/* check if a eoe packet is ready to transmit */
 				//eoeReplyPending = eoe_tx_ready(); /* add this to use initiative tx of ethernet packets */
 				break;
 			}
