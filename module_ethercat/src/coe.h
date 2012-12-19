@@ -8,6 +8,8 @@
 #ifndef ECAT_COE_H
 #define ECAT_COE_H
 
+#include <stdint.h>
+
 #define COE_MAX_HEADER_SIZE  4
 #define COE_MAX_MSG_SIZE     122
 #define COE_MAX_DATA_SIZE    (COE_MAX_MSG_SIZE-COE_MAX_HEADER_SIZE)
@@ -70,7 +72,58 @@
 #define COE_ABORT_NO_OBJECT_DICT      0x08000023 /* Object dictionary dynamic generation fails or no object dictionary is present */
 
 
+/*
+ * Static object dictionary entries
+ *
+ * Attention: keep in sync with global syncmanger config of ET1100!
+ */
 
+/* sync manager communication type values */
+#define COE_SMCT_UNUSED          0
+#define COE_SMCT_MAILBOX_RX      1
+#define COE_SMCT_MAILBOX_TX      2   /* slave to master */
+#define COE_SMCT_PDO_OUT         3
+#define COE_SMCT_PDO_IN          4   /* slave to master */
+
+
+/* ODE index 0x1C00, subindex is the position within the array */
+#if 0
+struct _sm_comm_type_ode {
+	uint8_t sm_channels = 4;
+	uint8_t sm0 = COE_SMCT_MAILBOX_RX;
+	uint8_t sm1 = COE_SMCT_MAILBOX_TX;
+	uint8_t sm2 = COE_SMCT_PDO_IN;
+	uint8_t sm3 = COE_SMCT_PDO_OUT;
+	uint8_t sm4 = COE_SMCT_UNUSED;
+} SM_CommType_ODE;
+#endif
+
+uint8_t SM_CommType_ODE[] = {
+	4,
+	COE_SMCT_MAILBOX_RX,
+	COE_SMCT_MAILBOX_TX,
+	COE_SMCT_PDO_IN,
+	COE_SMCT_PDO_OUT,
+	COE_SMCT_UNUSED
+};
+
+/* sync manager channel object dictionary entry - index 0x1C10 - 0x1C2F */
+struct _sm_channel {
+	uint8_t sm_pdo_channels = 4; /* or 4? */
+	uint16_t pdo1 = 0x1600; /* RxPDO 1 */
+	uint16_t pdo2 = 0x1601; /* RxPDO 2 */
+	uint16_t pdo3 = 0x1A00; /* TxPDO 1 */
+	uint16_t pdo4 = 0x1A01; /* TxPDO 2 */
+} SM_PDO_Channels;
+
+/* sync manager synchronization object dictionary entry - index 0x1C30 - 0x1C4F */
+/* FIXME: this is optional, but makes sense, don't get it if (and how) this
+ * coudl be assigned to specific SMs */
+struct {
+	uint8_t params = 1;
+	uint16_t synctype = 1; /* syncronized with AL Event */
+	/*uint32_t cycletime =  / * optional */
+} SM_PDO_Synchronization;
 /* data structures */
 
 struct _coe_header {
