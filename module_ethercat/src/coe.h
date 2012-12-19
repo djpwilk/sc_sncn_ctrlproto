@@ -14,7 +14,7 @@
 
 /* can service (4 bit wide) */
 #define COE_SERVICE_EMERGENCY     0x01  /* Emergency */
-#define COE_SERVICE_SDO           0x02  /* SDO Request */
+#define COE_SERVICE_SDOREQ        0x02  /* SDO Request */
 #define COE_SERVICE_SDORSP        0x03  /* SDO Response */
 #define COE_SERVICE_TXPDO         0x04  /* TxPDO */
 #define COE_SERVICE_RXPDO         0x05  /* RxPDO */
