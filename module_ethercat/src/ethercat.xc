@@ -1,7 +1,8 @@
-/* ethercat.xc
+/**
+ * @brief ethercat.xc
  *
- * Copyright 2011, Synapticon GmbH. All rights reserved.
- * Author: Frank Jeschke <jeschke@fjes.de>
+ * @author Frank Jeschke <jeschke@fjes.de>
+ * @note Copyright 2011, Synapticon GmbH. All rights reserved.
  */
 
 #include "ethercat.h"
