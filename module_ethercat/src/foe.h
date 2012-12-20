@@ -1,36 +1,41 @@
-/* foe.h
+/**
+ * @file foe.h
  *
  * header for file file over EtherCAT access.
  *
- * 2012-03-29 Frank Jeschke <jeschke@fjes.de>
+ * @author Frank Jeschke <jeschke@fjes.de>
+ * @date 2012-03-29
  */
+
+#ifndef FOE_H
+#define FOE_H
 
 #include <stdint.h>
 
 /* packet types */
 
-#define FOE_UNUSED         0x00   /* used to indicate empty FOE reply */
-#define FOE_READ           0x01   /* FoE read*/
-#define FOE_WRITE          0x02   /* FoE write */
-#define FOE_DATA           0x03   /* data request */
-#define FOE_ACK            0x04   /* ack request */
-#define FOE_ERROR          0x05   /* error request */
-#define FOE_BUSY           0x06   /* busy request */
+#define FOE_UNUSED         0x00   ///< used to indicate empty FOE reply
+#define FOE_READ           0x01   ///< FoE read
+#define FOE_WRITE          0x02   ///< FoE write
+#define FOE_DATA           0x03   ///< data request
+#define FOE_ACK            0x04   ///< ack request
+#define FOE_ERROR          0x05   ///< error request
+#define FOE_BUSY           0x06   ///< busy request
 
 /* error codes for use in FOE_ERROR packages */
 
-#define FOE_ERR_UNDEF      0x8000 /* Not defined */
-#define FOE_ERR_NOTFOUND   0x8001 /* not found */
-#define FOE_ERR_NOACCESS   0x8002 /* Access denied */
-#define FOE_ERR_DISKFULL   0x8003 /* disk full */
-#define FOE_ERR_ILLEGAL    0x8004 /* illegal */
-#define FOE_ERR_NUMBER     0x8005 /* paket number wrong */
-#define FOE_ERR_EXISTS     0x8006 /* already exists */
-#define FOE_ERR_NOUSER     0x8007 /* no user */
-#define FOE_ERR_BOOT       0x8008 /* bootstrap only */
-#define FOE_ERR_NOBOOT     0x8009 /* not bootstrap */
-#define FOE_ERR_PERM       0x800A /* no rights */
-#define FOE_ERR_PERR       0x800B /* programm error */
+#define FOE_ERR_UNDEF      0x8000 ///< Not defined
+#define FOE_ERR_NOTFOUND   0x8001 ///< not found
+#define FOE_ERR_NOACCESS   0x8002 ///< Access denied
+#define FOE_ERR_DISKFULL   0x8003 ///< disk full
+#define FOE_ERR_ILLEGAL    0x8004 ///< illegal
+#define FOE_ERR_NUMBER     0x8005 ///< paket number wrong
+#define FOE_ERR_EXISTS     0x8006 ///< already exists
+#define FOE_ERR_NOUSER     0x8007 ///< no user
+#define FOE_ERR_BOOT       0x8008 ///< bootstrap only
+#define FOE_ERR_NOBOOT     0x8009 ///< not bootstrap
+#define FOE_ERR_PERM       0x800A ///< no rights
+#define FOE_ERR_PERR       0x800B ///< programm error
 
 #define FOE_STATE_IDLE     0
 #define FOE_STATE_READ     1
@@ -44,6 +49,7 @@
 #define FOE_MAX_MSGSIZE    122
 #define FOE_DATA_SIZE      (FOE_MAX_MSGSIZE-FOE_HEADER_SIZE)
 
+/* FOE message */
 typedef struct {
 	unsigned char opcode;
 	union {
@@ -100,3 +106,5 @@ int foe_request(uint16_t data[]);
  * @param 0 on success, otherwise error.
  */
 int foe_file_access(chanend comm, int command);
+
+#endif /* FOE_H */
