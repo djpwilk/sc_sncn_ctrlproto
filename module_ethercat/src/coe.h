@@ -24,6 +24,19 @@
 #define COE_SERVICE_RXPDO_REMOTE  0x07  /* RxPDO remote request */
 #define COE_SERVICE_SDO_INFO      0x08  /* SDO Information */
 
+/* SDO information request types (7 bit wide) */
+#define COE_ODLIST_REQUEST        0x01 /* Get OD List Request */
+#define COE_ODLIST_RESPONSE       0x02 /* Get OD List Response */
+#define COE_OBJDICT_REQ           0x03 /* Get Object Description Request */
+#define COE_OBJDICT_RSP           0x04 /* Get Object Description Response */
+#define COE_ENTRY_DESCRIPTION_REQ 0x05 /* Get Entry Description Request */
+#define COE_ENTRY_DESCRIPTION_RSP 0x06 /* Get Entry Description Response */
+#define COE_INFO_ERR_REQ          0x07 /* SDO Info Error Request */
+
+/* fragment indicator (1 bit wide) */
+#define COE_SDO_LAST_FRAGMENT     0x00  /* last SDO Information fragment */
+#define COE_SDO_MORE_FRAGMENTS    0x01  /* SDO Information fragments will follow */
+
 /* data set size is 2 bit wide */
 #define COE_DATA_SET_SIZE_4       0x00  /* 4 octet data */
 #define COE_DATA_SET_SIZE_3       0x01  /* 3 octet data */
@@ -39,6 +52,7 @@
 #define COE_CMD_UPLOAD_RSP        0x02  /* upload response */
 #define COE_CMD_UPLOAD_SEG_REQ    0x03  /* upload segment request */
 #define COE_CMD_UPLOAD_SEG_RSP    0x00  /* upload segment response */
+
 
 #define COE_CMD_ABRTT_REQ         0x04  /* abort transfer request */
 
