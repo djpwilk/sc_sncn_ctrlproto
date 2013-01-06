@@ -10,8 +10,8 @@
 
 #include <stdint.h>
 
-#define COE_MAX_HEADER_SIZE  4
-#define COE_MAX_MSG_SIZE     122
+#define COE_MAX_HEADER_SIZE  2
+#define COE_MAX_MSG_SIZE     124
 #define COE_MAX_DATA_SIZE    (COE_MAX_MSG_SIZE-COE_MAX_HEADER_SIZE)
 
 /* can service (4 bit wide) */
