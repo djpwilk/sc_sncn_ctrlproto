@@ -2,7 +2,7 @@
  * Implementation of the CoE handling of the EtherCAT module.
  *
  * @author  Frank Jeschke <jeschke@fjes.de>
- * 2012 Synapticon GmbH
+ * 2012-2013 Synapticon GmbH
  */
 
 #ifndef ECAT_COE_H
@@ -16,8 +16,8 @@
 
 /* can service (4 bit wide) */
 #define COE_SERVICE_EMERGENCY     0x01  /* Emergency */
-#define COE_SERVICE_SDOREQ        0x02  /* SDO Request */
-#define COE_SERVICE_SDORSP        0x03  /* SDO Response */
+#define COE_SERVICE_SDO_REQ       0x02  /* SDO Request */
+#define COE_SERVICE_SDO_RSP       0x03  /* SDO Response */
 #define COE_SERVICE_TXPDO         0x04  /* TxPDO */
 #define COE_SERVICE_RXPDO         0x05  /* RxPDO */
 #define COE_SERVICE_TXPDO_REMOTE  0x06  /* TxPDO remote request */
@@ -25,13 +25,13 @@
 #define COE_SERVICE_SDO_INFO      0x08  /* SDO Information */
 
 /* SDO information request types (7 bit wide) */
-#define COE_ODLIST_REQUEST        0x01 /* Get OD List Request */
-#define COE_ODLIST_RESPONSE       0x02 /* Get OD List Response */
-#define COE_OBJDICT_REQ           0x03 /* Get Object Description Request */
-#define COE_OBJDICT_RSP           0x04 /* Get Object Description Response */
-#define COE_ENTRY_DESCRIPTION_REQ 0x05 /* Get Entry Description Request */
-#define COE_ENTRY_DESCRIPTION_RSP 0x06 /* Get Entry Description Response */
-#define COE_INFO_ERR_REQ          0x07 /* SDO Info Error Request */
+#define COE_SDOI_GET_ODLIST_REQ        0x01 /* Get OD List Request */
+#define COE_SDOI_GET_ODLIST_RSP        0x02 /* Get OD List Response */
+#define COE_SDOI_OBJDICT_REQ           0x03 /* Get Object Description Request */
+#define COE_SDOI_OBJDICT_RSP           0x04 /* Get Object Description Response */
+#define COE_SDOI_ENTRY_DESCRIPTION_REQ 0x05 /* Get Entry Description Request */
+#define COE_SDOI_ENTRY_DESCRIPTION_RSP 0x06 /* Get Entry Description Response */
+#define COE_SDOI_INFO_ERR_REQ          0x07 /* SDO Info Error Request */
 
 /* fragment indicator (1 bit wide) */
 #define COE_SDO_LAST_FRAGMENT     0x00  /* last SDO Information fragment */
@@ -141,9 +141,9 @@ struct {
 /* data structures */
 
 struct _coe_header {
-	unsigned int number;   /* 9 bit */
+	unsigned int number;      /* 9 bit - depending on COE service */
 	/* unsigned char reserved;   3 bit */
-	unsigned char service;   /* 4 bit */
+	unsigned char service;    /* 4 bit - used with COE_SERVICE_* */
 };
 
 /**
