@@ -1,6 +1,6 @@
 /* eoe.xc
  *
- * Copyright 2012, Synapticon GmbH. All rights reserved.
+ * Copyright 2012-2013, Synapticon GmbH. All rights reserved.
  * Author: Frank Jeschke <jeschke@fjes.de>
  */
 
