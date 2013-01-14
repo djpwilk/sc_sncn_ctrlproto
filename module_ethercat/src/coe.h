@@ -160,7 +160,7 @@ int coe_init(void);
  * @param
  * @return
  */
-int coe_rx_handler(char buffer[], unsigned size);
+int coe_rx_handler(chanend coe, char buffer[], unsigned size);
 
 /**
  * @brief
