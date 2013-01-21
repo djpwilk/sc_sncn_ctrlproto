@@ -111,14 +111,24 @@ int canod_get_entry_description(struct _sdoinfo_service_data obj, unsigned index
  *
  * @param index
  * @param subindex
- * @param vales[]     read/write the values from this array.
+ * @param &value     read/write the values from this array.
+ * @param &type      the type of &value
  * @return 0 on success
  */
-/* FIXME how to handle these various data types a object dictionary entry could
- * become?
+int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned &type);
+
+/**
+ * Get/Set OD entry values
+ *
+ * @note This function is currently unused.
+ *
+ * @param index
+ * @param subindex
+ * @param &value     read/write the values from this array.
+ * @param &type      the type of &value
+ * @return 0 on success
  */
-int canod_get_entry(unsigned index, unsigned subindex, char values[]);
-int canod_set_entry(unsigned index, unsigned subindex, char values[]);
+int canod_set_entry(unsigned index, unsigned subindex, unsigned value, unsigned type);
 
 #endif /* CANOD_H */
 

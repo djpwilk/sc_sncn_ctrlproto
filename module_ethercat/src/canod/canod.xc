@@ -128,15 +128,23 @@ int canod_get_entry(unsigned index, unsigned subindex, char values[])
 				identity.objcount;
 				break;
 
-			default:
-				unsupported
-				break;
-			}
+int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned &bitlength)
+{
+	int i;
 
-			break;
+	/* FIXME handle special subindex 0xff to request object type -> see also CiA 301 */
 
+	for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
+		if (SDO_Info_Entries[i].index == index
+		    && SDO_Info_Entries[i].subindex == subindex) {
+			value = SDO_Info_Entries[i].value;
+			bitlength = SDO_Info_Entries[i].bitLength; /* alternative bitLength */
 
+			return 0;
+		}
 	}
+
+	return 1; /* not found */
 }
 
 int canod_set_entry(unsigned index, unsigned subindex, char values[])
