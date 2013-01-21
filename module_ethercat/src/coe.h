@@ -146,6 +146,7 @@ struct _coe_header {
 	unsigned char service;    /* 4 bit - used with COE_SERVICE_* */
 };
 
+
 /**
  * @brief
  *

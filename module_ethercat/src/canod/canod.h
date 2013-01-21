@@ -28,6 +28,14 @@
 #define CANOD_TYPE_ARRAY      0x8
 #define CANOD_TYPE_RECORD     0x9
 
+/* list types */
+#define CANOD_LIST_ALL        0x01  ///< all objects
+#define CANOD_LIST_RXPDO_MAP  0x02  ///< only objects which are mappable in a RxPDO
+#define CANOD_LIST_TXPDO_MAP  0x03  ///< only objects which are mappable in a TxPDO
+#define CANOD_LIST_REPLACE    0x04  ///< objects which has to stored for a device replacement ???
+#define CANOD_LIST_STARTUP    0x05  ///< objects which can be used as startup parameter
+
+
 struct _sdoinfo_service {
 	unsigned opcode;                   ///< OD operation code
 	unsigned incomplete;               ///< 0 - last fragment, 1 - more fragments follow
@@ -94,17 +102,22 @@ struct _sdoinfo_entry_description {
 /**
  * Return the length of all five cathegories
  */
-int canod_get_list_length(unsigned length[]);
+int canod_get_all_list_length(unsigned length[]);
+
+/**
+ * return the length of list of type listtype
+ */
+int canod_get_list_length(unsigned listtype);
 
 /**
  * Get list of objects in the specified cathegory
  */
-int canod_get_list(unsigned list[], unsigned cathegory);
+int canod_get_list(unsigned list[], unsigned size; unsigned listtype);
 
 /**
  * Get description of object at index and subindex.
  */
-int canod_get_entry_description(struct _sdoinfo_service_data obj, unsigned index, unsigned subindex);
+int canod_get_object_description(struct _sdoinfo_object_description &obj, unsigned index);
 
 /**
  * Get/Set OD entry values

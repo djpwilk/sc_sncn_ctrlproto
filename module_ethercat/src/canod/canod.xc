@@ -95,38 +95,97 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 
 /* API implementation */
 
-int canod_get_list_length(unsigned length[])
+int canod_get_all_list_length(unsigned length[])
 {
+	/* FIXME correct length of all subsections */
+	length[0] = sizeof(SDO_Info_Objects)/sizeof(SDO_Info_Objects[0]);
+	length[1] = 0;
+	length[2] = 0;
+	length[3] = 0;
+	length[4] = 0;
+
 	return 0;
 }
 
-int canod_get_list(unsigned list[], unsigned cathegory)
+/* FIXME except for all the list length returns length 0 */
+int canod_get_list_length(unsigned listtype)
 {
+	int length = 0;
+
+	switch (listtype) {
+	case CANOD_LIST_ALL:
+		length = sizeof(SDO_Info_Objects)/sizeof(SDO_Info_Objects[0]);
+		break;
+
+	case CANOD_LIST_RXPDO_MAP:
+		break;
+
+	case CANOD_LIST_TXPDO_MAP:
+		break;
+
+	case CANOD_LIST_REPLACE:
+		break;
+
+	case CANOD_LIST_STARTUP:
+		break;
+	
+	default:
+		return 0;
+	};
+
+	return length;
+}
+
+/* FIXME implement and check other list lengths. */
+int canod_get_list(unsigned list[], unsigned size, unsigned listtype)
+{
+	int length, i;
+
+	switch (listtype) {
+	case CANOD_LIST_ALL:
+		length = sizeof(SDO_Info_Objects)/sizeof(SDO_Info_Objects[0]);
+
+		for (i=0; i<length && i<size; i++) {
+			list[i] = SDO_Info_Objects[i].index;
+		}
+
+		break;
+
+	case CANOD_LIST_RXPDO_MAP:
+		break;
+
+	case CANOD_LIST_TXPDO_MAP:
+		break;
+
+	case CANOD_LIST_REPLACE:
+		break;
+
+	case CANOD_LIST_STARTUP:
+		break;
+	
+	default:
+		return 0;
+	};
+
 	return 0;
 }
-int canod_get_entry_description(struct _sdoinfo_service_data obj, unsigned index, unsigned subindex)
+
+int canod_get_object_description(struct _sdoinfo_object_description &obj, unsigned index)
 {
+	int i = 0;
+
+	for (i=0; i<sizeof(SDO_Info_Objects)/sizeof(SDO_Info_Objects[0]); i++) {
+		if (SDO_Info_Objects[i].index == index) {
+			obj = SDO_Info_objects[i]; /* FIXME this object should be copied! */
+		}
+
+		if (SDO_Info_Objects[i].index == 0x0) {
+			return 1; /* object not found */
+		}
+	}
+
 	return 0;
 }
-
-int canod_get_entry(unsigned index, unsigned subindex, char values[])
-{
-	/* index 0x0001 - 0x0FFF  data type area */
-	/* index 0x1000 - 0x1FFF  CoE communication profile area */
-	/* index 0x2000 - 0x5FFF  manufacturer specific area - UNUSED */
-	/* index 0x6000 - 0xFFFF  profile area - UNUSED */
-
-	if (index > 0x1000 && index < 0x1ffff) {
-		switch (index) {
-		case 0x1000:
-			!!! Device type;
-			break;
-
-		case 0x1018:
-			switch (subindex) {
-			case 0:
-				identity.objcount;
-				break;
 
 int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned &bitlength)
 {
