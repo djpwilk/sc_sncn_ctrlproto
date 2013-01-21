@@ -6,6 +6,11 @@
  * Copyright 2013 Synapticon GmbH
  */
 
+#include "canod.h"
+#include <xc1.h>
+
+/* static object dictionary */
+
 /*
  * supported object dictionary indexes:
  * - 0x0000 .. 0x0037                        - default data types
@@ -17,11 +22,6 @@
  *
  * A future version of this module will support device profiles like EDS or similar.
  */
-
-#include "canod.xc"
-#include <xc1.h>
-
-/* static object dictionary */
 
 /* object descriptions */
 static struct _sdoinfo_object_description SDO_Info_Objects[] =  {
