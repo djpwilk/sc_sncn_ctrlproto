@@ -1,6 +1,8 @@
 #include <xs1.h>
+#include <print.h>
 
 #include "coe.h"
+#include "canod/canod.h"
 
 static unsigned char reply[COE_MAX_DATA_SIZE];
 static int replyPending;
@@ -12,14 +14,14 @@ struct _sdo_info_header {
 	unsigned fragmentsleft; /* number of fragments which will follow - Q: in this or the next packet? */
 };
 
-static void build_reply(struct _sdo_info_header sdo_header, unsigned char data, unsigned datasize)
+static void build_reply(struct _sdo_info_header sdo_header, unsigned char data[], unsigned datasize)
 {
 	int i,j;
 
 	reply[0] = (sdo_header.opcode&0x7f) | ((sdo_header.incomplete&0x01)<<8);
 	reply[1] = 0;
 	reply[2] = sdo_header.fragmentsleft&0xff;
-	reply[3] = (sdo_header.fragmentsleft>>8)0xff;
+	reply[3] = (sdo_header.fragmentsleft>>8)&0xff;
 
 	for (i=0,j=4; i<datasize; i++) {
 		reply[j] = data[i];
@@ -28,27 +30,30 @@ static void build_reply(struct _sdo_info_header sdo_header, unsigned char data, 
 	replyPending = 1;
 }
 
+#if 0
 static void parse_packet(unsigned char buffer[], ...)
 {
 }
+#endif
 
-static inline void parse_coe_header(unsinged char buffer[], struct _coe_header &head)
+static inline void parse_coe_header(unsigned char buffer[], struct _coe_header head)
 {
-	unsigned head = buffer[1];
-	head = (head<<8) | buffer[0];
+	unsigned tmp = buffer[1];
+	tmp = (tmp<<8) | buffer[0];
 
-	head.number = head&0x09;
-	head.service = (head>>12)&0x04;
+	head.sdonumber = tmp&0x09;
+	head.sdoservice = (tmp>>12)&0x04;
 }
 
 
 /* sdo information request handler */
 static int getODListRequest(unsigned listtype)
 {
+	int i,k;
 	unsigned lists[5];
-	unsigned olist[100]; /* check length */
+	unsigned olists[100]; /* check length */
 	unsigned size;
-	unsigned data[COE_MAX_DATA_SIZE];
+	unsigned char data[COE_MAX_DATA_SIZE];
 	struct _sdo_info_header sdo_header;
 
 	if (replyPending) {
@@ -90,7 +95,7 @@ static int getODListRequest(unsigned listtype)
 	return 0;
 }
 
-static int sdoinfo_request(unsigned char buffer[], size_t size)
+static int sdoinfo_request(unsigned char buffer[], unsigned size)
 {
 	struct _sdo_info_header infoheader;
 	unsigned char data[COE_MAX_DATA_SIZE-6]; /* quark */
@@ -99,34 +104,35 @@ static int sdoinfo_request(unsigned char buffer[], size_t size)
 	unsigned servicedata = 0;
 
 	unsigned index, subindex, valueinfo;
+	struct _sdoinfo_entry_description desc;
 
 	infoheader.opcode = buffer[2]&0x07;
 	infoheader.incomplete = (buffer[2]>>7)&0x01;
 	infoheader.fragmentsleft = buffer[4] | ((unsigned)buffer[5]>>8);
 
 	if (size>(COE_MAX_DATA_SIZE-6)) {
-		printstrln("[%s] error size is much larger than expected\n", __func__);
+		printstrln("[sdoinfo_request()] error size is much larger than expected\n");
 		return 0;
 	}
 
 	switch (infoheader.opcode) {
 	case COE_SDOI_GET_ODLIST_REQ: /* answer with COE_SDOI_GET_ODLIST_RSP */
 		/* DEBUG output: */
-		servicedata = (unsigned)buffger[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
+		servicedata = (unsigned)buffer[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
 		printstr("[DEBUG SDO INFO] get OD list: 0x"); printhexln(servicedata);
 		getODListRequest(servicedata);
 		break;
 
 	case COE_SDOI_OBJDICT_REQ: /* answer with COE_SDOI_OBJDICT_RSP */
-		servicedata = (unsigned)buffger[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
+		servicedata = (unsigned)buffer[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
 		/* here servicedata  holds the index of the requested object description */
 		break;
 
 	case COE_SDOI_ENTRY_DESCRIPTION_REQ: /* answer with COE_SDOI_ENTRY_DESCRIPTION_RSP */
-		index = (unsigned)buffger[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
+		index = (unsigned)buffer[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
 		subindex = buffer[8];
 		valueinfo = buffer[9]; /* bitmask which elements should be in the response - bit 1,2 and 3 = 0 (reserved) */
-		coeod_getEntryDescription(index, subindex, valueinfo);
+		canod_get_entry_description(index, subindex, valueinfo, desc);
 		break;
 
 	case COE_SDOI_INFO_ERR_REQ: /* FIXME check abort code and take action */
@@ -165,9 +171,9 @@ int coe_rx_handler(chanend coe, char buffer[], unsigned size)
 	unsigned canmsgsize = size - COE_MAX_HEADER_SIZE; /* FIXME unused */
 	unsigned reply_pending = 0;
 
-	parse_coe_header(buffer, size, coe_header);
+	parse_coe_header(buffer, /*size,*/ coe_header);
 
-	switch (coe_header.service) {
+	switch (coe_header.sdoservice) {
 	case COE_SERVICE_EMERGENCY:
 		/* emergency request */
 		break;

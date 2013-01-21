@@ -7,7 +7,8 @@
  */
 
 #include "canod.h"
-#include <xc1.h>
+#include "canod_datatypes.h"
+#include <xs1.h>
 
 /* static object dictionary */
 
@@ -24,7 +25,7 @@
  */
 
 /* object descriptions */
-static struct _sdoinfo_object_description SDO_Info_Objects[] =  {
+static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 	{ 0x1000, DEFTYPE_UNSIGNED32, 0, CANOD_TYPE_VAR , "Device Type" },
 	{ 0x1018, DEFSTRUCT_IDENTITY, 4, CANOD_TYPE_RECORD, "Identity" },
 	{ 0x1C00, DEFTYPE_UNSIGNED8,  4, CANOD_TYPE_ARRAY, "Sync Manager Communication Type" },
@@ -42,7 +43,7 @@ static struct _sdoinfo_object_description SDO_Info_Objects[] =  {
 	/* assigned PDO objects */
 	{ 0x2000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Rx PDO Assingnment" },
 	{ 0x2001, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Tx PDO Assingnment" },
-	{ 0, 0, 0, 0, nil}
+	{ 0, 0, 0, 0, {0}}
 };
 
 
@@ -69,17 +70,17 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4 },
 	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x01 }, /* mailbox receive */
 	{ 0x1C00, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x02 }, /* mailbox send */
-	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x03 oder 0x04 }, /* PDO in or output */
-	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x03 oder 0x04 }, /* PDO in or output */
+	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x03 }, /* PDO in or output */
+	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x04 }, /* PDO in or output */
 	/* Tx PDO and Rx PDO assignments */
 	{ 0x1C10, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0}, /* assignment of SyncMan 0 */
 	{ 0x1C11, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0}, /* assignment of SyncMan 1 */
 	{ 0x1C12, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2}, /* assignment of SyncMan 2 */
-	{ 0x1C12, 1, 0, DEFTUPE_UNSIGNED16, 16, 0x0203, 0x1600 /* either 0x1600 or 0x1A00 */ },
-	{ 0x1C12, 2, 0, DEFTUPE_UNSIGNED16, 16, 0x0203, 0x1601 /* either 0x1601 or 0x1A01 */ ..},
+	{ 0x1C12, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1600 /* either 0x1600 */ },
+	{ 0x1C12, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1601 /* either 0x1601 */ },
 	{ 0x1C13, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2}, /* assignment of SyncMan 3 */
-	{ 0x1C13, 1, 0, DEFTUPE_UNSIGNED16, 16, 0x0203, 0x1A00 /* either 0x1600 or 0x1A00 */ },
-	{ 0x1C13, 2, 0, DEFTUPE_UNSIGNED16, 16, 0x0203, 0x1A01 /* either 0x1601 or 0x1A01 */ ..},
+	{ 0x1C13, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A00 /* either 0x1A00 */ },
+	{ 0x1C13, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A01 /* either 0x1A01 */ },
 	/* FIXME check - objects describing RxPDOs */
 	{ 0x2000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2 },
 	{ 0x2000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0 }, /* the values are elsewhere !!! */
@@ -176,7 +177,7 @@ int canod_get_object_description(struct _sdoinfo_object_description &obj, unsign
 
 	for (i=0; i<sizeof(SDO_Info_Objects)/sizeof(SDO_Info_Objects[0]); i++) {
 		if (SDO_Info_Objects[i].index == index) {
-			obj = SDO_Info_objects[i]; /* FIXME this object should be copied! */
+			obj = SDO_Info_Objects[i]; /* FIXME this object should be copied! */
 		}
 
 		if (SDO_Info_Objects[i].index == 0x0) {
@@ -187,13 +188,19 @@ int canod_get_object_description(struct _sdoinfo_object_description &obj, unsign
 	return 0;
 }
 
+int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
+{
+	/* FIXME implement entry_description */
+	return -1;
+}
+
 int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned &bitlength)
 {
 	int i;
 
 	/* FIXME handle special subindex 0xff to request object type -> see also CiA 301 */
 
-	for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
+	for (i=0; SDO_Info_Entries[i].index != 0x0; i++) {
 		if (SDO_Info_Entries[i].index == index
 		    && SDO_Info_Entries[i].subindex == subindex) {
 			value = SDO_Info_Entries[i].value;
@@ -206,7 +213,7 @@ int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned
 	return 1; /* not found */
 }
 
-int canod_set_entry(unsigned index, unsigned subindex, char values[])
+int canod_set_entry(unsigned index, unsigned subindex, unsigned value, unsigned type)
 {
 	return -1; /* currently unsupported! */
 }

@@ -35,14 +35,14 @@
 #define CANOD_LIST_REPLACE    0x04  ///< objects which has to stored for a device replacement ???
 #define CANOD_LIST_STARTUP    0x05  ///< objects which can be used as startup parameter
 
-
+#if 0
 struct _sdoinfo_service {
 	unsigned opcode;                   ///< OD operation code
 	unsigned incomplete;               ///< 0 - last fragment, 1 - more fragments follow
 	unsigned fragments;                ///< number of fragments which follow
-	unsigned char data[SDO_MAX_DATA];  ///< SDO data field
+	unsigned char data[COE_MAX_DATA_SIZE];  ///< SDO data field
 };
-
+#endif
 
 /* sdo information data structure - FIXME may move to canod.h */
 
@@ -56,7 +56,7 @@ struct _sdoinfo_object_description {
 	unsigned dataType; ///< 16 bit int should be sufficient
 	unsigned char maxSubindex;
 	unsigned char objectCode;
-	unsigned char name[COE_MAX_MSG_SIZE-12];
+	unsigned char name[50]; /* FIXME shouldn't exceed COE data section */
 };
 
 /** entry description structure */
@@ -112,12 +112,17 @@ int canod_get_list_length(unsigned listtype);
 /**
  * Get list of objects in the specified cathegory
  */
-int canod_get_list(unsigned list[], unsigned size; unsigned listtype);
+int canod_get_list(unsigned list[], unsigned size, unsigned listtype);
 
 /**
  * Get description of object at index and subindex.
  */
 int canod_get_object_description(struct _sdoinfo_object_description &obj, unsigned index);
+
+/**
+ * Get description of specified entry
+ */
+int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc);
 
 /**
  * Get/Set OD entry values

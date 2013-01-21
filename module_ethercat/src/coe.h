@@ -121,6 +121,7 @@ uint8_t SM_CommType_ODE[] = {
 	COE_SMCT_UNUSED
 };
 
+#if 0 /* obsoleted by canod/canod.h */
 /* sync manager channel object dictionary entry - index 0x1C10 - 0x1C2F */
 struct _sm_channel {
 	uint8_t sm_pdo_channels = 4; /* or 4? */
@@ -133,17 +134,18 @@ struct _sm_channel {
 /* sync manager synchronization object dictionary entry - index 0x1C30 - 0x1C4F */
 /* FIXME: this is optional, but makes sense, don't get it if (and how) this
  * coudl be assigned to specific SMs */
-struct {
+struct _sm_pdo_sync {
 	uint8_t params = 1;
 	uint16_t synctype = 1; /* syncronized with AL Event */
 	/*uint32_t cycletime =  / * optional */
 } SM_PDO_Synchronization;
 /* data structures */
+#endif
 
 struct _coe_header {
-	unsigned int number;      /* 9 bit - depending on COE service */
+	unsigned int sdonumber;      /* 9 bit - depending on COE service */
 	/* unsigned char reserved;   3 bit */
-	unsigned char service;    /* 4 bit - used with COE_SERVICE_* */
+	unsigned char sdoservice;    /* 4 bit - used with COE_SERVICE_* */
 };
 
 
