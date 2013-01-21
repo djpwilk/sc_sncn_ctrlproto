@@ -2,6 +2,32 @@
 
 #include "coe.h"
 
+static unsigned char reply[COE_MAX_DATA_SIZE];
+static int replyPending;
+
+
+struct _sdo_info_header {
+	unsigned char opcode;
+	unsigned char incomplete;
+	unsigned fragmentsleft; /* number of fragments which will follow - Q: in this or the next packet? */
+};
+
+static void build_reply(struct _sdo_info_header sdo_header, unsigned char data, unsigned datasize)
+{
+	int i,j;
+
+	reply[0] = (sdo_header.opcode&0x7f) | ((sdo_header.incomplete&0x01)<<8);
+	reply[1] = 0;
+	reply[2] = sdo_header.fragmentsleft&0xff;
+	reply[3] = (sdo_header.fragmentsleft>>8)0xff;
+
+	for (i=0,j=4; i<datasize; i++) {
+		reply[j] = data[i];
+	}
+
+	replyPending = 1;
+}
+
 static void parse_packet(unsigned char buffer[], ...)
 {
 }
