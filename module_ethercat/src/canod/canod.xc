@@ -167,7 +167,7 @@ int canod_get_list(unsigned list[], unsigned size, unsigned listtype)
 		return 0;
 	};
 
-	return 0;
+	return length;
 }
 
 int canod_get_object_description(struct _sdoinfo_object_description &obj, unsigned index)

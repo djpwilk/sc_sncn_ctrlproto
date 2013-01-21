@@ -15,13 +15,54 @@ static inline void parse_coe_header(unsinged char buffer[], struct _coe_header &
 	head.service = (head>>12)&0x04;
 }
 
-/* sdo information request handler */
 
-struct _sdo_info_header {
-	unsigned char opcode;
-	unsigned char incomplete;
-	unsigned fragmentsleft; /* number of fragments which will follow - Q: in this or the next packet? */
-};
+/* sdo information request handler */
+static int getODListRequest(unsigned listtype)
+{
+	unsigned lists[5];
+	unsigned olist[100]; /* check length */
+	unsigned size;
+	unsigned data[COE_MAX_DATA_SIZE];
+	struct _sdo_info_header sdo_header;
+
+	if (replyPending) {
+		return -1; /* previous reply is pending */
+	}
+
+	sdo_header.opcode = COE_SDOI_GET_ODLIST_RSP;
+
+	if (listtype == 0) { /* list of length is replied */
+		canod_get_all_list_length(lists);
+		/* FIXME build reply */
+		sdo_header.incomplete = 0;
+		sdo_header.fragmentsleft = 0;
+		for (i=0, k=0; i<5; i++, k++) {
+			data[k] = lists[i]&0xff;
+			k++;
+			data[k] = (lists[i]>>8)&0xff;
+		}
+
+	} else {
+		size = canod_get_list(olists, 100 /* == maxsize*/, listtype);
+
+		if (size*2>COE_MAX_DATA_SIZE-3) {
+			printstr("more segments will follow\n");
+		}
+
+		/* FIXME build reply */
+		sdo_header.incomplete = 0;
+		sdo_header.fragmentsleft = 0;
+		for (i=0, k=0; i<size; i++, k++) {
+			data[k] = olists[i]&0xff;
+			k++;
+			data[k] = (olists[i]>>8)&0xff;
+		}
+	}
+
+	build_reply(sdo_header, data, k);
+
+	return 0;
+}
 
 static int sdoinfo_request(unsigned char buffer[], size_t size)
 {
@@ -46,8 +87,8 @@ static int sdoinfo_request(unsigned char buffer[], size_t size)
 	case COE_SDOI_GET_ODLIST_REQ: /* answer with COE_SDOI_GET_ODLIST_RSP */
 		/* DEBUG output: */
 		servicedata = (unsigned)buffger[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
-		printstr("[SDO INFO] get OD list: 0x");
-		printhexln(servicedata);
+		printstr("[DEBUG SDO INFO] get OD list: 0x"); printhexln(servicedata);
+		getODListRequest(servicedata);
 		break;
 
 	case COE_SDOI_OBJDICT_REQ: /* answer with COE_SDOI_OBJDICT_RSP */
