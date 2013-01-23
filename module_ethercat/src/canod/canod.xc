@@ -92,6 +92,56 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0, 0, 0, 0, 0, 0 }
 };
 
+/* local */
+
+static int get_minvalue(unsigned datatype)
+{
+	switch (datatype) {
+	case DEFTYPE_BOOLEAN:
+		return 0;
+	case DEFTYPE_INTEGER8:
+		return 0xff;
+	case DEFTYPE_INTEGER16:
+		return 0xffff;
+	case DEFTYPE_INTEGER32:
+		return 0xffffffff;
+	case DEFTYPE_UNSIGNED8:
+		return 0;
+	case DEFTYPE_UNSIGNED16:
+		return 0;
+	case DEFTYPE_UNSIGNED32:
+		return 0;
+	default:
+		return 0;
+	}
+
+	return 0;
+}
+
+static int get_maxvalue(unsigned datatype)
+{
+	switch (datatype) {
+	case DEFTYPE_BOOLEAN:
+		return 1;
+	case DEFTYPE_INTEGER8:
+		return 0x7f;
+	case DEFTYPE_INTEGER16:
+		return 0x7fff;
+	case DEFTYPE_INTEGER32:
+		return 0x7fffffff;
+	case DEFTYPE_UNSIGNED8:
+		return 0xff;
+	case DEFTYPE_UNSIGNED16:
+		return 0xffff;
+	case DEFTYPE_UNSIGNED32:
+		return 0xffffffff;
+	default:
+		return 0;
+	}
+
+	return 0;
+}
+
 
 
 /* API implementation */
