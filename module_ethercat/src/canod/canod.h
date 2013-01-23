@@ -28,6 +28,12 @@
 #define CANOD_TYPE_ARRAY      0x8
 #define CANOD_TYPE_RECORD     0x9
 
+/* value info values */
+#define CANOD_VALUEINFO_UNIT      0x08
+#define CANOD_VALUEINFO_DEFAULT   0x10
+#define CANOD_VALUEINFO_MIN       0x20
+#define CANOD_VALUEINFO_MAX       0x40
+
 /* list types */
 #define CANOD_LIST_ALL        0x01  ///< all objects
 #define CANOD_LIST_RXPDO_MAP  0x02  ///< only objects which are mappable in a RxPDO

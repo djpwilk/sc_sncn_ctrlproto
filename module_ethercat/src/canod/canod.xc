@@ -240,7 +240,47 @@ int canod_get_object_description(struct _sdoinfo_object_description &obj, unsign
 
 int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
 {
+	struct _sdoinfo_entry_description entry;
+	int i;
+
+	for (i=0; i<SDO_Info_Entries[i].index != 0x0; i++) {
+		if (SDO_Info_Entries[i].index == index)
+			break;
+	}
+
+	if (SDO_Info_Entries[i].index == 0x0)
+		return -1; /* Entry object not found */
+
 	/* FIXME implement entry_description */
+	desc.index = index;
+	desc.subindex = subindex;
+	desc.valueInfo = valueinfo;
+
+	desc.dataType = SDO_Info_Entries[i].dataType;
+	desc.bitLength = SDO_Info_Entries[i].bitLength;
+	desc.objectAccess = SDO_Info_Entries[i].objectAccess;
+
+	switch (valueinfo) {
+	case CANOD_VALUEINFO_UNIT:
+		desc.value = 0; /* unit type currently unsupported */
+		break;
+
+	case CANOD_VALUEINFO_DEFAULT:
+		desc.value = SDO_Info_Entries[i].value;
+		break;
+	case CANOD_VALUEINFO_MIN:
+		desc.value = get_minvalue(desc.dataType);
+		break;
+
+	case CANOD_VALUEINFO_MAX:
+		desc.value = get_maxvalue(desc.dataType);
+		break;
+	default:
+		/* empty response */
+		desc.value = 0;
+		break;
+	}
+
 	return -1;
 }
 
