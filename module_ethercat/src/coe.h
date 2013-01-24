@@ -54,7 +54,7 @@
 #define COE_CMD_UPLOAD_SEG_RSP    0x00  /* upload segment response */
 
 
-#define COE_CMD_ABRTT_REQ         0x04  /* abort transfer request */
+#define COE_CMD_ABORT_REQ         0x04  /* abort transfer request */
 
 
 /* abort codes */
