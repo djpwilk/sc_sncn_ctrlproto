@@ -217,7 +217,7 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 		break;
 
 	case COE_SDOI_OBJDICT_REQ: /* answer with COE_SDOI_OBJDICT_RSP */
-		servicedata = (unsigned)buffer[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
+		servicedata = (unsigned)buffer[6]&0xff | ((unsigned)buffer[7]>>8)&0xff;
 		/* here servicedata holds the index of the requested object description */
 		canod_get_object_description(objdesc, servicedata);
 		/* FIXME build response */
