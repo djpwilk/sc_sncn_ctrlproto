@@ -105,6 +105,7 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 
 	unsigned index, subindex, valueinfo;
 	struct _sdoinfo_entry_description desc;
+	struct _sdoinfo_object_description objdesc;
 
 	infoheader.opcode = buffer[2]&0x07;
 	infoheader.incomplete = (buffer[2]>>7)&0x01;
@@ -125,7 +126,9 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 
 	case COE_SDOI_OBJDICT_REQ: /* answer with COE_SDOI_OBJDICT_RSP */
 		servicedata = (unsigned)buffer[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
-		/* here servicedata  holds the index of the requested object description */
+		/* here servicedata holds the index of the requested object description */
+		canod_get_object_description(objdesc, servicedata);
+		/* FIXME build response */
 		break;
 
 	case COE_SDOI_ENTRY_DESCRIPTION_REQ: /* answer with COE_SDOI_ENTRY_DESCRIPTION_RSP */
@@ -133,6 +136,7 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 		subindex = buffer[8];
 		valueinfo = buffer[9]; /* bitmask which elements should be in the response - bit 1,2 and 3 = 0 (reserved) */
 		canod_get_entry_description(index, subindex, valueinfo, desc);
+		/* FIXME build response */
 		break;
 
 	case COE_SDOI_INFO_ERR_REQ: /* FIXME check abort code and take action */
@@ -142,6 +146,7 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 			((unsigned)buffer[9]>>24)&0xff;
 		printstr("[SDO INFO] Error request receiveied 0x");
 		printhexln(abortcode);
+		/* FIXME do something appropriate  */
 		break;
 
 	default:
