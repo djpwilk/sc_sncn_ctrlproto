@@ -14,7 +14,22 @@ struct _sdo_info_header {
 	unsigned fragmentsleft; /* number of fragments which will follow - Q: in this or the next packet? */
 };
 
-static void build_reply(struct _sdo_info_header sdo_header, unsigned char data[], unsigned datasize)
+struct _sdo_request_header {
+	unsigned char command;
+	unsigned char complete;
+	unsigned index;
+	unsigned subindex;
+};
+
+struct _sdo_response_header {
+	unsigned char command;
+	unsigned char complete;
+	unsigned char dataSetSize;
+	unsigned char transfereType; /* normal (0x00) or expedited (0x01) */
+	unsigned char sizeIndicator; /* 0x01 */
+};
+
+static void build_sdoinfo_reply(struct _sdo_info_header sdo_header, unsigned char data[], unsigned datasize)
 {
 	int i,j;
 
@@ -25,6 +40,23 @@ static void build_reply(struct _sdo_info_header sdo_header, unsigned char data[]
 
 	for (i=0,j=4; i<datasize; i++) {
 		reply[j] = data[i];
+	}
+
+	replyPending = 1;
+}
+
+static void build_sdo_reply(struct _sdo_response_header header, unsigned char data[], unsigned datasize)
+{
+	int i;
+
+	reply[0] = (header.sizeIndicator&0x1) |
+		   ((header.transfereType&0x1)<<1) |
+		   ((header.dataSetSize&0x3)<<2) |
+		   ((header.complete&0x1)<<4) |
+		   ((header.command&0x7)<<5);
+
+	for (i=0; i<datasize; i++) {
+		reply[i+1] = data[i];
 	}
 
 	replyPending = 1;
@@ -90,7 +122,67 @@ static int getODListRequest(unsigned listtype)
 		}
 	}
 
-	build_reply(sdo_header, data, k);
+	build_sdoinfo_reply(sdo_header, data, k);
+
+	return 0;
+}
+
+static int sdo_request(unsigned char buffer[], unsigned size)
+{
+	unsigned i;
+	unsigned index;
+	unsigned subindex;
+	unsigned opcode = (buffer[2]>>5)&0x03;
+	unsigned type;
+	unsigned value;
+	struct _sdo_response_header header;
+	unsigned char tmp[10];
+
+	switch (opcode) {
+	case COE_CMD_UPLOAD_REQ:
+		if (((buffer[2]>>4)&0x01) == 1) {
+			if (buffer[5] != 0) {
+				/* error complete access requested, but subindex is not zero */
+				return -1;
+			}
+		}
+
+		index = (buffer[3]&0xff) | (((unsigned)buffer[4]<<8)&0xff00);
+		subindex = buffer[5];
+
+		canod_get_entry(index, subindex, value, type);
+
+		header.command = COE_CMD_UPLOAD_RSP;
+		header.complete = 0x00;
+		header.dataSetSize = 0x00;
+		header.transfereType = 0x00; /* normal transfere */
+		header.sizeIndicator = 0x01;
+
+		for (i=0; i<(type/8); i++) {
+			tmp[i] = (value>>i)&0xff;
+		}
+
+		build_sdo_reply(header, tmp, i);
+		break;
+
+#if 0
+	case COE_CMD_UPLOAD_RSP:
+		break;
+#endif
+
+	case COE_CMD_UPLOAD_SEG_REQ:
+		return -1; /* currently unsupported */
+
+	case COE_CMD_UPLOAD_SEG_RSP:
+		return -1; /* currently unsupported */
+
+	case COE_CMD_ABORT_REQ:
+		/* FIXME handle abort request appropriately */
+		break;
+
+	default:
+		return -1; /* unknown command specifier */
+	}
 
 	return 0;
 }
@@ -185,6 +277,7 @@ int coe_rx_handler(chanend coe, char buffer[], unsigned size)
 
 	case COE_SERVICE_SDO_REQ:
 		/* download expedited, download normal, SDO segment, upload expedited, upload normal, upload SDO segment, abort SDO transfer */
+		sdo_request(buffer,size);
 		break;
 
 	case COE_SERVICE_SDO_RSP: /* only needed if SDO requests are sent */
