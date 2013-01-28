@@ -307,3 +307,22 @@ int coe_rx_handler(chanend coe, char buffer[], unsigned size)
 	return reply_pending;
 }
 
+int coe_get_reply(char buffer[])
+{
+	if (replyPending == 1)
+		return 0;
+
+	for (i=0; i<COE_MAX_DATA_SIZE; i++) {
+		buffer[i] = reply[i];
+	}
+
+	reply[0] = 0;
+	replyPending = 0;
+
+	return 0;
+}
+
+int coe_reply_ready()
+{
+	return replyPending;
+}

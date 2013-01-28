@@ -174,19 +174,18 @@ int coe_rx_handler(chanend coe, char buffer[], unsigned size);
 int coe_tx_handler();
 
 /**
- * @brief
+ * @brief Get currently pending reply.
  *
- * @param
- * @return
+ * @param buffer[] buffer for outgoing packet
+ * @return number of bytes stored in buffer
  */
-int coe_get_reply();
+int coe_get_reply(char buffer[]);
 
 /**
- * @brief
+ * @brief Check if a packet is pending
  *
- * @param
- * @return
+ * @return 0 if no packet is available
  */
-int coe_reply_ready();
+int coe_reply_ready(void);
 
 #endif /* ECAT_COE_H */
