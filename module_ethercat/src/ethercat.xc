@@ -10,6 +10,7 @@
 #include "foefs.h"
 #include "foe.h"
 #include "eoe.h"
+#include "coe.h"
 
 #include <platform.h>
 #include <xs1.h>
@@ -125,6 +126,7 @@ static uint8_t pdiError;
 static int packet_pending; /* indicate packet ready for sending to master */
 static int foeReplyPending;
 static int eoeReplyPending;
+static int coeReplyPending;
 
 /**
  * @brief send packages to the connected channel endpoint.
@@ -350,9 +352,10 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 			break;
 
 		case COE_PACKET:
-			//printstr("DEBUG ethercat: received COE packet, but this is not processed.\n");
-			ecat_send_handler(c_coe, buffer, wordCount);
+			//printstr("DEBUG ethercat: received COE packet.\n");
+			//ecat_send_handler(c_coe, buffer, wordCount);
 			//error = AL_MBX_COE;
+			coeReplyPending = coe_rx_handler(c_coe, (buffer, unsigned char[]), (unsigned)wordCount);
 			break;
 
 		case FOE_PACKET:
@@ -786,6 +789,9 @@ int ecat_init(void)
 	foe_init();
 	foeReplyPending=0;
 	eoeReplyPending=0;
+	coeReplyPending=0;
+
+	coe_init();
 
 	return 0;
 }
@@ -1043,6 +1049,13 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				pending_mailbox = 1;
 				eoeReplyPending = eoe_check_chunks(); /* Check if there are still chunks to transfere */
 				//printstr("[DEBUG EoE] more packets? eoeReplyPending="); printintln(eoeReplyPending);
+			}
+
+			if (pending_mailbox != 1 && coeReplyPending == 1) {
+				out_size = (uint16_t)coe_get_reply((out_buffer, unsigned char[]));
+				out_type = COE_PACKET;
+				pending_mailbox = 1;
+				//printstr("[DEBUG CoE] more packets? coeReplyPending="); printintln(coeReplyPending);
 			}
 		}
 	}

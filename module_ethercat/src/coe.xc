@@ -6,6 +6,7 @@
 
 static unsigned char reply[COE_MAX_DATA_SIZE];
 static int replyPending;
+static int replyDataSize;
 
 
 struct _sdo_info_header {
@@ -46,6 +47,7 @@ static void build_sdoinfo_reply(struct _sdo_info_header sdo_header, unsigned cha
 		reply[j] = 0;
 
 	replyPending = 1;
+	replyDataSize = datasize;
 }
 
 static void build_sdo_reply(struct _sdo_response_header header, unsigned char data[], unsigned datasize)
@@ -66,6 +68,7 @@ static void build_sdo_reply(struct _sdo_response_header header, unsigned char da
 		reply[i+1] = 0;
 
 	replyPending = 1;
+	replyDataSize = datasize;
 }
 
 #if 0
@@ -265,7 +268,13 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 
 int coe_init(void)
 {
-	return 0;
+	int i;
+
+	for (i=0; i<COE_MAX_DATA_SIZE; i++)
+		reply[i] = 0;
+
+	replyPending = 0;
+	replyDataSize = 0;
 }
 
 int coe_rx_handler(chanend coe, char buffer[], unsigned size)
@@ -315,6 +324,8 @@ int coe_rx_handler(chanend coe, char buffer[], unsigned size)
 
 int coe_get_reply(char buffer[])
 {
+	int i, size;
+
 	if (replyPending == 1)
 		return 0;
 
@@ -322,10 +333,13 @@ int coe_get_reply(char buffer[])
 		buffer[i] = reply[i];
 	}
 
+	size = replyDataSize;
+
 	reply[0] = 0;
 	replyPending = 0;
+	replyDataSize = 0;
 
-	return 0;
+	return size;
 }
 
 int coe_reply_ready()
