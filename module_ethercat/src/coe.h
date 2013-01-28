@@ -100,8 +100,8 @@
 #define COE_SMCT_PDO_IN          4   /* slave to master */
 
 
-/* ODE index 0x1C00, subindex is the position within the array */
 #if 0
+/* ODE index 0x1C00, subindex is the position within the array */
 struct _sm_comm_type_ode {
 	uint8_t sm_channels = 4;
 	uint8_t sm0 = COE_SMCT_MAILBOX_RX;
@@ -110,7 +110,6 @@ struct _sm_comm_type_ode {
 	uint8_t sm3 = COE_SMCT_PDO_OUT;
 	uint8_t sm4 = COE_SMCT_UNUSED;
 } SM_CommType_ODE;
-#endif
 
 uint8_t SM_CommType_ODE[] = {
 	4,
@@ -120,6 +119,7 @@ uint8_t SM_CommType_ODE[] = {
 	COE_SMCT_PDO_OUT,
 	COE_SMCT_UNUSED
 };
+#endif
 
 #if 0 /* obsoleted by canod/canod.h */
 /* sync manager channel object dictionary entry - index 0x1C10 - 0x1C2F */
