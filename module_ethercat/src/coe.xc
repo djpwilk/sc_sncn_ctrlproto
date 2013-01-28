@@ -42,6 +42,9 @@ static void build_sdoinfo_reply(struct _sdo_info_header sdo_header, unsigned cha
 		reply[j] = data[i];
 	}
 
+	for (; j<COE_MAX_DATA_SIZE; j++) /* padding */
+		reply[j] = 0;
+
 	replyPending = 1;
 }
 
@@ -58,6 +61,9 @@ static void build_sdo_reply(struct _sdo_response_header header, unsigned char da
 	for (i=0; i<datasize; i++) {
 		reply[i+1] = data[i];
 	}
+
+	for (; i<COE_MAX_DATA_SIZE; i++)
+		reply[i+1] = 0;
 
 	replyPending = 1;
 }
