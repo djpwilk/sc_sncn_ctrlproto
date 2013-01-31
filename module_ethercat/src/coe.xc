@@ -105,9 +105,11 @@ static int getODListRequest(unsigned listtype)
 
 	if (listtype == 0) { /* list of length is replied */
 		canod_get_all_list_length(lists);
+
 		/* FIXME build reply */
 		sdo_header.incomplete = 0;
 		sdo_header.fragmentsleft = 0;
+
 		for (i=0, k=0; i<5; i++, k++) {
 			data[k] = lists[i]&0xff;
 			k++;
@@ -319,14 +321,17 @@ int coe_rx_handler(chanend coe, char buffer[], unsigned size)
 		break;
 	}
 
-	return reply_pending;
+	if (replyPending)
+		return 1;
+
+	return 0/*reply_pending*/;
 }
 
 int coe_get_reply(char buffer[])
 {
 	int i, size;
 
-	if (replyPending == 1)
+	if (replyPending == 0)
 		return 0;
 
 	for (i=0; i<COE_MAX_DATA_SIZE; i++) {

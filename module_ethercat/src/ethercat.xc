@@ -952,9 +952,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			}
 		}
 
-		/* send pending mailbox data * /
+		/* send pending mailbox data */
 		if (pending_mailbox) {
-			printstr("DEBUG: Pending mailbox, calling ecat_mbox_packet_send()\n");
+			//printstr("DEBUG: Pending mailbox, calling ecat_mbox_packet_send()\n");
 			packet_error = ecat_mbox_packet_send(manager[i].address, manager[i].size,
 						 out_type, out_buffer, out_size);
 		}

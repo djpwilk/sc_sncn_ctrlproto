@@ -194,7 +194,7 @@ int canod_get_list(unsigned list[], unsigned size, unsigned listtype)
 
 	switch (listtype) {
 	case CANOD_LIST_ALL:
-		length = sizeof(SDO_Info_Objects)/sizeof(SDO_Info_Objects[0]);
+		length = sizeof(SDO_Info_Objects)/sizeof(SDO_Info_Objects[0])-1;
 
 		for (i=0; i<length && i<size; i++) {
 			list[i] = SDO_Info_Objects[i].index;
