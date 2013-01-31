@@ -33,13 +33,16 @@ struct _sdo_response_header {
 static void build_sdoinfo_reply(struct _sdo_info_header sdo_header, unsigned char data[], unsigned datasize)
 {
 	int i,j;
+//printstr("[trace build_sdoinfo_reply] building reply\n");
+	reply[0] = 0x00;
+	reply[1] = 0x80;
 
-	reply[0] = (sdo_header.opcode&0x7f) | ((sdo_header.incomplete&0x01)<<8);
-	reply[1] = 0;
-	reply[2] = sdo_header.fragmentsleft&0xff;
-	reply[3] = (sdo_header.fragmentsleft>>8)&0xff;
+	reply[2] = (sdo_header.opcode&0x7f) | ((sdo_header.incomplete&0x01)<<8);
+	reply[3] = 0;
+	reply[4] = sdo_header.fragmentsleft&0xff;
+	reply[5] = (sdo_header.fragmentsleft>>8)&0xff;
 
-	for (i=0,j=4; i<datasize; i++) {
+	for (i=0,j=6; i<datasize; i++, j++) {
 		reply[j] = data[i];
 	}
 
@@ -201,10 +204,12 @@ static int sdo_request(unsigned char buffer[], unsigned size)
 static int sdoinfo_request(unsigned char buffer[], unsigned size)
 {
 	struct _sdo_info_header infoheader;
+	struct _sdo_info_header response;
 	unsigned char data[COE_MAX_DATA_SIZE-6]; /* quark */
 	unsigned datasize = COE_MAX_DATA_SIZE-6;
 	unsigned abortcode = 0;
 	unsigned servicedata = 0;
+	int i;
 
 	unsigned index, subindex, valueinfo;
 	struct _sdoinfo_entry_description desc;
@@ -222,20 +227,35 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 	switch (infoheader.opcode) {
 	case COE_SDOI_GET_ODLIST_REQ: /* answer with COE_SDOI_GET_ODLIST_RSP */
 		/* DEBUG output: */
-		servicedata = (unsigned)buffer[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
+		servicedata = (((unsigned)buffer[6])&0xff) | ((((unsigned)buffer[7])>>8)&0xff);
 		printstr("[DEBUG SDO INFO] get OD list: 0x"); printhexln(servicedata);
 		getODListRequest(servicedata);
 		break;
 
 	case COE_SDOI_OBJDICT_REQ: /* answer with COE_SDOI_OBJDICT_RSP */
-		servicedata = (unsigned)buffer[6]&0xff | ((unsigned)buffer[7]>>8)&0xff;
+		servicedata = ((unsigned)buffer[6]&0xff) | (((unsigned)buffer[7]<<8)&0xff00);
 		/* here servicedata holds the index of the requested object description */
 		canod_get_object_description(objdesc, servicedata);
-		/* FIXME build response */
+
+		data[0] = objdesc.index&0xff;
+		data[1] = (objdesc.index>>8)&0xff;
+		data[2] = objdesc.dataType&0xff;
+		data[3]	= (objdesc.dataType>>8)&0xff;
+		data[4]	= objdesc.maxSubindex;
+		data[5]	= objdesc.objectCode;
+		for (i=0; objdesc.name[i] != '\0'; i++) {
+			data[i+6]	= objdesc.name[i];
+		}
+
+		response.fragmentsleft = 0;
+		response.incomplete = 0;
+		response.opcode = COE_SDOI_OBJDICT_RSP;
+
+		build_sdoinfo_reply(response, data, 6+i);
 		break;
 
 	case COE_SDOI_ENTRY_DESCRIPTION_REQ: /* answer with COE_SDOI_ENTRY_DESCRIPTION_RSP */
-		index = (unsigned)buffer[6]&0xff | ((unsigned)buffer[7])>>8&0xff;
+		index = ((unsigned)buffer[6]&0xff) | ((((unsigned)buffer[7])>>8)&0xff);
 		subindex = buffer[8];
 		valueinfo = buffer[9]; /* bitmask which elements should be in the response - bit 1,2 and 3 = 0 (reserved) */
 		canod_get_entry_description(index, subindex, valueinfo, desc);
@@ -243,10 +263,10 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 		break;
 
 	case COE_SDOI_INFO_ERR_REQ: /* FIXME check abort code and take action */
-		abortcode = (unsigned)buffer[6]&0xff |
-			((unsigned)buffer[7]>>8)&0xff |
-			((unsigned)buffer[8]>>16)&0xff |
-			((unsigned)buffer[9]>>24)&0xff;
+		abortcode = ((unsigned)buffer[6]&0xff) |
+			(((unsigned)buffer[7]>>8)&0xff) |
+			(((unsigned)buffer[8]>>16)&0xff) |
+			(((unsigned)buffer[9]>>24)&0xff);
 		printstr("[SDO INFO] Error request receiveied 0x");
 		printhexln(abortcode);
 		/* FIXME do something appropriate  */
@@ -277,6 +297,8 @@ int coe_init(void)
 
 	replyPending = 0;
 	replyDataSize = 0;
+
+	return 0;
 }
 
 int coe_rx_handler(chanend coe, char buffer[], unsigned size)
@@ -294,7 +316,7 @@ int coe_rx_handler(chanend coe, char buffer[], unsigned size)
 
 	case COE_SERVICE_SDO_REQ:
 		/* download expedited, download normal, SDO segment, upload expedited, upload normal, upload SDO segment, abort SDO transfer */
-		sdo_request(buffer,size);
+		sdo_request(buffer, size);
 		break;
 
 	case COE_SERVICE_SDO_RSP: /* only needed if SDO requests are sent */

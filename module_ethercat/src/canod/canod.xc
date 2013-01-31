@@ -223,11 +223,18 @@ int canod_get_list(unsigned list[], unsigned size, unsigned listtype)
 
 int canod_get_object_description(struct _sdoinfo_object_description &obj, unsigned index)
 {
-	int i = 0;
+	int i = 0, k;
 
 	for (i=0; i<sizeof(SDO_Info_Objects)/sizeof(SDO_Info_Objects[0]); i++) {
 		if (SDO_Info_Objects[i].index == index) {
-			obj = SDO_Info_Objects[i]; /* FIXME this object should be copied! */
+			obj.index = SDO_Info_Objects[i].index;
+			obj.dataType = SDO_Info_Objects[i].dataType;
+			obj.maxSubindex = SDO_Info_Objects[i].maxSubindex;
+			obj.objectCode = SDO_Info_Objects[i].objectCode;
+			for (k=0; k<50; k++) {
+				obj.name[k] = SDO_Info_Objects[i].name[k];
+			}
+			break;
 		}
 
 		if (SDO_Info_Objects[i].index == 0x0) {
