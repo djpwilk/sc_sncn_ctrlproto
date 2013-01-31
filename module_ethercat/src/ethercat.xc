@@ -355,7 +355,7 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 			//printstr("DEBUG ethercat: received COE packet.\n");
 			//ecat_send_handler(c_coe, buffer, wordCount);
 			//error = AL_MBX_COE;
-			coeReplyPending = coe_rx_handler(c_coe, (buffer, unsigned char[]), (unsigned)wordCount);
+			coeReplyPending = coe_rx_handler(c_coe, (buffer, unsigned char[]), (unsigned)h.length);
 			break;
 
 		case FOE_PACKET:
@@ -986,9 +986,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				break;
 
 			case c_eoe_r :> otmp :
-				eoeReplyPending = eoe_tx_handler(c_eoe_r, otmp);
-				/*
-				if (eoeReplyPending==1) {
+				/* FIXME currently not supported!!!
+				coeReplyPending = coe_tx_handler(c_eoe_r, otmp);
+				if (coeReplyPending==1) {
 					printstr("[DEBUG EoE] packet waits for transmit\n");
 				}
 				 */
@@ -1055,6 +1055,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				out_size = (uint16_t)coe_get_reply((out_buffer, unsigned char[]));
 				out_type = COE_PACKET;
 				pending_mailbox = 1;
+				coeReplyPending = 0; /* FIXME check for further segments */
 				//printstr("[DEBUG CoE] more packets? coeReplyPending="); printintln(coeReplyPending);
 			}
 		}
