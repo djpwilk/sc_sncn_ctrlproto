@@ -50,28 +50,32 @@ static void build_sdoinfo_reply(struct _sdo_info_header sdo_header, unsigned cha
 		reply[j] = 0;
 
 	replyPending = 1;
-	replyDataSize = datasize;
+	replyDataSize = datasize+6;
 }
 
 static void build_sdo_reply(struct _sdo_response_header header, unsigned char data[], unsigned datasize)
 {
 	int i;
+	printstr("[trace build_sdo_reply] building reply\n");
 
-	reply[0] = (header.sizeIndicator&0x1) |
+	reply[0] = 0;
+	reply[1] = 0x30; /* SDO Response - handcrafted */
+
+	reply[2] = (header.sizeIndicator&0x1) |
 		   ((header.transfereType&0x1)<<1) |
 		   ((header.dataSetSize&0x3)<<2) |
 		   ((header.complete&0x1)<<4) |
 		   ((header.command&0x7)<<5);
 
 	for (i=0; i<datasize; i++) {
-		reply[i+1] = data[i];
+		reply[i+3] = data[i];
 	}
 
-	for (; i<COE_MAX_DATA_SIZE; i++)
+	for (; i<COE_MAX_DATA_SIZE-1; i++)
 		reply[i+1] = 0;
 
 	replyPending = 1;
-	replyDataSize = datasize;
+	replyDataSize = datasize+3;
 }
 
 #if 0
@@ -255,7 +259,7 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 		break;
 
 	case COE_SDOI_ENTRY_DESCRIPTION_REQ: /* answer with COE_SDOI_ENTRY_DESCRIPTION_RSP */
-		index = ((unsigned)buffer[6]&0xff) | ((((unsigned)buffer[7])>>8)&0xff);
+		index = ((unsigned)buffer[6]&0xff) | ((((unsigned)buffer[7])<<8)&0xff);
 		subindex = buffer[8];
 		valueinfo = buffer[9]; /* bitmask which elements should be in the response - bit 1,2 and 3 = 0 (reserved) */
 		canod_get_entry_description(index, subindex, valueinfo, desc);
@@ -264,9 +268,9 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 
 	case COE_SDOI_INFO_ERR_REQ: /* FIXME check abort code and take action */
 		abortcode = ((unsigned)buffer[6]&0xff) |
-			(((unsigned)buffer[7]>>8)&0xff) |
-			(((unsigned)buffer[8]>>16)&0xff) |
-			(((unsigned)buffer[9]>>24)&0xff);
+			(((unsigned)buffer[7]<<8)&0xff) |
+			(((unsigned)buffer[8]<<16)&0xff) |
+			(((unsigned)buffer[9]<<24)&0xff);
 		printstr("[SDO INFO] Error request receiveied 0x");
 		printhexln(abortcode);
 		/* FIXME do something appropriate  */
