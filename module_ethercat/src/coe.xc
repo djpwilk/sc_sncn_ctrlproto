@@ -80,13 +80,13 @@ static void parse_packet(unsigned char buffer[], ...)
 }
 #endif
 
-static inline void parse_coe_header(unsigned char buffer[], struct _coe_header head)
+static inline void parse_coe_header(unsigned char buffer[], struct _coe_header &head)
 {
 	unsigned tmp = buffer[1];
 	tmp = (tmp<<8) | buffer[0];
 
-	head.sdonumber = tmp&0x09;
-	head.sdoservice = (tmp>>12)&0x04;
+	head.sdonumber = tmp&0x1ff;
+	head.sdoservice = (tmp>>12)&0x0f;
 }
 
 
