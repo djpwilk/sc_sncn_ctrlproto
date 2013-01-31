@@ -2,7 +2,7 @@
  *
  * Test appliction for module_ethercat.
  *
- * Copyright 2011, Synapticon GmbH. All rights reserved.
+ * Copyright 2011-2013, Synapticon GmbH. All rights reserved.
  * Author: Frank Jeschke <jeschke@fjes.de>
  */
 
