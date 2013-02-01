@@ -52,10 +52,10 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000000 },
 	/* identity object */
 	{ 0x1018, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4 },
-	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xbeef }, /* Vendor ID (by ETG) */
+	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xbeefbeef }, /* Vendor ID (by ETG) */
 	{ 0x1018, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x1 }, /* Product Code */
 	{ 0x1018, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x2 }, /* Revision Number */
-	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0 }, /* Serial Number */
+	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xdeefdeef }, /* Serial Number */
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
 	/* FIXME check PDO Mapping RX and TX */
 	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1 },
@@ -251,7 +251,7 @@ int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valu
 	int i;
 
 	for (i=0; i<SDO_Info_Entries[i].index != 0x0; i++) {
-		if (SDO_Info_Entries[i].index == index)
+		if ((SDO_Info_Entries[i].index == index) && (SDO_Info_Entries[i].subindex == subindex))
 			break;
 	}
 

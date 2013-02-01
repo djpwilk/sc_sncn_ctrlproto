@@ -277,11 +277,30 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 		data[6] = desc.bitLength&0xff;
 		data[7]	= (desc.bitLength>>8)&0xff;
 		data[8]	= desc.objectAccess&0xff;
-		data[9] = (desc.objectAccess>>7)&0xff;
-		data[10] = desc.value&0xff;
-		data[11] = (desc.value>>8)&0xff;
+		data[9] = (desc.objectAccess>>8)&0xff;
+		//data[10] = desc.value&0xff;
+		//data[11] = (desc.value>>8)&0xff;
+		datasize = 10;
 
-		build_sdoinfo_reply(response, data, 6+12); /* header.size = 6, data.size = 12 */
+		/* FIXME refactor for more generality */
+		switch (desc.bitLength/8) {
+		case 1:
+			data[datasize++] = desc.value&0xff;
+			break;
+		case 2:
+			data[datasize++] = desc.value&0xff;
+			data[datasize++] = (desc.value>>8)&0xff;
+			break;
+		case 4:
+			data[datasize++] = desc.value&0xff;
+			data[datasize++] = (desc.value>>8)&0xff;
+			data[datasize++] = (desc.value>>16)&0xff;
+			data[datasize++] = (desc.value>>24)&0xff;
+			break;
+		}
+		printstr("datasize: "); printintln(datasize);
+
+		build_sdoinfo_reply(response, data, datasize);
 
 		break;
 
