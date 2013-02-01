@@ -70,8 +70,8 @@ struct _sdoinfo_entry_description {
 	unsigned index; ///< 16 bit int should be sufficient
 	unsigned subindex; ///< 16 bit int should be sufficient
 	unsigned char valueInfo; /* depends on SDO Info: get entry description request */
-	unsigned char dataType;
-	unsigned char bitLength;
+	unsigned dataType;
+	unsigned bitLength;
 	unsigned objectAccess;
 	unsigned value; ///< real data type is defined by .dataType
 };
