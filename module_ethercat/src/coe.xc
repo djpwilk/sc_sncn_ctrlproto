@@ -262,8 +262,27 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 		index = ((unsigned)buffer[6]&0xff) | ((((unsigned)buffer[7])<<8)&0xff00);
 		subindex = buffer[8];
 		valueinfo = buffer[9]; /* bitmask which elements should be in the response - bit 1,2 and 3 = 0 (reserved) */
+
 		canod_get_entry_description(index, subindex, valueinfo, desc);
-		/* FIXME build response */
+		response.fragmentsleft = 0;
+		response.incomplete = 0;
+		response.opcode = COE_SDOI_ENTRY_DESCRIPTION_RSP;
+
+		data[0] = index&0xff;
+		data[1]	= (index>>8)&0xff;
+		data[2] = subindex;
+		data[3] = valueinfo;
+		data[4] = desc.dataType&0xff;
+		data[5] = (desc.dataType>>8)&0xff;
+		data[6] = desc.bitLength&0xff;
+		data[7]	= (desc.bitLength>>8)&0xff;
+		data[8]	= desc.objectAccess&0xff;
+		data[9] = (desc.objectAccess>>7)&0xff;
+		data[10] = desc.value&0xff;
+		data[11] = (desc.value>>8)&0xff;
+
+		build_sdoinfo_reply(response, data, 6+12); /* header.size = 6, data.size = 12 */
+
 		break;
 
 	case COE_SDOI_INFO_ERR_REQ: /* FIXME check abort code and take action */

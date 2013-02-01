@@ -288,7 +288,7 @@ int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valu
 		break;
 	}
 
-	return -1;
+	return 0;
 }
 
 int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned &bitlength)
