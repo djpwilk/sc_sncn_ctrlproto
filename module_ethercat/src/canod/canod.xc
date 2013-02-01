@@ -231,7 +231,7 @@ int canod_get_object_description(struct _sdoinfo_object_description &obj, unsign
 			obj.dataType = SDO_Info_Objects[i].dataType;
 			obj.maxSubindex = SDO_Info_Objects[i].maxSubindex;
 			obj.objectCode = SDO_Info_Objects[i].objectCode;
-			for (k=0; k<50; k++) {
+			for (k=0; k<50; k++) { /* FIXME set a define for max string length */
 				obj.name[k] = SDO_Info_Objects[i].name[k];
 			}
 			break;

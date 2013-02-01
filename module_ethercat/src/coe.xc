@@ -259,7 +259,7 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 		break;
 
 	case COE_SDOI_ENTRY_DESCRIPTION_REQ: /* answer with COE_SDOI_ENTRY_DESCRIPTION_RSP */
-		index = ((unsigned)buffer[6]&0xff) | ((((unsigned)buffer[7])<<8)&0xff);
+		index = ((unsigned)buffer[6]&0xff) | ((((unsigned)buffer[7])<<8)&0xff00);
 		subindex = buffer[8];
 		valueinfo = buffer[9]; /* bitmask which elements should be in the response - bit 1,2 and 3 = 0 (reserved) */
 		canod_get_entry_description(index, subindex, valueinfo, desc);

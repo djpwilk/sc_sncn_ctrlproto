@@ -1052,7 +1052,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			}
 
 			if (pending_mailbox != 1 && coeReplyPending == 1) {
-				out_size = (uint16_t)coe_get_reply((out_buffer, unsigned char[]));
+				out_size = ((uint16_t)coe_get_reply((out_buffer, unsigned char[]))+1)/2; // size conversion bytes->words
 				out_type = COE_PACKET;
 				pending_mailbox = 1;
 				coeReplyPending = 0; /* FIXME check for further segments */
