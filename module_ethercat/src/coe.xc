@@ -270,8 +270,8 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 
 		data[0] = index&0xff;
 		data[1]	= (index>>8)&0xff;
-		data[2] = subindex;
-		data[3] = valueinfo;
+		data[2] = subindex&0xff;
+		data[3] = valueinfo&0xff;
 		data[4] = desc.dataType&0xff;
 		data[5] = (desc.dataType>>8)&0xff;
 		data[6] = desc.bitLength&0xff;
@@ -282,26 +282,57 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 		//data[11] = (desc.value>>8)&0xff;
 		datasize = 10;
 
+		/* repeat data type (know as unit type) [DWORD] */
+		data[datasize++] = desc.dataType&0xff;
+		data[datasize++] = (desc.dataType>>8)&0xff;
+		//data[datasize++] = 0x00;
+		//data[datasize++] = 0x00;
+
 		/* FIXME refactor for more generality */
 		switch (desc.bitLength/8) {
 		case 1:
 			data[datasize++] = desc.value&0xff;
+			/* min value */
+			data[datasize++] = 0x00;
+			/* max value */
+			data[datasize++] = 0xff;
 			break;
+
 		case 2:
 			data[datasize++] = desc.value&0xff;
 			data[datasize++] = (desc.value>>8)&0xff;
+			/* min value */
+			data[datasize++] = 0x00;
+			data[datasize++] = 0x00;
+			/* max value */
+			data[datasize++] = 0xff;
+			data[datasize++] = 0xff;
 			break;
+
 		case 4:
 			data[datasize++] = desc.value&0xff;
 			data[datasize++] = (desc.value>>8)&0xff;
 			data[datasize++] = (desc.value>>16)&0xff;
 			data[datasize++] = (desc.value>>24)&0xff;
+			/* min value */
+			data[datasize++] = 0x00;
+			data[datasize++] = 0x00;
+			data[datasize++] = 0x00;
+			data[datasize++] = 0x00;
+			/* max value */
+			data[datasize++] = 0xff;
+			data[datasize++] = 0xff;
+			data[datasize++] = 0xff;
+			data[datasize++] = 0xff;
 			break;
 		}
-		printstr("datasize: "); printintln(datasize);
 
 		build_sdoinfo_reply(response, data, datasize);
 
+		printstr("[trace] request index: 0x"); printhex(index);
+		printstr(" subindex 0x"); printhexln(subindex);
+//		printstr("[trace] length: "); printintln(replyDataSize);
+		printstr("[trace] value 0x"); printhexln(desc.value);
 		break;
 
 	case COE_SDOI_INFO_ERR_REQ: /* FIXME check abort code and take action */

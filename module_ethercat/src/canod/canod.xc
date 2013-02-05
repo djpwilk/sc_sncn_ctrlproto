@@ -267,6 +267,9 @@ int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valu
 	desc.bitLength = SDO_Info_Entries[i].bitLength;
 	desc.objectAccess = SDO_Info_Entries[i].objectAccess;
 
+#if 1
+	desc.value = SDO_Info_Entries[i].value;
+#else /* wrong assumption of packet content? */
 	switch (valueinfo) {
 	case CANOD_VALUEINFO_UNIT:
 		desc.value = 0; /* unit type currently unsupported */
@@ -287,7 +290,7 @@ int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valu
 		desc.value = 0;
 		break;
 	}
-
+#endif
 	return 0;
 }
 
