@@ -49,46 +49,46 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 
 /* static list of od entries description and value */
 struct _sdoinfo_entry_description SDO_Info_Entries[] = {
-	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000000 },
+	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000000, "Device Type" },
 	/* identity object */
-	{ 0x1018, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4 },
-	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xbeefbeef }, /* Vendor ID (by ETG) */
-	{ 0x1018, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x1 }, /* Product Code */
-	{ 0x1018, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x2 }, /* Revision Number */
-	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xdeefdeef }, /* Serial Number */
+	{ 0x1018, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4, "Identity" },
+	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xbeefbeef, "Vendor ID" }, /* Vendor ID (by ETG) */
+	{ 0x1018, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x1, "Product Code" }, /* Product Code */
+	{ 0x1018, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x2, "Revision Number" }, /* Revision Number */
+	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xdeefdeef, "Serial Number" }, /* Serial Number */
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
 	/* FIXME check PDO Mapping RX and TX */
-	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1 },
-	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20000116 }, /* see comment on PDO Mapping value below */
-	{ 0x1601, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1 },
-	{ 0x1601, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20000216 }, /* see comment on PDO Mapping value below */
-	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1 },
-	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20010116 }, /* see comment on PDO Mapping value below */
-	{ 0x1A01, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1 },
-	{ 0x1A01, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20000216 }, /* see comment on PDO Mapping value below */
+	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
+	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20000116, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1601, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
+	{ 0x1601, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20000216, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
+	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20010116, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A01, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
+	{ 0x1A01, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20000216, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	/* SyncManager Communication Type - FIXME check assignment */
-	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4 },
-	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x01 }, /* mailbox receive */
-	{ 0x1C00, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x02 }, /* mailbox send */
-	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x03 }, /* PDO in or output */
-	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x04 }, /* PDO in or output */
+	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4, "SyncManager Comm" },
+	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x01, "SyncManager Comm" }, /* mailbox receive */
+	{ 0x1C00, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x02, "SyncManager Comm" }, /* mailbox send */
+	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x03, "SyncManager Comm" }, /* PDO in or output */
+	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x04, "SyncManager Comm" }, /* PDO in or output */
 	/* Tx PDO and Rx PDO assignments */
-	{ 0x1C10, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0}, /* assignment of SyncMan 0 */
-	{ 0x1C11, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0}, /* assignment of SyncMan 1 */
-	{ 0x1C12, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2}, /* assignment of SyncMan 2 */
-	{ 0x1C12, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1600 /* either 0x1600 */ },
-	{ 0x1C12, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1601 /* either 0x1601 */ },
-	{ 0x1C13, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2}, /* assignment of SyncMan 3 */
-	{ 0x1C13, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A00 /* either 0x1A00 */ },
-	{ 0x1C13, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A01 /* either 0x1A01 */ },
+	{ 0x1C10, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 0 */
+	{ 0x1C11, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 1 */
+	{ 0x1C12, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "SyncMan 0 assignment"}, /* assignment of SyncMan 2 */
+	{ 0x1C12, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1600 /* either 0x1600 */, "SyncMan 0 assignment" },
+	{ 0x1C12, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1601 /* either 0x1601 */, "SyncMan 0 assignment" },
+	{ 0x1C13, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "SyncMan 0 assignment"}, /* assignment of SyncMan 3 */
+	{ 0x1C13, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A00 /* either 0x1A00 */, "SyncMan 0 assignment" },
+	{ 0x1C13, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A01 /* either 0x1A01 */, "SyncMan 0 assignment" },
 	/* FIXME check - objects describing RxPDOs */
-	{ 0x2000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2 },
-	{ 0x2000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0 }, /* the values are elsewhere !!! */
-	{ 0x2000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0 }, /* the values are elsewhere !!! */
+	{ 0x2000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "Rx PDOs" },
+	{ 0x2000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Rx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x2000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Rx PDOs" }, /* the values are elsewhere !!! */
 	/* FIXME check - objects describing RxPDOs */
-	{ 0x2001, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2 },
-	{ 0x2001, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0 }, /* the values are elsewhere !!! */
-	{ 0x2001, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0 }, /* the values are elsewhere !!! */
+	{ 0x2001, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "Tx PDOs" },
+	{ 0x2001, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x2001, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
 	{ 0, 0, 0, 0, 0, 0 }
 };
 

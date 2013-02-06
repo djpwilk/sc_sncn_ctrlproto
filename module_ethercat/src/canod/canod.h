@@ -74,6 +74,7 @@ struct _sdoinfo_entry_description {
 	unsigned bitLength;
 	unsigned objectAccess;
 	unsigned value; ///< real data type is defined by .dataType
+	unsigned char name[50];
 };
 
 /* ad valueInfo (BYTE):
