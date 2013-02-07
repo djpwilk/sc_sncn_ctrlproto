@@ -49,12 +49,12 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 
 /* static list of od entries description and value */
 struct _sdoinfo_entry_description SDO_Info_Entries[] = {
-	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000000, "Device Type" },
+	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000001, "Device Type" },
 	/* identity object */
 	{ 0x1018, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4, "Identity" },
-	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xbeefbeef, "Vendor ID" }, /* Vendor ID (by ETG) */
-	{ 0x1018, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x1, "Product Code" }, /* Product Code */
-	{ 0x1018, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x2, "Revision Number" }, /* Revision Number */
+	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x000022d2, "Vendor ID" }, /* Vendor ID (by ETG) */
+	{ 0x1018, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000201, "Product Code" }, /* Product Code */
+	{ 0x1018, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x0a000002, "Revision Number" }, /* Revision Number */
 	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xdeefdeef, "Serial Number" }, /* Serial Number */
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
 	/* FIXME check PDO Mapping RX and TX */
