@@ -55,27 +55,27 @@ static void build_sdoinfo_reply(struct _sdo_info_header sdo_header, unsigned cha
 
 static void build_sdo_reply(struct _sdo_response_header header, unsigned char data[], unsigned datasize)
 {
-	int i;
-	printstr("[trace build_sdo_reply] building reply\n");
+	unsigned datas = 0;
+	//printstr("[trace build_sdo_reply] building reply\n");
 
-	reply[0] = 0;
-	reply[1] = 0x30; /* SDO Response - handcrafted */
+	reply[datas++] = 0;
+	reply[datas++] = 0x30; /* SDO Response - handcrafted */
 
-	reply[2] = (header.sizeIndicator&0x1) |
+	reply[datas++] = (header.sizeIndicator&0x1) |
 		   ((header.transfereType&0x1)<<1) |
 		   ((header.dataSetSize&0x3)<<2) |
 		   ((header.complete&0x1)<<4) |
 		   ((header.command&0x7)<<5);
 
-	for (i=0; i<datasize; i++) {
-		reply[i+3] = data[i];
+	for (int i=0; i<datasize; i++) {
+		reply[datas++] = data[i];
 	}
 
-	for (; i<COE_MAX_DATA_SIZE-1; i++)
-		reply[i+1] = 0;
+	for (int i=datas; i<COE_MAX_DATA_SIZE-1; i++)
+		reply[i] = 0;
 
 	replyPending = 1;
-	replyDataSize = datasize+3;
+	replyDataSize = datas;
 }
 
 #if 0
@@ -133,10 +133,13 @@ static int getODListRequest(unsigned listtype)
 		/* FIXME build reply */
 		sdo_header.incomplete = 0;
 		sdo_header.fragmentsleft = 0;
-		for (i=0, k=0; i<size; i++, k++) {
-			data[k] = olists[i]&0xff;
-			k++;
-			data[k] = (olists[i]>>8)&0xff;
+
+		k=0;
+		data[k++] = listtype&0xff;
+		data[k++] = (listtype>>8)&0xff;
+		for (i=0; i<size; i++) {
+			data[k++] = olists[i]&0xff;
+			data[k++] = (olists[i]>>8)&0xff;
 		}
 	}
 
@@ -147,40 +150,95 @@ static int getODListRequest(unsigned listtype)
 
 static int sdo_request(unsigned char buffer[], unsigned size)
 {
-	unsigned i;
+	unsigned i, k;
 	unsigned index;
 	unsigned subindex;
-	unsigned opcode = (buffer[2]>>5)&0x03;
 	unsigned type;
 	unsigned value;
 	struct _sdo_response_header header;
-	unsigned char tmp[10];
+	unsigned char tmp[COE_MAX_DATA_SIZE];
+	unsigned opcode = (buffer[2]>>5)&0x03;
+	unsigned completeAccess = (buffer[2]>>4)&0x01; /* completeAccess only in SDO Upload Req/Rsp */
+	unsigned maxSubindex = 0;
+	unsigned dataSize = 0;
 
 	switch (opcode) {
 	case COE_CMD_UPLOAD_REQ:
-		if (((buffer[2]>>4)&0x01) == 1) {
-			if (buffer[5] != 0) {
-				/* error complete access requested, but subindex is not zero */
+		index = (buffer[3]&0xff) | (((unsigned)buffer[4]<<8)&0xff00);
+		subindex = buffer[5];
+
+#if 0
+		printstr("[DEBUG] index: "); printhexln(index);
+		printstr("[DEBUG] subindex: "); printhexln(subindex);
+		printstr("[DEBUG] complete access: "); printhexln(completeAccess);
+#endif
+		if (completeAccess == 1) {
+			if (buffer[5] != 0 || buffer[5] != 1) {
+				/* error complete access requested, but subindex is not zero or one*/
+				printstr("[ERROR] Complete Access with wrong subindex field\n");
 				return -1;
 			}
 		}
 
-		index = (buffer[3]&0xff) | (((unsigned)buffer[4]<<8)&0xff00);
-		subindex = buffer[5];
-
-		canod_get_entry(index, subindex, value, type);
-
 		header.command = COE_CMD_UPLOAD_RSP;
-		header.complete = 0x00;
-		header.dataSetSize = 0x00;
-		header.transfereType = 0x00; /* normal transfere */
+		header.complete = completeAccess;
+		header.dataSetSize = 0x00; /* fixed to 0 */
+		header.transfereType = 0x00; /* normal transfer */
 		header.sizeIndicator = 0x01;
 
-		for (i=0; i<(type/8); i++) {
-			tmp[i] = (value>>i)&0xff;
+		tmp[0/*dataSize++*/] = index&0xff;
+		tmp[1/*dataSize++*/] = (index>>8)&0xff;
+		tmp[2/*dataSize++*/] = subindex&0xff;
+		tmp[3/*dataSize++*/] = 0x00; //type&0xff; // index 3
+		tmp[4/*dataSize++*/] = 0x00; //(type>>8)&0xff;
+		tmp[5/*dataSize++*/] = 0x00; //(type>>16)&0xff;
+		tmp[6/*dataSize++*/] = 0x00; //(type>>24)&0xff;
+
+		dataSize = 7;
+
+		if (completeAccess==1) {
+			canod_get_entry(index, 0, value, type);
+			maxSubindex = value;
+			if (subindex==0x00) {
+				tmp[dataSize++] = value&0xff; /* subindex 0 is alway UNSIGNED8 */
+			}
+
+			for (i=1; i<maxSubindex; i++) {
+				canod_get_entry(index, i, value, type);
+
+//				printstr("[DEBUG complete object values: "); printintln(i); printstr(": ");
+				for (k=0; k<(type/8); k++) {
+					tmp[dataSize++] = (value>>(k*8))&0xff;
+//					printhexln(tmp[dataSize-1]);
+				}
+			}
+
+		} else {
+			if (canod_get_entry(index, subindex, value, type)) { // type is bitlength
+				printstr("error, entry not found\n");
+				return 1;
+			}
+
+			//printstr("[DEBUG] single value: ");
+			for (k=0; k<(type/8); k++) {
+				tmp[dataSize++] = (value>>(k*8))&0xff;
+				//printhexln(tmp[dataSize-1]);
+			}
 		}
 
-		build_sdo_reply(header, tmp, i);
+		type = dataSize-7; /* recycling of variable type */
+		tmp[3] = type&0xff;
+		tmp[4] = (type>>8)&0xff;
+		tmp[5] = (type>>16)&0xff;
+		tmp[6] = (type>>24)&0xff;
+#if 0
+		printstr("[DEBUG] datasize to send: ");
+		printhex(tmp[6]);
+		printhex(tmp[5]);
+		printhex(tmp[4]);
+		printhexln(tmp[3]);
+#endif
+		build_sdo_reply(header, tmp, dataSize);
 		break;
 
 #if 0
@@ -230,9 +288,9 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 
 	switch (infoheader.opcode) {
 	case COE_SDOI_GET_ODLIST_REQ: /* answer with COE_SDOI_GET_ODLIST_RSP */
-		/* DEBUG output: */
 		servicedata = (((unsigned)buffer[6])&0xff) | ((((unsigned)buffer[7])>>8)&0xff);
-		printstr("[DEBUG SDO INFO] get OD list: 0x"); printhexln(servicedata);
+		/* DEBUG output: */
+		//printstr("[DEBUG SDO INFO] get OD list: 0x"); printhexln(servicedata);
 		getODListRequest(servicedata);
 		break;
 
@@ -270,8 +328,8 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 
 		data[0] = index&0xff;
 		data[1]	= (index>>8)&0xff;
-		data[2] = subindex;
-		data[3] = valueinfo;
+		data[2] = subindex&0xff;
+		data[3] = 0x18; /* valueinfo&0xff;*/
 		data[4] = desc.dataType&0xff;
 		data[5] = (desc.dataType>>8)&0xff;
 		data[6] = desc.bitLength&0xff;
@@ -282,26 +340,73 @@ static int sdoinfo_request(unsigned char buffer[], unsigned size)
 		//data[11] = (desc.value>>8)&0xff;
 		datasize = 10;
 
+#if 1
+		/* repeat data type (know as unit type) [DWORD] */
+		data[datasize++] = desc.dataType&0xff;
+		data[datasize++] = (desc.dataType>>8)&0xff;
+		//data[datasize++] = 0x00;
+		//data[datasize++] = 0x00;
+
 		/* FIXME refactor for more generality */
 		switch (desc.bitLength/8) {
 		case 1:
 			data[datasize++] = desc.value&0xff;
+#if 0
+			/* min value */
+			data[datasize++] = 0x00;
+			/* max value */
+			data[datasize++] = 0xff;
+#endif
 			break;
+
 		case 2:
 			data[datasize++] = desc.value&0xff;
 			data[datasize++] = (desc.value>>8)&0xff;
+			//data[datasize] = 0x00;
+			//data[datasize] = 0x00;
+#if 0
+			/* min value */
+			data[datasize++] = 0x00;
+			data[datasize++] = 0x00;
+			/* max value */
+			data[datasize++] = 0xff;
+			data[datasize++] = 0xff;
+#endif
 			break;
+
 		case 4:
 			data[datasize++] = desc.value&0xff;
 			data[datasize++] = (desc.value>>8)&0xff;
 			data[datasize++] = (desc.value>>16)&0xff;
 			data[datasize++] = (desc.value>>24)&0xff;
+#if 0
+			/* min value */
+			data[datasize++] = 0x00;
+			data[datasize++] = 0x00;
+			data[datasize++] = 0x00;
+			data[datasize++] = 0x00;
+			/* max value */
+			data[datasize++] = 0xff;
+			data[datasize++] = 0xff;
+			data[datasize++] = 0xff;
+			data[datasize++] = 0xff;
+#endif
 			break;
 		}
-		printstr("datasize: "); printintln(datasize);
 
+		/* this should only be included if enough space is available in the report - FIXME include in official packet??? */
+		if ((datasize+6)<COE_MAX_DATA_SIZE) {
+			for (i=0; desc.name[i] != '\0'; i++) {
+				data[datasize+i] = desc.name[i];
+			}
+		}
+#endif
 		build_sdoinfo_reply(response, data, datasize);
 
+//		printstr("[trace] request index: 0x"); printhex(index);
+//		printstr(" subindex 0x"); printhexln(subindex);
+//		printstr("[trace] length: "); printintln(replyDataSize);
+//		printstr("[trace] value 0x"); printhexln(desc.value);
 		break;
 
 	case COE_SDOI_INFO_ERR_REQ: /* FIXME check abort code and take action */
