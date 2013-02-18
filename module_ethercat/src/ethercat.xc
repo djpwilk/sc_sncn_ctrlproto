@@ -232,6 +232,7 @@ static int ecat_write(uint16_t address, uint16_t word)
 	return 0;
 }
 
+// len - length of buf[] in 16-bit words
 static unsigned int ecat_write_block(uint16_t addr, uint16_t len, uint16_t buf[])
 {
 	unsigned int wordcount = 0;
@@ -406,7 +407,7 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
  * max_size       maximum size of mailbox memory area
  * type           type of mailbox message
  * buffer[]       buffer to copy to mailbox memory area
- * sendsize       size of mailbox data in words
+ * sendsize       size of mailbox data in bytes
  * return AL_NO_ERROR or AL_ERROR
  */
 static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int type,
@@ -421,10 +422,10 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 
 	struct _ec_mailbox_header h;
 
-	h.length = sendsize*2; /* FIXME add handling of uneven sized payload */
+	h.length = sendsize;
 	h.address = escStationAddress;
 	h.channel = 0;
-	h. priority = 1;
+	h.priority = 1;
 	h.type = type;
 	h.control = 1; /* start value 1, 0 is reserved */
 
@@ -439,7 +440,7 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 	sendbuffer[pos] |= (temp<<12);
 	pos++;
 
-	for (i=0; i<sendsize; i++, pos++) {
+	for (i=0; i<(sendsize+1)/2; i++, pos++) {
 		sendbuffer[pos] = buffer[i];
 	}
 
@@ -449,7 +450,7 @@ static int ecat_mbox_packet_send(uint16_t start_address, uint16_t max_size, int 
 	}
 
 	sent = ecat_write_block(start_address, size, sendbuffer);
-	if (sent != size) {
+	if ((sent - size) > 1) {
 		printstr("Error wrong return size\n");
 		return AL_ERROR;
 	}
@@ -883,9 +884,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 					select {
 					case c_pdo_r :> otmp :
 						printstr("DEBUG: processing outgoing PDO packets\n");
-						out_size = otmp&0xffff;
+						out_size = (otmp&0xffff)*2; /* FIXME: check the channel protocol spec of size in the first byte */
 						out_type = 0; // no mailbox packet, unused here!
-						for (i=0; i<out_size; i++) {
+						for (i=0; i<(out_size+1)/2; i++) {
 							c_pdo_r :> otmp;
 							out_buffer[i] = otmp&0xffff;
 						}
@@ -913,7 +914,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 						printstr("Write Buffer SyncM: ");
 						printintln(i);
 						/* FIXME check return value */
-						ecat_write_block(manager[i].address, out_size, out_buffer);
+						ecat_write_block(manager[i].address, (out_size+1)/2, out_buffer); // out_size: byte -> word
 						pending_buffer=0;
 					}
 					break;
@@ -976,9 +977,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			case c_coe_r :> otmp :
 				printstr("DEBUG: processing outgoing CoE packets\n");
 				out_type = COE_PACKET;
-				out_size = otmp&0xffff;
+				out_size = (otmp&0xffff)*2; /* otmp is number of 16-bit words,  */
 				printhexln(out_size);
-				for (i=0; i<out_size; i++) {
+				for (i=0; i<(out_size+1)/2; i++) {
 					c_coe_r :> otmp;
 					out_buffer[i] = otmp&0xffff;
 				}
@@ -1037,14 +1038,14 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 			/* FIXME Check for potential race conditions between this internal package and channel based communication! */
 			if (pending_mailbox != 1 && foeReplyPending == 1) {
-				out_size = foe_get_reply(out_buffer);
+				out_size = (foe_get_reply(out_buffer)*2); // FIXME foe_get_reply() returns the number of words
 				out_type = FOE_PACKET;
 				pending_mailbox = 1;
 				foeReplyPending = 0;
 			}
 
 			if (pending_mailbox != 1 && eoeReplyPending == 1) {
-				out_size = eoe_get_reply(out_buffer);
+				out_size = (eoe_get_reply(out_buffer)*2); // FIXME eoe_get_reply() returns the number of words
 				out_type = EOE_PACKET;
 				pending_mailbox = 1;
 				eoeReplyPending = eoe_check_chunks(); /* Check if there are still chunks to transfere */
@@ -1052,7 +1053,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			}
 
 			if (pending_mailbox != 1 && coeReplyPending == 1) {
-				out_size = ((uint16_t)coe_get_reply((out_buffer, unsigned char[]))+1)/2; // size conversion bytes->words
+				out_size = (uint16_t)coe_get_reply((out_buffer, unsigned char[]));
 				out_type = COE_PACKET;
 				pending_mailbox = 1;
 				coeReplyPending = 0; /* FIXME check for further segments */
