@@ -89,7 +89,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x2001, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "Tx PDOs" },
 	{ 0x2001, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
 	{ 0x2001, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
-	{ 0, 0, 0, 0, 0, 0 }
+	{ 0, 0, 0, 0, 0, 0, 0, "\0" }
 };
 
 /* local */
@@ -248,7 +248,7 @@ int canod_get_object_description(struct _sdoinfo_object_description &obj, unsign
 int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc)
 {
 	struct _sdoinfo_entry_description entry;
-	int i;
+	int i,k;
 
 	for (i=0; i<SDO_Info_Entries[i].index != 0x0; i++) {
 		if ((SDO_Info_Entries[i].index == index) && (SDO_Info_Entries[i].subindex == subindex))
@@ -291,6 +291,11 @@ int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valu
 		break;
 	}
 #endif
+
+	/* copy name */
+	for (k=0; k<50 && SDO_Info_Entries[i].name[k] != '\0'; k++) {
+		desc.name[k] = SDO_Info_Entries[i].name[k];
+	}
 	return 0;
 }
 
