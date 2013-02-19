@@ -41,8 +41,8 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 	{ 0x1C12, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "SM2 PDO Assing" },
 	{ 0x1C13, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "SM3 PDO Assing" },
 	/* assigned PDO objects */
-	{ 0x2000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Rx PDO Assingnment" },
-	{ 0x2001, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Tx PDO Assingnment" },
+	{ 0x6000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Rx PDO Assingnment" },
+	{ 0x7000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Tx PDO Assingnment" },
 	{ 0, 0, 0, 0, {0}}
 };
 
@@ -59,13 +59,13 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
 	/* FIXME check PDO Mapping RX and TX */
 	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20000116, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x60000116, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	{ 0x1601, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1601, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20000216, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1601, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x60000216, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20010116, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x70000116, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	{ 0x1A01, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1A01, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x20000216, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A01, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x70000216, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	/* SyncManager Communication Type - FIXME check assignment */
 	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4, "SyncManager Comm" },
 	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x01, "SyncManager Comm" }, /* mailbox receive */
@@ -82,13 +82,13 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1C13, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A00 /* either 0x1A00 */, "SyncMan 0 assignment" },
 	{ 0x1C13, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A01 /* either 0x1A01 */, "SyncMan 0 assignment" },
 	/* FIXME check - objects describing RxPDOs */
-	{ 0x2000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "Rx PDOs" },
-	{ 0x2000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Rx PDOs" }, /* the values are elsewhere !!! */
-	{ 0x2000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Rx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x6000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "Rx PDOs" },
+	{ 0x6000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Rx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x6000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Rx PDOs" }, /* the values are elsewhere !!! */
 	/* FIXME check - objects describing RxPDOs */
-	{ 0x2001, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "Tx PDOs" },
-	{ 0x2001, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
-	{ 0x2001, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x7000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "Tx PDOs" },
+	{ 0x7000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x7000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
 	{ 0, 0, 0, 0, 0, 0, 0, "\0" }
 };
 
