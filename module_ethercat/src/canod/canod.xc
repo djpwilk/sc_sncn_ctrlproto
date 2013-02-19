@@ -70,8 +70,8 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4, "SyncManager Comm" },
 	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x01, "SyncManager Comm" }, /* mailbox receive */
 	{ 0x1C00, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x02, "SyncManager Comm" }, /* mailbox send */
-	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x03, "SyncManager Comm" }, /* PDO in or output */
-	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x04, "SyncManager Comm" }, /* PDO in or output */
+	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x03, "SyncManager Comm" }, /* PDO in */
+	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x04, "SyncManager Comm" }, /* PDO output */
 	/* Tx PDO and Rx PDO assignments */
 	{ 0x1C10, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 0 */
 	{ 0x1C11, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 1 */
