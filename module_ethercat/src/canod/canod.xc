@@ -59,13 +59,13 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
 	/* FIXME check PDO Mapping RX and TX */
 	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x60000116, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x60000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	{ 0x1601, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1601, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x60000216, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1601, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x60000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x70000116, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x70000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	{ 0x1A01, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1A01, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x70000216, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A01, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x70000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	/* SyncManager Communication Type - FIXME check assignment */
 	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4, "SyncManager Comm" },
 	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x01, "SyncManager Comm" }, /* mailbox receive */
