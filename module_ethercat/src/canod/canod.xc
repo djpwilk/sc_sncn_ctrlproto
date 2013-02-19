@@ -51,44 +51,44 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000001, "Device Type" },
 	/* identity object */
-	{ 0x1018, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4, "Identity" },
-	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x000022d2, "Vendor ID" }, /* Vendor ID (by ETG) */
-	{ 0x1018, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000201, "Product Code" }, /* Product Code */
-	{ 0x1018, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x0a000002, "Revision Number" }, /* Revision Number */
-	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0xdeefdeef, "Serial Number" }, /* Serial Number */
+	{ 0x1018, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 4, "Identity" },
+	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x000022d2, "Vendor ID" }, /* Vendor ID (by ETG) */
+	{ 0x1018, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x00000201, "Product Code" }, /* Product Code */
+	{ 0x1018, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x0a000002, "Revision Number" }, /* Revision Number */
+	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0xdeefdeef, "Serial Number" }, /* Serial Number */
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
 	/* FIXME check PDO Mapping RX and TX */
-	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x60000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
-	{ 0x1601, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1601, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x60000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
-	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x70000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
-	{ 0x1A01, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 1, "PDO Mapping" },
-	{ 0x1A01, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x70000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 1, "PDO Mapping" },
+	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1601, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 1, "PDO Mapping" },
+	{ 0x1601, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 1, "PDO Mapping" },
+	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A01, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 1, "PDO Mapping" },
+	{ 0x1A01, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	/* SyncManager Communication Type - FIXME check assignment */
-	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 4, "SyncManager Comm" },
-	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x01, "SyncManager Comm" }, /* mailbox receive */
-	{ 0x1C00, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x02, "SyncManager Comm" }, /* mailbox send */
-	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x03, "SyncManager Comm" }, /* PDO in */
-	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0x04, "SyncManager Comm" }, /* PDO output */
+	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 4, "SyncManager Comm" },
+	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x01, "SyncManager Comm" }, /* mailbox receive */
+	{ 0x1C00, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x02, "SyncManager Comm" }, /* mailbox send */
+	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x03, "SyncManager Comm" }, /* PDO in */
+	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x04, "SyncManager Comm" }, /* PDO output */
 	/* Tx PDO and Rx PDO assignments */
-	{ 0x1C10, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 0 */
-	{ 0x1C11, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 1 */
-	{ 0x1C12, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "SyncMan 0 assignment"}, /* assignment of SyncMan 2 */
-	{ 0x1C12, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1600 /* either 0x1600 */, "SyncMan 0 assignment" },
-	{ 0x1C12, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1601 /* either 0x1601 */, "SyncMan 0 assignment" },
-	{ 0x1C13, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "SyncMan 0 assignment"}, /* assignment of SyncMan 3 */
-	{ 0x1C13, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A00 /* either 0x1A00 */, "SyncMan 0 assignment" },
-	{ 0x1C13, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0x1A01 /* either 0x1A01 */, "SyncMan 0 assignment" },
+	{ 0x1C10, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 0 */
+	{ 0x1C11, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 1 */
+	{ 0x1C12, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "SyncMan 0 assignment"}, /* assignment of SyncMan 2 */
+	{ 0x1C12, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1600, "SyncMan 0 assignment" },
+	{ 0x1C12, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1601, "SyncMan 0 assignment" },
+	{ 0x1C13, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "SyncMan 0 assignment"}, /* assignment of SyncMan 3 */
+	{ 0x1C13, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1A00, "SyncMan 0 assignment" },
+	{ 0x1C13, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1A01, "SyncMan 0 assignment" },
 	/* FIXME check - objects describing RxPDOs */
-	{ 0x6000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "Rx PDOs" },
-	{ 0x6000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Rx PDOs" }, /* the values are elsewhere !!! */
-	{ 0x6000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Rx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x6000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Rx PDOs" },
+	{ 0x6000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0247, 0x0001, "Rx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x6000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0247, 0x0002, "Rx PDOs" }, /* the values are elsewhere !!! */
 	/* FIXME check - objects describing RxPDOs */
-	{ 0x7000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0203, 2, "Tx PDOs" },
-	{ 0x7000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
-	{ 0x7000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0203, 0, "Tx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x7000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Tx PDOs" },
+	{ 0x7000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0287, 0x0010, "Tx PDOs" }, /* the values are elsewhere !!! */
+	{ 0x7000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0287, 0x0020, "Tx PDOs" }, /* the values are elsewhere !!! */
 	{ 0, 0, 0, 0, 0, 0, 0, "\0" }
 };
 
