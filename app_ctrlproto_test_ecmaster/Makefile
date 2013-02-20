@@ -1,0 +1,44 @@
+UNAME := $(shell uname)
+SOURCE_DIRS = src
+
+MASTER_INSTALLDIR := /opt/etherlab
+
+SOURCES += src/main.c
+
+INCLUDE_DIRS += -I ../common_include 
+INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
+INCLUDE_DIRS += -I ../library_ctrlproto_ecmaster/include
+
+LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
+LIB_DIRS += -L ../library_ctrlproto_ecmaster/lib
+
+LIBS += -lsncn_ctrlproto
+LIBS += -lethercat
+
+FLAGS = -static
+
+
+all:
+	@cd ../library_ctrlproto_ecmaster; make
+ifneq "$(UNAME)" "Linux"
+		@echo
+		@echo "------------------------------------------------------------------------------------------------------"
+		@echo "||Your System isn't Linux, so the Master Application for the Linux Ethercat Master can not be built.||"
+		@echo "------------------------------------------------------------------------------------------------------"
+		@echo
+else
+		@if test -d $(MASTER_INSTALLDIR); \
+		then \
+		gcc $(SOURCES) $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS) $(FLAGS) -o bin/app_ctrlproto_test_ecmaster ; \
+		else echo \
+		"\n\
+		-----------------------------------------------------------------------------------------------------------------\n\
+		||Ethercat Master is not installed at given directory if you installed it elsewhere change location in Makefile||\n\
+		-----------------------------------------------------------------------------------------------------------------\n";\
+		fi
+endif
+
+##Add clean Master Application
+clean: masterAppClean
+masterAppClean:
+	rm -f bin/app_ctrlproto_test_ecmaster
