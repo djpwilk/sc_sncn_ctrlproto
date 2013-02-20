@@ -19,6 +19,7 @@ ifneq "$(UNAME)" "Linux"
 else
 		@if test -d $(MASTER_INSTALLDIR); \
 		then \
+		mkdir lib -p;\
 		gcc src/ctrlproto_m.c $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.so -shared -fPIC;\
 		gcc -c src/ctrlproto_m.c $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.o;\
 		ar  rcs lib/libsncn_ctrlproto.a lib/libsncn_ctrlproto.o;\

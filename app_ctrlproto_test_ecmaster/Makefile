@@ -29,6 +29,7 @@ ifneq "$(UNAME)" "Linux"
 else
 		@if test -d $(MASTER_INSTALLDIR); \
 		then \
+		mkdir bin -p;\
 		gcc $(SOURCES) $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS) $(FLAGS) -o bin/app_ctrlproto_test_ecmaster ; \
 		else echo \
 		"\n\
