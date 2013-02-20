@@ -70,11 +70,11 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x04, "SyncManager Comm" }, /* PDO output */
 	/* Tx PDO and Rx PDO assignments */
 	{ 0x1C10, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 0 */
-	{ 0x1C11, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 1 */
-	{ 0x1C12, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 1, "SyncMan 0 assignment"}, /* assignment of SyncMan 2 */
-	{ 0x1C12, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1600, "SyncMan 0 assignment" },
-	{ 0x1C13, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 1, "SyncMan 0 assignment"}, /* assignment of SyncMan 3 */
-	{ 0x1C13, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1A00, "SyncMan 0 assignment" },
+	{ 0x1C11, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "SyncMan 1 assignment"}, /* assignment of SyncMan 1 */
+	{ 0x1C12, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 1, "SyncMan 2 assignment"}, /* assignment of SyncMan 2 */
+	{ 0x1C12, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1600, "SyncMan 2 assignment" },
+	{ 0x1C13, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 1, "SyncMan 3 assignment"}, /* assignment of SyncMan 3 */
+	{ 0x1C13, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1A00, "SyncMan 3 assignment" },
 	/* FIXME check - objects describing RxPDOs */
 	{ 0x6000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Rx PDOs" },
 	{ 0x6000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0247, 0x0001, "Rx PDOs" }, /* the values are elsewhere !!! */
