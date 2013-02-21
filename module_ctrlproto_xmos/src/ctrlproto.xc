@@ -86,7 +86,7 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 				heartbeat++;
 				output&=heartbeat<<8;
 //
-//				pdo_out<:2; FIXME UNCOMMENT WHEN PDO READ IS WORKING PROPERLY
+//				pdo_out<:2;
 //				pdo_out<:output;
 //				pdo_out<:outval;
 			}

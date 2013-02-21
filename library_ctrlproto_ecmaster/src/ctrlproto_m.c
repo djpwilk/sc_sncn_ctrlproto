@@ -31,8 +31,8 @@ void handleEcat(master_setup_variables_t *master_setup,
 	    for(slv=0;slv<slave_num;++slv)
 	    {
 	    	//Write slave values
-	    	EC_WRITE_U16(master_setup->domain_pd+*slv_handles[slv].__ecat_slave_out,slv_handles[slv].out[0]);
-	    	EC_WRITE_U16(master_setup->domain_pd+*slv_handles[slv].__ecat_slave_out+2,slv_handles[slv].out[1]);
+	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out,slv_handles[slv].out[0]);
+	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out+2,slv_handles[slv].out[1]);
 	    }
 		ecrt_master_send(master_setup->master);
 		ecrt_domain_queue(master_setup->domain);
@@ -115,8 +115,8 @@ void handleEcat(master_setup_variables_t *master_setup,
 		//Receiving
 	    for(slv=0;slv<slave_num;++slv)
 	    {
-	    	slv_handles[slv].in[0]=EC_READ_U16(master_setup->domain_pd+*slv_handles[slv].__ecat_slave_in);
-	    	slv_handles[slv].in[1]=EC_READ_U16(master_setup->domain_pd+*slv_handles[slv].__ecat_slave_in+2);
+	    	slv_handles[slv].in[0]=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in);
+	    	slv_handles[slv].in[1]=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in+2);
 	    	uint8_t hb=(uint8_t)(slv_handles[slv].in[0]&0xFF00);
 	    	slv_handles[slv].in[0]&=0xFF;
 	    	slv_handles[slv].is_responding=slv_handles[slv].__last_heartbeat_value!=hb;
@@ -128,7 +128,7 @@ void handleEcat(master_setup_variables_t *master_setup,
 	ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
     if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
     {
-    	printf("OP FLAG!\n");
+    	printf("Operational!\n");
             master_setup->opFlag = 1;
     }
 

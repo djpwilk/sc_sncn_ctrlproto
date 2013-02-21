@@ -27,13 +27,29 @@ typedef struct
 	 * This links to the output variable inside the
 	 * ec_pdo_entry_reg_t array for the somanet slave
 	 */
-	unsigned int *__ecat_slave_out;
+	unsigned int __ecat_slave_out;
 
 	/**
 	 * This links to the input variable inside the
 	 * ec_pdo_entry_reg_t array for the somanet slave
 	 */
-	unsigned int *__ecat_slave_in;
+	unsigned int __ecat_slave_in;
+
+	/**
+	 * The PDO entries
+	 */
+	ec_pdo_entry_info_t *__pdo_entry;
+
+	/**
+	 * The PDO info
+	 */
+	ec_pdo_info_t *__pdo_info;
+
+	/**
+	 * The ec sync
+	 */
+	ec_sync_info_t *__sync_info;
+
 
 	/**
 	 * This variable counts lost packages for each slave,
