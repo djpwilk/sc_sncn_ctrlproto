@@ -36,8 +36,8 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 	/* FIXME add 0x1C1x Syncmanager x PDO Assignment */
 	{ 0x1C10, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_ARRAY, "SM0 PDO Assing" },
 	{ 0x1C11, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_ARRAY, "SM1 PDO Assing" },
-	{ 0x1C12, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "SM2 PDO Assing" },
-	{ 0x1C13, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "SM3 PDO Assing" },
+	{ 0x1C12, DEFTYPE_UNSIGNED16, 1, CANOD_TYPE_ARRAY, "SM2 PDO Assing" },
+	{ 0x1C13, DEFTYPE_UNSIGNED16, 1, CANOD_TYPE_ARRAY, "SM3 PDO Assing" },
 	/* assigned PDO objects */
 	{ 0x6000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Rx PDO Assingnment" },
 	{ 0x7000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Tx PDO Assingnment" },
@@ -56,10 +56,10 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0xdeefdeef, "Serial Number" }, /* Serial Number */
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
 	/* FIXME check PDO Mapping RX and TX */
-	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "PDO Mapping" },
+	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "PDO Mapping" }, /* input */
 	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	{ 0x1600, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
-	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "PDO Mapping" },
+	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "PDO Mapping" }, /* output */
 	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	{ 0x1A00, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
 	/* SyncManager Communication Type - FIXME check assignment */
@@ -67,7 +67,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x01, "SyncManager Comm" }, /* mailbox receive */
 	{ 0x1C00, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x02, "SyncManager Comm" }, /* mailbox send */
 	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x03, "SyncManager Comm" }, /* PDO in */
-	{ 0x1C00, 3, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x04, "SyncManager Comm" }, /* PDO output */
+	{ 0x1C00, 4, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x04, "SyncManager Comm" }, /* PDO output */
 	/* Tx PDO and Rx PDO assignments */
 	{ 0x1C10, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "SyncMan 0 assignment"}, /* assignment of SyncMan 0 */
 	{ 0x1C11, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "SyncMan 1 assignment"}, /* assignment of SyncMan 1 */
