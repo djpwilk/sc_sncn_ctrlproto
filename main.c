@@ -59,13 +59,17 @@
 
 // EtherCAT
 static ec_master_t *master = NULL;
-static ec_master_state_t master_state = {};
+static ec_master_state_t master_state/* = {}*/;
 
 static ec_domain_t *domain1 = NULL;
-static ec_domain_state_t domain1_state = {};
+static ec_domain_state_t domain1_state/* = {}*/;
 
+static ec_slave_config_t *sc_data_in = NULL;
+static ec_slave_config_state_t sc_data_in_state;
+#if 0
 static ec_slave_config_t *sc_ana_in = NULL;
-static ec_slave_config_state_t sc_ana_in_state = {};
+static ec_slave_config_state_t sc_ana_in_state/* = {}*/;
+#endif
 
 // Timer
 static unsigned int sig_alarms = 0;
