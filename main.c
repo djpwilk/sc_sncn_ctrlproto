@@ -77,9 +77,13 @@ static unsigned int user_alarms = 0;
 
 /****************************************************************************/
 
-// process data
+// process data pointer
 static uint8_t *domain1_pd = NULL;
 
+#define SomanetPos     0, 0
+#define SOMANET_ID     0x000022d2, 0x00000201
+
+/*
 #define BusCouplerPos  0, 0
 #define DigOutSlavePos 0, 2
 #define AnaInSlavePos  0, 3
@@ -91,19 +95,33 @@ static uint8_t *domain1_pd = NULL;
 #define Beckhoff_EL3152 0x00000002, 0x0c503052
 #define Beckhoff_EL3102 0x00000002, 0x0c1e3052
 #define Beckhoff_EL4102 0x00000002, 0x10063052
+ */
 
 // offsets for PDO entries
+static unsigned int off_pdo1_in;
+static unsigned int off_pdo2_in;
+static unsigned int off_pdo1_out;
+static unsigned int off_pdo2_out;
+
+/*
 static unsigned int off_ana_in_status;
 static unsigned int off_ana_in_value;
 static unsigned int off_ana_out;
 static unsigned int off_dig_out;
+ */
 
 const static ec_pdo_entry_reg_t domain1_regs[] = {
+	{SomanetPos, SOMANET_ID, 0x6000, 1, &off_pdo1_in},
+	{SomanetPos, SOMANET_ID, 0x6000, 2, &off_pdo2_in},
+	{SomanetPos, SOMANET_ID, 0x7000, 2, &off_pdo1_out},
+	{SomanetPos, SOMANET_ID, 0x7000, 2, &off_pdo2_out},
+	/*
     {AnaInSlavePos,  Beckhoff_EL3102, 0x3101, 1, &off_ana_in_status},
     {AnaInSlavePos,  Beckhoff_EL3102, 0x3101, 2, &off_ana_in_value},
     {AnaOutSlavePos, Beckhoff_EL4102, 0x3001, 1, &off_ana_out},
     {DigOutSlavePos, Beckhoff_EL2032, 0x3001, 1, &off_dig_out},
-    {}
+    	*/
+    {0}
 };
 
 static unsigned int counter = 0;
@@ -113,10 +131,42 @@ static unsigned int blink = 0;
 
 #if CONFIGURE_PDOS
 
+/* Master 0, Slave 0, "Synapticon-ECAT"
+ * Vendor ID:       0x000022d2
+ * Product code:    0x00000201
+ * Revision number: 0x0a000002
+ */
+
+//static ec_pdo_entry_info_t somanet_pdo_entries[] = { };
+static ec_pdo_entry_info_t slave_0_pdo_entries[] = {
+    {0x7000, 0x01, 16}, /* ECAT Out1 */
+    {0x7000, 0x02, 16}, /* ECAT Out2 */
+    {0x6000, 0x01, 16}, /* ECAT In1 */
+    {0x6000, 0x02, 16}, /* ECAT In2 */
+};
+
+//static ec_pdo_info_t somanet_pdos[] = {};
+static ec_pdo_info_t slave_0_pdos[] = {
+    {0x1a00, 2, slave_0_pdo_entries + 0}, /* Outputs */
+    {0x1600, 2, slave_0_pdo_entries + 2}, /* Inputs */
+};
+
+//static ec_sync_info_t somanet_syncs[] = {};
+/* this configures the sync manager entries */
+static ec_sync_info_t slave_0_syncs[] = {
+    {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
+    {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
+    {2, EC_DIR_OUTPUT, 1, slave_0_pdos + 0, EC_WD_DISABLE},
+    {3, EC_DIR_INPUT, 1, slave_0_pdos + 1, EC_WD_DISABLE},
+    {0xff}
+};
+
+
+#if 0 /* original foo */
 // Analog in --------------------------
 
 static ec_pdo_entry_info_t el3102_pdo_entries[] = {
-    {0x3101, 1,  8}, // channel 1 status
+{0x3101, 1,  8}, // channel 1 status
     {0x3101, 2, 16}, // channel 1 value
     {0x3102, 1,  8}, // channel 2 status
     {0x3102, 2, 16}, // channel 2 value
@@ -175,6 +225,7 @@ static ec_sync_info_t el2004_syncs[] = {
     {0xff}
 };
 #endif
+#endif
 
 /*****************************************************************************/
 
@@ -222,17 +273,17 @@ void check_slave_config_states(void)
 {
     ec_slave_config_state_t s;
 
-    ecrt_slave_config_state(sc_ana_in, &s);
+    ecrt_slave_config_state(sc_data_in, &s);
 
-    if (s.al_state != sc_ana_in_state.al_state)
+    if (s.al_state != sc_data_in_state.al_state)
         printf("AnaIn: State 0x%02X.\n", s.al_state);
-    if (s.online != sc_ana_in_state.online)
+    if (s.online != sc_data_in_state.online)
         printf("AnaIn: %s.\n", s.online ? "online" : "offline");
-    if (s.operational != sc_ana_in_state.operational)
+    if (s.operational != sc_data_in_state.operational)
         printf("AnaIn: %soperational.\n",
                 s.operational ? "" : "Not ");
 
-    sc_ana_in_state = s;
+    sc_data_in_state = s;
 }
 
 /*****************************************************************************/
@@ -299,14 +350,19 @@ void cyclic_task()
             EC_READ_U16(domain1_pd + off_ana_in_value));
 #endif
 
-#if 1
+#define TESTWORD1   0xdead
+#define TESTWORD2   0xbeef
+#define TESTWORD3   0xfefe
+#define TESTWORD4   0xa5a5
     // write process data
-    EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
-#endif
+    //EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
+    EC_WRITE_U16(domain1_pd + off_pdo1_out, blink ? TESTWORD1 : TESTWORD2);
+    EC_WRITE_U16(domain1_pd + off_pdo2_out, blink ? TESTWORD3 : TESTWORD4);
 
     // send process data
     ecrt_domain_queue(domain1);
     ecrt_master_send(master);
+    //printf("Wrote %x to slave\n",  blink ? TESTWORD1 : TESTWORD2);
 }
 
 /****************************************************************************/
@@ -335,8 +391,8 @@ int main(int argc, char **argv)
     if (!domain1)
         return -1;
 
-    if (!(sc_ana_in = ecrt_master_slave_config(
-                    master, AnaInSlavePos, Beckhoff_EL3102))) {
+    if (!(sc_data_in = ecrt_master_slave_config(
+                    master, SomanetPos, SOMANET_ID))) {
         fprintf(stderr, "Failed to get slave configuration.\n");
         return -1;
     }
@@ -352,17 +408,18 @@ int main(int argc, char **argv)
 
 #if CONFIGURE_PDOS
     printf("Configuring PDOs...\n");
-    if (ecrt_slave_config_pdos(sc_ana_in, EC_END, el3102_syncs)) {
+    if (ecrt_slave_config_pdos(sc_data_in, EC_END, slave_0_syncs)) {
         fprintf(stderr, "Failed to configure PDOs.\n");
         return -1;
     }
 
     if (!(sc = ecrt_master_slave_config(
-                    master, AnaOutSlavePos, Beckhoff_EL4102))) {
+                    master, SomanetPos, SOMANET_ID))) {
         fprintf(stderr, "Failed to get slave configuration.\n");
         return -1;
     }
 
+#if 0
     if (ecrt_slave_config_pdos(sc, EC_END, el4102_syncs)) {
         fprintf(stderr, "Failed to configure PDOs.\n");
         return -1;
@@ -379,9 +436,10 @@ int main(int argc, char **argv)
         return -1;
     }
 #endif
+#endif
 
     // Create configuration for bus coupler
-    sc = ecrt_master_slave_config(master, BusCouplerPos, Beckhoff_EK1100);
+    sc = ecrt_master_slave_config(master, SomanetPos /*BusCouplerPos*/, SOMANET_ID/*Beckhoff_EK1100*/);
     if (!sc)
         return -1;
 
@@ -430,7 +488,7 @@ int main(int argc, char **argv)
 #if 0
         struct timeval t;
         gettimeofday(&t, NULL);
-        printf("%u.%06u\n", t.tv_sec, t.tv_usec);
+        printf("%u.%06u\n", (unsigned)t.tv_sec, (unsigned)t.tv_usec);
 #endif
 
         while (sig_alarms != user_alarms) {
