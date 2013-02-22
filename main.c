@@ -26,6 +26,11 @@
  *  industrial property and similar rights of Beckhoff Automation GmbH.
  *
  ****************************************************************************/
+ /*
+  * Adaption to somanet by Frank Jeschke <jeschke@fjes.de>
+  *
+  * for Synapticon GmbH
+  */
 
 #include <errno.h>
 #include <signal.h>
