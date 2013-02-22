@@ -315,6 +315,9 @@ void read_sdo(void)
 
 void cyclic_task()
 {
+	/* sync the dc clock of the slaves */
+	ecrt_master_sync_slave_clocks(master);
+
     // receive process data
     ecrt_master_receive(master);
     ecrt_domain_process(domain1);
