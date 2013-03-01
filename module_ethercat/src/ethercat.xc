@@ -859,6 +859,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			//printstr("new state: "); printhexln(al_state);
 		}
 
+		/* check if state transission errors occured */
 		if ((al_state&0x10) > 0 || al_error != AL_NO_ERROR) {
 			continue;
 		}
