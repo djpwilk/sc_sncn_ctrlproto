@@ -56,12 +56,12 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0xdeefdeef, "Serial Number" }, /* Serial Number */
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
 	/* FIXME check PDO Mapping RX and TX */
-	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "PDO Mapping" }, /* input */
-	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
-	{ 0x1600, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
-	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "PDO Mapping" }, /* output */
-	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000110, "PDO Mapping" }, /* see comment on PDO Mapping value below */
-	{ 0x1A00, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000210, "PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Rx PDO Mapping" }, /* input */
+	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000110, "Rx PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1600, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000210, "Rx PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Tx PDO Mapping" }, /* output */
+	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000110, "Tx PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A00, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000210, "Tx PDO Mapping" }, /* see comment on PDO Mapping value below */
 	/* SyncManager Communication Type - FIXME check assignment */
 	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 4, "SyncManager Comm" },
 	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x01, "SyncManager Comm" }, /* mailbox receive */
@@ -79,7 +79,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x6000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Rx PDOs" },
 	{ 0x6000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0247, 0x0001, "Rx PDOs" }, /* the values are elsewhere !!! */
 	{ 0x6000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0247, 0x0002, "Rx PDOs" }, /* the values are elsewhere !!! */
-	/* FIXME check - objects describing RxPDOs */
+	/* FIXME check - objects describing TxPDOs */
 	{ 0x7000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Tx PDOs" },
 	{ 0x7000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0287, 0x0010, "Tx PDOs" }, /* the values are elsewhere !!! */
 	{ 0x7000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0287, 0x0020, "Tx PDOs" }, /* the values are elsewhere !!! */
