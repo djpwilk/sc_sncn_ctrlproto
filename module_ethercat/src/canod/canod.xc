@@ -53,7 +53,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x000022d2, "Vendor ID" }, /* Vendor ID (by ETG) */
 	{ 0x1018, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x00000201, "Product Code" }, /* Product Code */
 	{ 0x1018, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x0a000002, "Revision Number" }, /* Revision Number */
-	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0xdeefdeef, "Serial Number" }, /* Serial Number */
+	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x000000dd, "Serial Number" }, /* Serial Number */
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
 	/* FIXME check PDO Mapping RX and TX */
 	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Rx PDO Mapping" }, /* input */
