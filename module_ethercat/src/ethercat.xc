@@ -577,21 +577,17 @@ static void ecat_clear_fmmu(void)
  * @return  new state, either reqstate is confirmed or fallback.
  * @return  0 if no error occures, error word (@see AL error codes)
  */
-{uint16_t, uint16_t} al_state_machine(uint16_t reqState)
+{uint16_t, uint16_t} al_state_machine(uint16_t reqState, uint16_t currentState)
 {
 	uint16_t newstate = 0;
 	uint16_t error = AL_NO_ERROR;
-
-	/* FIXME better handling of error state changes */
-	if ((reqState & AL_STATE_ERRORBIT) > 0) {
-		/* error confirmed by master */
-		return {AL_STATE_INIT, AL_ERROR};
-	}
+	uint8_t errorBit = reqState&AL_STATE_ERRORBIT; /* FIXME should check if errorbit is ack'ed */
+	reqState = reqState&0xf;
 
 	switch (reqState) {
 	case AL_STATE_INIT:
-		ecat_clear_syncm();
 		ecat_clear_fmmu();
+		ecat_clear_syncm();
 		newstate = AL_STATE_INIT;
 		error = AL_NO_ERROR;
 		break;
@@ -603,8 +599,8 @@ static void ecat_clear_fmmu(void)
 
 	case AL_STATE_PREOP:
 		/* master configured DL-Address registers and SyncM registers */
-		ecat_read_syncm();
 		ecat_clear_fmmu();
+		ecat_read_syncm();
 		newstate = AL_STATE_PREOP;
 		error = AL_NO_ERROR;
 		break;
@@ -612,22 +608,34 @@ static void ecat_clear_fmmu(void)
 	case AL_STATE_SAFEOP:
 		/* master conf. parameters using mailbox (process data);
 		 * master configures SyncM channels for process data and fmmu channels
+		 * starting input PDOs
 		 */
 		ecat_read_syncm(); /* reread for process data */
-		ecat_read_fmmu_config();
-		newstate = AL_STATE_SAFEOP;
-		error = AL_NO_ERROR;
+		if (ecat_read_fmmu_config() < 1) { /* FIXME check if FMMU input is configured */
+			newstate = currentState; /* FIXME stay on state and ignore FMMU configure if fallback from higher sate */
+			error = AL_INVALID_INPUT_MAPPING;
+		} else {
+			newstate = AL_STATE_SAFEOP;
+			error = AL_NO_ERROR;
+		}
 		break;
 
 	case AL_STATE_OP:
-		/* process input (master->client) mailbox communication outputs in safestate */
-		newstate = AL_STATE_OP;
-		error = AL_NO_ERROR;
+		/* slave now fully operational, input and output PDOs and mailbox communication */
+		ecat_read_syncm(); /* reread for process data */
+
+		if (ecat_read_fmmu_config() < 2) { /* FIXME check if FMMU output is configured */
+			newstate = currentState; /* FIXME stay on state and ignore FMMU configure if fallback from higher sate */
+			error = AL_INVALID_OUTPUT_MAPPING;
+		} else {
+			newstate = AL_STATE_OP;
+			error = AL_NO_ERROR;
+		}
 		break;
 
 	default:
 		/* errornous state: set AL_REG_STATUS_CODE (error) and stop */
-		newstate = AL_STATE_INIT|AL_STATE_ERRORBIT;
+		newstate = currentState|AL_STATE_ERRORBIT;
 		error = AL_ERROR;
 		break;
 	}
@@ -854,7 +862,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 		data = ecat_read(AL_REG_EVENT_REQUEST_LOW);
 		if (data & AL_CONTROL_EVENT) {
 			data = ecat_read(AL_REG_CONTROL);
-			{al_state, al_error} = al_state_machine(data&0x001f); /* bits 15:5 are reserved */
+			{al_state, al_error} = al_state_machine(data&0x001f, al_state); /* bits 15:5 are reserved */
 			ecat_write(AL_REG_STATUS, al_state);
 			ecat_write(AL_REG_STATUS_CODE, al_error);
 			//if (al_state==AL_STATE_OP)
