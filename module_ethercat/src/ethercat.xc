@@ -766,9 +766,8 @@ int ecat_init(void)
 	}
 #endif
 
-	/* Force init state on startup */
 	EC_CS_SET();
-	ecat_write(AL_REG_STATUS, (uint16_t)AL_STATE_INIT);
+//	ecat_write(AL_REG_STATUS, (uint16_t)AL_STATE_NOOP); /* wait until state is requested */
 	ecat_write(AL_REG_STATUS_CODE, (uint16_t)AL_NO_ERROR);
 
 #if 0
