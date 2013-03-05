@@ -514,9 +514,9 @@ static void ecat_clear_syncm(void)
 
 /* ----- fmmu ----- */
 
-static void ecat_read_fmmu_config(void)
+static int ecat_read_fmmu_config(void)
 {
-	int i;
+	int i, activeFmmu=0;
 	uint16_t address = EC_FMMU_BASE;
 	uint16_t data;
 	uint32_t tmp;
@@ -542,8 +542,11 @@ static void ecat_read_fmmu_config(void)
 		fmmu[i].reg_type = (data>>8)&0xff;
 
 		data = ecat_read(address+12);
-		fmmu[i].reg_activate = data&0xff;
+		fmmu[i].reg_activate = data&0x01;
+		activeFmmu += fmmu[i].reg_activate;
 	}
+
+	return activeFmmu;
 }
 
 static void ecat_clear_fmmu(void)
