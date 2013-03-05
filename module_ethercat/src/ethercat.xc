@@ -823,6 +823,8 @@ int ecat_reset(void)
  * };
  *
  */
+#define PDO_BUFFER    4
+
 void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			chanend c_eoe_r, chanend c_eoe_s, chanend c_eoe_sig,
 			chanend c_foe_r, chanend c_foe_s,
@@ -837,10 +839,10 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	uint16_t data = 0;
 	uint16_t syncm_event = 0;
 
-	uint16_t buffer[256];
-	uint16_t pdo_inbuf[64];
-	uint16_t pdo_outbuf[64]; /* FIXME remove magic number and support generic size of pdo buffer */
+	uint16_t pdo_inbuf[PDO_BUFFER];
+	uint16_t pdo_outbuf[PDO_BUFFER]; /* FIXME remove magic number and support generic size of pdo buffer */
 	unsigned pdo_outsize = 0;
+	unsigned pdo_insize = 0;
 
 	uint16_t al_state = AL_STATE_NOOP;
 	uint16_t al_error = AL_NO_ERROR;
@@ -859,6 +861,12 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	foemsg_t foeMessage;
 
 	eoe_init();
+
+	for (i=0;i<PDO_BUFFER;i++) {
+		pdo_inbuf[i] = 0;
+		pdo_outbuf[i] = 0;
+	}
+
 	tpdo :> pdotime;
 
 	EC_CS_SET();
@@ -898,51 +906,36 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 				switch (manager[i].control&0x0f) {
 				case SYNCM_BUFFER_MODE_READ:
-#ifdef UGLYHACK
-					/* FIXME ugly hack to reduce probability of dead locks */
-					select {
-					case c_pdo_r :> otmp :
-						printstr("DEBUG: processing outgoing PDO packets\n");
-						out_size = (otmp&0xffff)*2; /* FIXME: check the channel protocol spec of size in the first byte */
-						out_type = 0; // no mailbox packet, unused here!
-						for (i=0; i<(out_size+1)/2; i++) {
-							c_pdo_r :> otmp;
-							out_buffer[i] = otmp&0xffff;
-						}
+					if ((al_state&0xf) >= AL_STATE_SAFEOP) {
+							if (lastwritten_inbuffer != ((manager[i].status>>4)&0x03)) {
+								if ((manager[i].status & 0x01) == 1) { /* read buffer is accessible, buffer was successfully written */
+									pdo_insize = ecat_read_block(manager[i].address, (manager[i].size/2), pdo_inbuf);
 
-						/* add padding */
-						for (; i<manager[i].size; i++) {
-							out_buffer[i] = 0x0;
-						}
-
-						pending_buffer=1;
-						break;
-
-					default:
+#if 0 /* DEBUG output */
+									for (int k=0; k<pdo_insize; k++) {
+										printstr("pdo received: "); printhexln(pdo_inbuf[k]);
+									}
 #endif
-						if (lastwritten_inbuffer != (manager[i].status>>4)&0x03) {
-							if ((manager[i].status & 0x01) == 1) { /* read buffer is accessible, buffer was successfully written */
-								packet_error = ecat_process_packet(manager[i].address, manager[i].size, SYNCM_BUFFER_MODE,
-											c_coe_s, c_eoe_s, c_eoe_sig, c_foe_s, c_pdo_s);
-								lastwritten_inbuffer = (manager[i].status>>4)&0x03;
+#if 0
+									packet_error = ecat_process_packet(manager[i].address, manager[i].size, SYNCM_BUFFER_MODE,
+												c_coe_s, c_eoe_s, c_eoe_sig, c_foe_s, c_pdo_s);
+#endif
+									lastwritten_inbuffer = (manager[i].status>>4)&0x03;
+								}
 							}
-						}
-#ifdef UGLYHACK
-						break;
 					}
-#endif
 					break;
 
 				case SYNCM_BUFFER_MODE_WRITE:
 					/* send packets pending? */
-					if ((al_state&0xf) < AL_STATE_OP) {
+					if ((al_state&0xf) == AL_STATE_OP) {
 						unsigned next;
 						tpdo :> pdotime;
-						if (((next-pdotime) >= 10) /*&& (lastwritten_outbuffer != (manager[i].status>>4)&0x03)*/) {
+						if (((next-pdotime) >= 100) /*&& (lastwritten_outbuffer != (manager[i].status>>4)&0x03)*/) {
 							//printstr("Write Buffer SyncM: ");
 							//printintln(i);
 							/* FIXME check return value */
-							ecat_write_block(manager[i].address, pdo_outsize, pdo_outbuf); // out_size: byte -> word
+							ecat_write_block(manager[i].address, pdo_outsize, pdo_outbuf); /* out_size: byte -> word */
 							lastwritten_outbuffer = (manager[i].status>>4)&0x03;
 						}
 					}
@@ -1049,6 +1042,15 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			default:
 				/* check if a eoe packet is ready to transmit */
 				//eoeReplyPending = eoe_tx_ready(); /* add this to use initiative tx of ethernet packets */
+
+				/* send pdo packets through channel */
+				if (pdo_insize>0) {
+					c_pdo_s <: pdo_insize;
+					for (i=0; i<pdo_insize; i++) {
+						c_pdo_s <: (unsigned int)pdo_inbuf[i];
+					}
+					pdo_insize = 0;
+				}
 				break;
 			}
 
