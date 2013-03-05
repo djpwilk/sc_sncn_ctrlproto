@@ -974,9 +974,6 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				}
 			}
 
-			ecat_write(AL_REG_STATUS, al_state);
-			ecat_write(AL_REG_STATUS_CODE, packet_error);
-
 			if (packet_error != AL_NO_ERROR) { /* FIXME implement valid error handling */
 				//printstr("Packet error: 0x"); printhexln(packet_error);
 			}
