@@ -829,6 +829,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			chanend c_foe_r, chanend c_foe_s,
 			chanend c_pdo_r, chanend c_pdo_s)
 {
+	timer tpdo;
+	unsigned int pdotime;
+
 	timer t;
 	unsigned int time;
 	unsigned int i;
@@ -836,8 +839,9 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	uint16_t syncm_event = 0;
 
 	uint16_t buffer[256];
-	uint16_t fmmu_inbuf[64];
-	uint16_t fmmu_outbuf[64];
+	uint16_t pdo_inbuf[64];
+	uint16_t pdo_outbuf[64]; /* FIXME remove magic number and support generic size of pdo buffer */
+	unsigned pdo_outsize = 0;
 
 	uint16_t al_state;
 	uint16_t al_error = AL_NO_ERROR;
@@ -850,9 +854,13 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	int pending_buffer = 0; /* no buffer to send */
 	int pending_mailbox = 0; /* no mailbox to send */
 
+	unsigned lastwritten_inbuffer = 3;
+	unsigned lastwritten_outbuffer = 3;
+
 	foemsg_t foeMessage;
 
 	eoe_init();
+	tpdo :> pdotime;
 
 	EC_CS_SET();
 	while (1) {
@@ -891,6 +899,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 
 				switch (manager[i].control&0x0f) {
 				case SYNCM_BUFFER_MODE_READ:
+#ifdef UGLYHACK
 					/* FIXME ugly hack to reduce probability of dead locks */
 					select {
 					case c_pdo_r :> otmp :
@@ -911,22 +920,32 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 						break;
 
 					default:
-						if ((manager[i].status & 0x01) == 1) { /* read buffer is accessible, buffer was successfully written */
-							packet_error = ecat_process_packet(manager[i].address, manager[i].size, SYNCM_BUFFER_MODE,
-										c_coe_s, c_eoe_s, c_eoe_sig, c_foe_s, c_pdo_s);
+#endif
+						if (lastwritten_inbuffer != (manager[i].status>>4)&0x03) {
+							if ((manager[i].status & 0x01) == 1) { /* read buffer is accessible, buffer was successfully written */
+								packet_error = ecat_process_packet(manager[i].address, manager[i].size, SYNCM_BUFFER_MODE,
+											c_coe_s, c_eoe_s, c_eoe_sig, c_foe_s, c_pdo_s);
+								lastwritten_inbuffer = (manager[i].status>>4)&0x03;
+							}
 						}
+#ifdef UGLYHACK
 						break;
 					}
+#endif
 					break;
 
 				case SYNCM_BUFFER_MODE_WRITE:
 					/* send packets pending? */
-					if (pending_buffer == 1) {
-						printstr("Write Buffer SyncM: ");
-						printintln(i);
-						/* FIXME check return value */
-						ecat_write_block(manager[i].address, (out_size+1)/2, out_buffer); // out_size: byte -> word
-						pending_buffer=0;
+					if ((al_state&0xf) < AL_STATE_OP) {
+						unsigned next;
+						tpdo :> pdotime;
+						if (((next-pdotime) >= 10) /*&& (lastwritten_outbuffer != (manager[i].status>>4)&0x03)*/) {
+							//printstr("Write Buffer SyncM: ");
+							//printintln(i);
+							/* FIXME check return value */
+							ecat_write_block(manager[i].address, pdo_outsize, pdo_outbuf); // out_size: byte -> word
+							lastwritten_outbuffer = (manager[i].status>>4)&0x03;
+						}
 					}
 					break;
 
@@ -1018,14 +1037,14 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				#endif
 				break;
 
-#if 0
+#if 1
 			case c_pdo_r :> otmp :
 				printstr("DEBUG: processing outgoing PDO packets\n");
-				out_size = otmp&0xffff;
+				pdo_outsize = otmp&0xffff;
 				out_type = 0/*ERROR_PACKET*/; // no mailbox packet, unused here!
-				for (i=0; i<out_size; i++) {
+				for (i=0; i<pdo_outsize; i++) {
 					c_pdo_r :> otmp;
-					out_buffer[i] = otmp&0xffff;
+					pdo_outbuf[i] = otmp&0xffff; /* FIXME asumption 16-bit values */
 				}
 				pending_buffer=1;
 				break;
