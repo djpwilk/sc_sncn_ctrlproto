@@ -767,7 +767,6 @@ int ecat_init(void)
 #endif
 
 	EC_CS_SET();
-//	ecat_write(AL_REG_STATUS, (uint16_t)AL_STATE_NOOP); /* wait until state is requested */
 	ecat_write(AL_REG_STATUS_CODE, (uint16_t)AL_NO_ERROR);
 
 #if 0
@@ -843,7 +842,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	uint16_t pdo_outbuf[64]; /* FIXME remove magic number and support generic size of pdo buffer */
 	unsigned pdo_outsize = 0;
 
-	uint16_t al_state;
+	uint16_t al_state = AL_STATE_NOOP;
 	uint16_t al_error = AL_NO_ERROR;
 	uint16_t packet_error = AL_NO_ERROR;
 

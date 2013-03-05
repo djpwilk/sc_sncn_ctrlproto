@@ -10,6 +10,7 @@
 #define AL_REG_EVENT_REQUEST_HIGH      0x0222  /* SyncM Events: bits 7:0; bits 15:8 unsued */
 
 /* AL States */
+#define AL_STATE_NOOP                  0x0000
 #define AL_STATE_INIT                  0x0001
 #define AL_STATE_PREOP                 0x0002
 #define AL_STATE_BOOTSTRAP             0x0003
