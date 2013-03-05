@@ -962,16 +962,6 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 		}
 		// */
 
-		/* check FMMU after AL_STATE_SAFEOP is reached * /
-		if ((al_state&0xf) < AL_STATE_OP) {
-			continue;
-		}
-		// */
-
-		/* FIXME: check FMMU data */
-		//ecat_read_fmmu(fmmu_inbuf);
-		//ecat_write_fmmu(fmmu_outbuf); /* echo the current values */
-
 		/* read incoming filehandles, if no mailbox is pending! */
 		if (pending_mailbox != 1) {
 			select {
