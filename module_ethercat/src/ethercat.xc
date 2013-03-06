@@ -1028,18 +1028,16 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				#endif
 				break;
 
-#if 1
 			case c_pdo_r :> otmp :
-				printstr("DEBUG: processing outgoing PDO packets\n");
+				//printstr("DEBUG: regular processing outgoing PDO packets\n");
 				pdo_outsize = otmp&0xffff;
-				out_type = 0/*ERROR_PACKET*/; // no mailbox packet, unused here!
+				out_type = 0; // no mailbox packet, unused here!
 				for (i=0; i<pdo_outsize; i++) {
 					c_pdo_r :> otmp;
 					pdo_outbuf[i] = otmp&0xffff; /* FIXME asumption 16-bit values */
 				}
 				pending_buffer=1;
 				break;
-#endif
 
 			default:
 				/* check if a eoe packet is ready to transmit */
