@@ -832,6 +832,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 {
 	timer tpdo;
 	unsigned int pdotime;
+	unsigned int pdotimeprev;
 
 	timer t;
 	unsigned int time;
@@ -868,6 +869,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 	}
 
 	tpdo :> pdotime;
+	pdotimeprev = pdotime;
 
 	EC_CS_SET();
 	while (1) {
@@ -929,14 +931,14 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				case SYNCM_BUFFER_MODE_WRITE:
 					/* send packets pending? */
 					if ((al_state&0xf) == AL_STATE_OP) {
-						unsigned next;
 						tpdo :> pdotime;
-						if (((next-pdotime) >= 100) /*&& (lastwritten_outbuffer != (manager[i].status>>4)&0x03)*/) {
+						if (((pdotime-pdotimeprev) >= 100) /*&& (lastwritten_outbuffer != (manager[i].status>>4)&0x03)*/) {
 							//printstr("Write Buffer SyncM: ");
 							//printintln(i);
 							/* FIXME check return value */
 							ecat_write_block(manager[i].address, pdo_outsize, pdo_outbuf); /* out_size: byte -> word */
 							lastwritten_outbuffer = (manager[i].status>>4)&0x03;
+							pdotimeprev = pdotime;
 						}
 					}
 					break;
