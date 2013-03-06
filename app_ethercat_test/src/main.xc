@@ -370,31 +370,63 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 static void pdo_handler(chanend pdo_out, chanend pdo_in)
 {
 	unsigned int inBuffer[64];
+	unsigned int outBuffer[64];
 	unsigned int count=0;
 	unsigned int outCount=0;
 	unsigned int tmp;
+	unsigned ready = 0;
+	int i;
 
 	timer t;
-	const unsigned int delay = 100000;
+	const unsigned int delay = 100;
 	unsigned int time = 0;
 
 	while (1){
 		count = 0;
 
+		pdo_in <: DATA_REQUEST;
+		pdo_in :> count;
+		for (i=0; i<count; i++) {
+			pdo_in :> inBuffer[i];
+			printstr("data "); printint(i);
+			printstr(": "); printhexln(inBuffer[i]);
+		}
+
+		if (count>0) {
+			pdo_out <: count;
+			for (i=0; i<count; i++) {
+				pdo_out <: inBuffer[i];
+			}
+		}
+
+#if 0
 		select {
 		case pdo_in :> tmp :
 			inBuffer[0] = tmp&0xffff;
+#if 1
 			printstr("[APP DEBUG] Received PDO packet: \n");
 
 			while (count<inBuffer[0]) {
 				tmp = 0;
 				pdo_in :> tmp;
 				inBuffer[count+1] = (tmp&0xffff);
-				printhex(tmp&0xffff);
+				//printhex(tmp&0xffff);
 				count++;
 			}
-			printstr("\n");
-
+			//printstr("\n");
+//printhexln(count);
+			/* echo received values */
+			outBuffer[0] = count;
+			for (int k=0; k<count; k++) {
+				outBuffer[k+1] = inBuffer[k+1];
+#if 0
+				printstr("copy value: "); printint(k+1);
+				printstr(": "); printhexln(inBuffer[k+1]);
+#endif
+			}
+			ready = 1;
+#endif
+#if 0
 			if (inBuffer[1] == 0xdead || inBuffer[1] == 0xadde || inBuffer[1] == 0xbeef || inBuffer[1] == 0xefbe) {
 				ledGreen <: 0;
 			} else {
@@ -406,10 +438,28 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 			} else {
 				ledRed <: 1;
 			}
+#endif
 			break;
+
 		default:
+			if (ready) {
+				printstr("[APP DEBUG] transmit (echo)\n");
+				for (i=0; i<(outBuffer[0]+1); i++) {
+					pdo_out <: outBuffer[i];
+				}
+
+#if 0
+				for (i=0; i<(outBuffer[0]+1); i++) {
+				printstr("sent value: "); printint(i);
+				printstr(": "); printhexln(outBuffer[i]);
+
+				}
+#endif
+				ready = 0;
+			}
 			break;
 		}
+#endif
 
 #if 0
 		if (count>0) {
@@ -421,8 +471,9 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 			}
 		}
 #endif
-		//t :> time;
-		//t when timerafter(time+delay) :> void;
+
+		t :> time;
+		t when timerafter(time+delay) :> void;
 	}
 }
 
