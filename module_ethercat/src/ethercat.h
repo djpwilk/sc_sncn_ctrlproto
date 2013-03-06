@@ -12,6 +12,8 @@
 
 #include <stdint.h>
 
+#define DATA_REQUEST     1
+
 enum EC_MailboxProtocolTypes {
 	ERROR_PACKET=0,            ///< Error Packet
 	VENDOR_BECKHOFF_PACKET,    ///< Beckhoff vendor specific packet

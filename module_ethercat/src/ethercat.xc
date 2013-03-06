@@ -1039,18 +1039,24 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 				pending_buffer=1;
 				break;
 
-			default:
-				/* check if a eoe packet is ready to transmit */
-				//eoeReplyPending = eoe_tx_ready(); /* add this to use initiative tx of ethernet packets */
+			case c_pdo_s :> otmp :
+				if (otmp == DATA_REQUEST) {
+					/* check if a eoe packet is ready to transmit */
+					//eoeReplyPending = eoe_tx_ready(); /* add this to use initiative tx of ethernet packets */
 
-				/* send pdo packets through channel */
-				if (pdo_insize>0) {
-					c_pdo_s <: pdo_insize;
-					for (i=0; i<pdo_insize; i++) {
-						c_pdo_s <: (unsigned int)pdo_inbuf[i];
+					if (pdo_insize>0) {
+						c_pdo_s <: pdo_insize;
+						for (i=0; i<pdo_insize; i++) {
+							c_pdo_s <: (unsigned int)pdo_inbuf[i];
+						}
+						pdo_insize = 0;
+					} else {
+						c_pdo_s <: pdo_insize;
 					}
-					pdo_insize = 0;
 				}
+				break;
+
+			default:
 				break;
 			}
 
