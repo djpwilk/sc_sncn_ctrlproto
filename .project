@@ -3,6 +3,7 @@
 	<name>sc_sncn_ctrlproto</name>
 	<comment></comment>
 	<projects>
+		<project>module_ethercat</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

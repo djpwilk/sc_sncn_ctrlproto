@@ -9,9 +9,10 @@ int main()
 	int i=0;
 	while(1)
 	{
-		//Currently this is a workaround because we are currently not able to receive a response from a slave
-		//Comming soon, should be there in March 2013
-		handleEcat(&master_setup,slv_handles, NUM_SLAVES, 100);
+		handleEcat(&master_setup,slv_handles, NUM_SLAVES, 1000);
+
+		if(slv_handles[0].in[0]!=0)printf("slv0_in0: %i\n",slv_handles[0].in[0]);
+
 		switch(i)
 		{
 		case 0: setSlave(0,CTRL_TORQUE,0,true,slv_handles);

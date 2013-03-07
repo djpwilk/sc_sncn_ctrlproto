@@ -27,13 +27,15 @@ typedef struct
 	 * This links to the output variable inside the
 	 * ec_pdo_entry_reg_t array for the somanet slave
 	 */
-	unsigned int __ecat_slave_out;
+	unsigned int __ecat_slave_out_1;
+	unsigned int __ecat_slave_out_2;
 
 	/**
 	 * This links to the input variable inside the
 	 * ec_pdo_entry_reg_t array for the somanet slave
 	 */
-	unsigned int __ecat_slave_in;
+	unsigned int __ecat_slave_in_1;
+	unsigned int __ecat_slave_in_2;
 
 	/**
 	 * The PDO entries
@@ -77,6 +79,8 @@ typedef struct
 	 */
 	ec_slave_config_t *slave_config;
 
+
+
 	/**
 	 * The slave alias
 	 */
@@ -90,12 +94,12 @@ typedef struct
 	/**
 	 * The VendorID
 	 */
-	uint16_t slave_vendorid;
+	uint32_t slave_vendorid;
 
 	/**
 	 * The ProductID
 	 */
-	uint16_t slave_productid;
+	uint32_t slave_productid;
 
 	/**
 	 * Variable for data received from the slave (2 times 16 Bit)
