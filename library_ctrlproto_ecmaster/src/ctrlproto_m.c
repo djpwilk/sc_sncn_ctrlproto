@@ -159,10 +159,10 @@ void handleEcat(master_setup_variables_t *master_setup,
 bool setSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t cmd, int16_t value, bool force_write, ctrlproto_slv_handle *slv_handles)
 {
 	ctrlproto_slv_handle* ptr=slv_handles+slave_no;
-//	if(!ptr->is_responding && !force_write)
-//	{
-//		return false;
-//	}
+	if(!ptr->is_responding && !force_write)
+	{
+		return false;
+	}
 	ptr->out[0]=cmd;
 	ptr->out[1]=value;
 	return ptr->is_responding;
@@ -171,10 +171,15 @@ bool setSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t cmd, int16_t value, b
 bool getSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t *what, int16_t *value, ctrlproto_slv_handle *slv_handles)
 {
 	ctrlproto_slv_handle* ptr=slv_handles+slave_no;
-//	if(!ptr->is_responding)
-//	{
-//		return false;
-//	}
+	*what=ptr->in[0]&0xFF;
+	*value=ptr->in[1];
 
-	return true;
+	if(!ptr->is_responding)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }

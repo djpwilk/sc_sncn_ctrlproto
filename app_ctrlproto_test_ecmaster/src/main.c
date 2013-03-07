@@ -11,7 +11,11 @@ int main()
 	{
 		handleEcat(&master_setup,slv_handles, NUM_SLAVES, 1000);
 
-		if(slv_handles[0].in[0]!=0)printf("slv0_in0: %i\n",slv_handles[0].in[0]);
+		unsigned int cmd;
+		int16_t value;
+
+		getSlave(0,&cmd,&value,slv_handles);
+		printf("CMD: %i, VAL: %i \n", cmd, value);
 
 		switch(i)
 		{
@@ -26,9 +30,12 @@ int main()
 
 		case 3: setSlave(0,SET_SETPOINT_SPEED,-300,true,slv_handles);
 		break;
+
+		case 4: setSlave(0,GET_SETPOINT_POSITION,-300,true,slv_handles);
+		break;
 		}
 		i++;
-		if(i==4)i=0;
+		if(i==5)i=0;
 	}
 	return 0;
 }
