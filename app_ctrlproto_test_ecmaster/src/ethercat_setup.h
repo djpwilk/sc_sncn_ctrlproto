@@ -69,10 +69,10 @@ static ctrlproto_slv_handle slv_handles[]=
  * Use the starting addresses for the digital I/O (see Output of ethercat -> pdo_entries[] )
  */
 const static ec_pdo_entry_reg_t domain_regs[] = {
-{SOMANET_0_Pos, SOMANET_ID, 0x7000, 1, &slv_handles[0].__ecat_slave_out_1},
-{SOMANET_0_Pos, SOMANET_ID, 0x7000, 2, &slv_handles[0].__ecat_slave_out_2},
-{SOMANET_0_Pos, SOMANET_ID, 0x6000, 1, &slv_handles[0].__ecat_slave_in_1},
-{SOMANET_0_Pos, SOMANET_ID, 0x6000, 2, &slv_handles[0].__ecat_slave_in_2},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 1, &slv_handles[0].__ecat_slave_out_1},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 2, &slv_handles[0].__ecat_slave_out_2},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 1, &slv_handles[0].__ecat_slave_in_1},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 2, &slv_handles[0].__ecat_slave_in_2},
 {}
 };
 
