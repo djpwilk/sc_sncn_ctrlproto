@@ -88,27 +88,27 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 			switch(output)
 			{
 			case GET_POSITION:
-					printstrln("POS");
+					//printstrln("POS");
 					outval=InOut.out_position;
 				break;
 			case GET_SPEED:
-					printstrln("SPE");
+					//printstrln("SPE");
 					outval=InOut.out_speed;
 				break;
 			case GET_TORQUE:
-					printstrln("TRQ");
+					//printstrln("TRQ");
 					outval=InOut.out_torque;
 				break;
 			case GET_SETPOINT_POSITION:
-				 	printstrln("SPOS");
+				 	//printstrln("SPOS");
 					outval=InOut.in_position;
 				break;
 			case GET_SETPOINT_SPEED:
-			 		printstrln("SSPE");
+			 		//printstrln("SSPE");
 					outval=InOut.in_speed;
 				break;
 			case GET_SETPOINT_TORQUE:
-			 		printstrln("STRQ");
+			 		//printstrln("STRQ");
 					outval=InOut.in_torque;
 				break;
 			}

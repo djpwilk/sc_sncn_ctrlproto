@@ -373,60 +373,66 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 
 static void pdo_handler(chanend pdo_out, chanend pdo_in)
 {
+	timer t;
+	const unsigned int delay = 100;
+	unsigned int time = 0;
 
-
-
-//	unsigned int inBuffer[64];
-//		unsigned int outBuffer[64];
-//		unsigned int count=0;
-//		unsigned int outCount=0;
-//		unsigned int tmp;
-//		unsigned ready = 0;
-//		int i;
-//
-		timer t;
-		const unsigned int delay = 100;
-		unsigned int time = 0;
-//
-//		while (1){
-//			count = 0;
-//			pdo_in <: DATA_REQUEST;
-//			pdo_in :> count;
-//			for (i=0; i<count; i++) {
-//				pdo_in :> inBuffer[i];
-//				printstr("data "); printint(i);
-//				printstr(": "); printhexln(inBuffer[i]);
-//			}
-//
-//			if (count>0) {
-//				pdo_out <: count;
-//				for (i=0; i<count; i++) {
-//					pdo_out <: inBuffer[i];
-//				}
-//			}
-//		}
-//
 	ctrl_proto_values_t InOut;
+	ctrl_proto_values_t InOutOld;
 	init_ctrl_proto(InOut);
 	printstr("narf!\n");
 	while(1)
 	{
+
 		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
+		t :> time;
 
-			printstrln("-------------------");
-			printstrln("Test:");
-			printstr("Motor Control: ");
+		if(InOutOld.ctrl_motor != InOut.ctrl_motor )
+		{
+			printstr("\nMotor: ");
 			printintln(InOut.ctrl_motor);
-			printstr("Position: ");
+		}
+		else if(InOutOld.in_position != InOut.in_position )
+		{
+			printstr("\nPosition: ");
 			printintln(InOut.in_position);
-			printstr("Torque: ");
-			printintln(InOut.in_torque);
-			printstr("Speed: ");
+		}
+		else if(InOutOld.in_speed != InOut.in_speed )
+		{
+			printstr("\nSpeed: ");
 			printintln(InOut.in_speed);
-			printstrln("-------------------");
-			t :> time;
-			t when timerafter(time+delay) :> void;
+		}
+		else if(InOutOld.in_torque != InOut.in_torque )
+		{
+			printstr("\nTorque: ");
+			printintln(InOut.in_torque);
+		}
+		else if(InOutOld.out_position != InOut.out_position )
+		{
+			printstr("\nOut_Position: ");
+			printintln(InOut.out_position);
+		}
+		else if(InOutOld.out_speed != InOut.out_speed )
+		{
+			printstr("\nOut_Speed: ");
+			printintln(InOut.out_speed);
+		}
+		else if(InOutOld.out_torque != InOut.out_torque)
+		{
+			printstr("\nOut_Torque: ");
+			printintln(InOut.out_torque);
+		}
 
+
+	   InOutOld.ctrl_motor 	= InOut.ctrl_motor;
+	   InOutOld.in_position = InOut.in_position;
+	   InOutOld.in_speed 	= InOut.in_speed;
+	   InOutOld.in_torque	= InOut.in_torque;
+	   InOutOld.out_position= InOut.out_position;
+	   InOutOld.out_speed 	= InOut.out_speed;
+	   InOutOld.out_torque 	= InOut.out_torque;
+
+		t when timerafter(time+delay) :> void;
 	}
 
 }
