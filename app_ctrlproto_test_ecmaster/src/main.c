@@ -31,8 +31,6 @@ int main()
 		}
 
 
-
-
 		if(master_setup.opFlag)
 		switch(i)
 		{
@@ -48,7 +46,7 @@ int main()
 		case 3: setSlave(0,SET_SETPOINT_SPEED,-300,true,slv_handles);
 		break;
 
-		case 4: setSlave(0,GET_SETPOINT_POSITION,-300,true,slv_handles);
+		case 4: setSlave(0,GET_POSITION,-300,true,slv_handles);
 		break;
 		}
 		i++;

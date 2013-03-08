@@ -374,16 +374,20 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 static void pdo_handler(chanend pdo_out, chanend pdo_in)
 {
 	timer t;
+
 	const unsigned int delay = 100;
 	unsigned int time = 0;
 
+	static int16_t i=0;
 	ctrl_proto_values_t InOut;
 	ctrl_proto_values_t InOutOld;
 	init_ctrl_proto(InOut);
-	printstr("narf!\n");
+
 	while(1)
 	{
-
+		i++;
+		if(i>=11)i=0;
+		InOut.out_position=i;
 		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
 		t :> time;
 
@@ -407,21 +411,21 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 			printstr("\nTorque: ");
 			printintln(InOut.in_torque);
 		}
-		else if(InOutOld.out_position != InOut.out_position )
-		{
-			printstr("\nOut_Position: ");
-			printintln(InOut.out_position);
-		}
-		else if(InOutOld.out_speed != InOut.out_speed )
-		{
-			printstr("\nOut_Speed: ");
-			printintln(InOut.out_speed);
-		}
-		else if(InOutOld.out_torque != InOut.out_torque)
-		{
-			printstr("\nOut_Torque: ");
-			printintln(InOut.out_torque);
-		}
+//		else if(InOutOld.out_position != InOut.out_position )
+//		{
+//			printstr("\nOut_Position: ");
+//			printintln(InOut.out_position);
+//		}
+//		else if(InOutOld.out_speed != InOut.out_speed )
+//		{
+//			printstr("\nOut_Speed: ");
+//			printintln(InOut.out_speed);
+//		}
+//		else if(InOutOld.out_torque != InOut.out_torque)
+//		{
+//			printstr("\nOut_Torque: ");
+//			printintln(InOut.out_torque);
+//		}
 
 
 	   InOutOld.ctrl_motor 	= InOut.ctrl_motor;
