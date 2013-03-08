@@ -137,6 +137,8 @@ void handleEcat(master_setup_variables_t *master_setup,
 		slv_handles[slv].in[1]=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in_2);
 		uint8_t hb=(uint8_t)(slv_handles[slv].in[0]&0xFF00);
 		slv_handles[slv].in[0]&=0xFF;
+
+		if(slv_handles[slv].is_responding!=false)
 		slv_handles[slv].is_responding=slv_handles[slv].__last_heartbeat_value!=hb;
 	}
 
@@ -163,9 +165,14 @@ bool setSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t cmd, int16_t value, b
 	{
 		return false;
 	}
-	ptr->out[0]=cmd;
-	ptr->out[1]=value;
-	return ptr->is_responding;
+	int ret=ptr->is_responding;
+	if(cmd != slv_handles[slave_no].out[0] || value != slv_handles[slave_no].out[1])
+	{
+		ptr->is_responding=false;
+		ptr->out[0]=cmd;
+		ptr->out[1]=value;
+	}
+	return ret;
 }
 
 bool getSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t *what, int16_t *value, ctrlproto_slv_handle *slv_handles)
