@@ -22,24 +22,6 @@ on stdcore[1] : out port ledBlue = LED_BLUE;
 on stdcore[1] : out port ledGreen = LED_GREEN;
 on stdcore[1] : out port ledRed = LED_RED;
 
-/* request a file from the master */
-static void get_file(chanend foe_out, char filename[])
-{
-	unsigned i, pos=0;
-	unsigned outBuffer[20];
-	outBuffer[1] = REQUEST_FILE;
-	
-	for (i=0, pos=2; filename[i] != '\n'; i++, pos++) {
-		outBuffer[pos++] = filename[i];
-	}
-
-	outBuffer[0] = pos;
-
-	for (i=0; i<pos; i++) {
-		foe_out <: outBuffer[i];
-	}
-}
-
 /* example consumer */
 static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eoe_out
 			/*, chanend foe_in, chanend foe_out, chanend pdo_in, chanend pdo_out*/)
@@ -68,6 +50,9 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 		/* Receive data */
 		select {
 		case coe_in :> tmp :
+			/* the CoE packets are handled within module_ethercat, currently
+			 * no data is provided for the application layer.
+			 */
 			inBuffer[0] = tmp&0xffff;
 			printstr("[APP] Received COE packet\n");
 			count=0;
@@ -78,16 +63,6 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 				count++;
 			}
 
-#if 0
-			/* Reply with abort initiate download sequence */
-			outType = COE_PACKET;
-			outBuffer[0] = 5;
-			outBuffer[1] = 0x2000;
-			outBuffer[2] = 0x0080;
-			outBuffer[3] = 0x001c;
-			outBuffer[4] = 0x0000;
-			outBuffer[5] = 0x0601;
-#endif
 			break;
 
 		case eoe_in :> tmp :
@@ -101,116 +76,14 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			}
 			break;
 
-#if 0
-		case foe_in :> tmp :
-			size = (uint16_t)(tmp&0xffff);
-			count=0;
-
-			while (count < size) {
-				tmp = 0;
-				foe_in :> tmp;
-				inBuffer[count] = (tmp&0xffff);
-				count++;
-			}
-
-			/* check packet content */
-			tmp = (inBuffer[0])&0xff;
-			foePacketNbr = inBuffer[1]&0xffff;
-
-			switch (tmp) {
-			case 0x01: /* FoE read req */
-				//printstr("DEBUG main FoE read request\n");
-				/* fixed answer, currently no file is stored */
-				outType = FOE_PACKET;
-				outBuffer[0] = 3;
-				outBuffer[1] = 0x0005; /* error request */
-				outBuffer[2] = 0x8001; /* not found */
-				outBuffer[3] = 0x0000;
-				break;
-
-			case 0x02: /* FoE write req */
-				//printstr("DEBUG main FoE write request\n");
-				// reply with ack request
-				outType = FOE_PACKET;
-				outBuffer[0] = 3;
-				outBuffer[1] = 0x0004; /* ack request */
-				outBuffer[2] = 0x0000;
-				outBuffer[3] = 0x0000;
-				break;
-
-			case 0x03: /* data request */
-				printstr("Ignore data packet\n");
-				//printstr("DEBUG main FoE data request, packet number: ");
-#if 0 /* since SOEM doesn't support the ACK reply this is not send! */
-				outType = FOE_PACKET;
-				outBuffer[0] = 3;
-#if 0
-				outBuffer[1] = 0x0005; /* error request */
-				outBuffer[2] = 0x8003; /* not found */
-				outBuffer[3] = 0x0000;
-#else
-				outBuffer[1] = 0x0004; /* ack.req */
-				outBuffer[2] = foePacketNbr;
-				outBuffer[3] = 0x0000;
-#endif
-#endif
-				break;
-
-			case 0x04: /* ack request */
-				printstr("DEBUG main FoE ack request\n");
-				break;
-
-			case 0x05: /* error request */
-				printstr("DEBUG main FoE error request\n");
-				break;
-
-			case 0x06: /* busy request */
-				printstr("DEBUG main FoE busy request\n");
-				break;
-			}
-
-			break;
-#endif
-
-#if 0
-		case pdo_out :> tmp :
-			inBuffer[0] = tmp&0xffff;
-			printstr("[APP] Received PDO packet: \n");
-
-			count = 0;
-			while (count<inBuffer[0]) {
-				tmp = 0;
-				pdo_out :> tmp;
-				inBuffer[count+1] = (tmp&0xffff);
-				count++;
-			}
-
-			if (inBuffer[1] == 0xde || inBuffer[1] == 0xad) {
-				ledGreen <: 0;
-			} else {
-				ledGreen <: 1;
-			}
-
-			if (inBuffer[1] == 0xaa || inBuffer[1] == 0x66) {
-				ledGreen <: 0;
-			} else {
-				ledRed <: 1;
-			}
-
-			/* DEBUG output of received packet: */
-			for (i=1;i<count+1;i++) {
-				printhex(inBuffer[i]);
-				printstr(";");
-			}
-			printstr(".\n");
-			// */
-
-			break;
-#endif
 		}
-/* send data */
+
+		/* send data */
 		switch (outType /*outBuffer[0]*/) {
 		case COE_PACKET:
+			/* Sending of CoE packets isn't provided, the low level CoE handling
+			 * is performed by module_ethercat.
+			 */
 			count=0;
 			//printstr("[APP DEBUG] send CoE packet\n");
 			outSize = outBuffer[0]+1;
@@ -234,25 +107,35 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			outType = -1;
 			break;
 
-#if 0 /* FIXME this resides in check_file() */
-		case FOE_PACKET:
-			count=0;
-			//printstr("DEBUG send FoE packet\n");
-			outSize = outBuffer[0]+1;
-			while (count<outSize) {
-				foe_out <: outBuffer[count];
-				count++;
-			}
-			outBuffer[0] = 0;
-			outType = -1; /* FIXME set correct define */
-			break;
-#endif
 		default:
 			break;
 		}
 
 		t :> time;
 		t when timerafter(time+delay) :> void;
+	}
+}
+
+
+/*
+ * FoE Example handling
+ */
+
+/* request a file from the master */
+static void get_file(chanend foe_out, char filename[])
+{
+	unsigned i, pos=0;
+	unsigned outBuffer[20];
+	outBuffer[1] = REQUEST_FILE;
+
+	for (i=0, pos=2; filename[i] != '\n'; i++, pos++) {
+		outBuffer[pos++] = filename[i];
+	}
+
+	outBuffer[0] = pos;
+
+	for (i=0; i<pos; i++) {
+		foe_out <: outBuffer[i];
 	}
 }
 
@@ -366,7 +249,11 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 	}
 }
 
-/* FIXME check channels! */
+
+/*
+ * example PDO handling - receive and reply values
+ */
+
 static void pdo_handler(chanend pdo_out, chanend pdo_in)
 {
 	unsigned int inBuffer[64];
@@ -399,79 +286,6 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 			}
 		}
 
-#if 0
-		select {
-		case pdo_in :> tmp :
-			inBuffer[0] = tmp&0xffff;
-#if 1
-			printstr("[APP DEBUG] Received PDO packet: \n");
-
-			while (count<inBuffer[0]) {
-				tmp = 0;
-				pdo_in :> tmp;
-				inBuffer[count+1] = (tmp&0xffff);
-				//printhex(tmp&0xffff);
-				count++;
-			}
-			//printstr("\n");
-//printhexln(count);
-			/* echo received values */
-			outBuffer[0] = count;
-			for (int k=0; k<count; k++) {
-				outBuffer[k+1] = inBuffer[k+1];
-#if 0
-				printstr("copy value: "); printint(k+1);
-				printstr(": "); printhexln(inBuffer[k+1]);
-#endif
-			}
-			ready = 1;
-#endif
-#if 0
-			if (inBuffer[1] == 0xdead || inBuffer[1] == 0xadde || inBuffer[1] == 0xbeef || inBuffer[1] == 0xefbe) {
-				ledGreen <: 0;
-			} else {
-				ledGreen <: 1;
-			}
-
-			if (inBuffer[1] == 0xaaaa || inBuffer[1] == 0x6666) {
-				ledRed <: 0;
-			} else {
-				ledRed <: 1;
-			}
-#endif
-			break;
-
-		default:
-			if (ready) {
-				printstr("[APP DEBUG] transmit (echo)\n");
-				for (i=0; i<(outBuffer[0]+1); i++) {
-					pdo_out <: outBuffer[i];
-				}
-
-#if 0
-				for (i=0; i<(outBuffer[0]+1); i++) {
-				printstr("sent value: "); printint(i);
-				printstr(": "); printhexln(outBuffer[i]);
-
-				}
-#endif
-				ready = 0;
-			}
-			break;
-		}
-#endif
-
-#if 0
-		if (count>0) {
-			/* echo pdo input */
-			printstr("[APP DEBUG] echo pdo packet\n");
-			outCount=0;
-			while (outCount < count) {
-				pdo_out <: inBuffer[outCount++];
-			}
-		}
-#endif
-
 		t :> time;
 		t when timerafter(time+delay) :> void;
 	}
@@ -501,8 +315,8 @@ int main(void) {
 	chan eoe_sig;
 	chan foe_in;   ///< File from module_ethercat to consumer
 	chan foe_out;  ///< File from consumer to module_ethercat
-	chan pdo_in;
-	chan pdo_out;
+	chan pdo_in;   ///< input to pdo_hanlder()
+	chan pdo_out;  ///< output from pdo_handler()
 
 	par {
 		on stdcore[0] : {
