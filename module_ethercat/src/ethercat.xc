@@ -232,7 +232,13 @@ static int ecat_write(uint16_t address, uint16_t word)
 	return 0;
 }
 
-// len - length of buf[] in 16-bit words
+/* write block of values to ram
+ *
+ * param addr   start address where data should go
+ * param len    length of buf[] in 16-bit words
+ * param buf[]  buffer of values to write
+ * return number of words written
+ */
 static unsigned int ecat_write_block(uint16_t addr, uint16_t len, uint16_t buf[])
 {
 	unsigned int wordcount = 0;
@@ -278,38 +284,6 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		ecat_read_block(start, wordCount, buffer);
 		ecat_send_handler(c_pdo, buffer, wordCount);
 
-#if 0 /* 2012-11-29 jes: disable echo foo */
-		/* FIXME: makeshift echo the buffer packet */
-		/* FIXME is it really necessary to echo the packet? */
-		for (i=0; i<8; i++) {
-			if ((manager[i].activate&0x01) != 1) {
-				continue;
-			}
-
-			if ((manager[i].control&0x0f) == SYNCM_BUFFER_MODE_WRITE) {
-				address = manager[i].address;
-				for (wc=0; wc<wordCount; wc++) {
-					ecat_write(address, buffer[wc]);
-					address+=2;
-				}
-
-				/* padding to make buffer active */
-				for (wc; wc<manager[i].size; wc++) {
-					ecat_write(address, buffer[wc]);
-					address+=2;
-				}
-			}
-		}
-		/* end buffer echo test */
-#endif
-		/* DEBUG print * /
-		printstr("DEBUG ecat_handler: ");
-		for (wc=0; wc<wordCount; wc++) {
-			printstr(" ");
-			printhex(buffer[wc]);
-		}
-		printstr("\n");
-		// */
 		break;
 
 	case SYNCM_MAILBOX_MODE:
@@ -320,11 +294,6 @@ static int ecat_process_packet(uint16_t start, uint16_t size, uint8_t type,
 		h.priority = (buffer[2]>>6)&0x0003;
 		h.type = (buffer[2]>>8)&0x000f;
 		h.control = (buffer[2]>>12)&0x0007;
-
-#if 0 /* DEBUG */
-		printstr("[DEBUG ecat_process_packet()] Received mailbox packet of type: 0x");
-		printhexln(h.type);
-#endif
 
 		if (wordCount < (h.length/2)) {
 			wordCount = wordCount;
@@ -648,7 +617,6 @@ static void ecat_clear_fmmu(void)
 
 static int ecat_read_fmmu(uint16_t data[])
 {
-	/* Assumption: there is only one FMMU read channel */
 	int i,j;
 	unsigned int wordCount=0;
 	uint16_t address;
@@ -664,10 +632,6 @@ static int ecat_read_fmmu(uint16_t data[])
 			for (j=0; j<wordCount; j++) {
 				data[j] = ecat_read(address);
 				address+=2;
-				/* DEBUG * /
-				printstr("FMMU content ("); printint(j); printstr(") = ");
-				printhexln(data[j]);
-				// */
 			}
 		}
 	}
