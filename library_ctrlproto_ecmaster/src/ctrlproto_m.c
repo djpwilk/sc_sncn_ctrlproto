@@ -162,7 +162,7 @@ void handleEcat(master_setup_variables_t *master_setup,
 	//If first Run, skip this.
 	if(master_setup->nFirstRun)
 	{
-		usleep(pause_betw_loops);
+
 		//Sending values out
 	    for(slv=0;slv<slave_num;++slv)
 	    {
@@ -174,16 +174,17 @@ void handleEcat(master_setup_variables_t *master_setup,
 	    }
 		ecrt_domain_queue(master_setup->domain);
 		ecrt_master_send(master_setup->master);
+		user_alarms++;
 	}
 	else
 	{
 		master_setup->nFirstRun=1;
 	}
 	//EC CYCLE BEGIN -->
-//	 pause();
 
-//	while (sig_alarms != user_alarms)
-//	{
+
+	 if(sig_alarms == user_alarms) pause();
+
 		//ecrt_master_sync_slave_clocks(master_setup->master);
 		ecrt_master_receive(master_setup->master);
 		ecrt_domain_process(master_setup->domain);

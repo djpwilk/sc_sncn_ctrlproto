@@ -411,22 +411,6 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 			printstr("\nTorque: ");
 			printintln(InOut.in_torque);
 		}
-//		else if(InOutOld.out_position != InOut.out_position )
-//		{
-//			printstr("\nOut_Position: ");
-//			printintln(InOut.out_position);
-//		}
-//		else if(InOutOld.out_speed != InOut.out_speed )
-//		{
-//			printstr("\nOut_Speed: ");
-//			printintln(InOut.out_speed);
-//		}
-//		else if(InOutOld.out_torque != InOut.out_torque)
-//		{
-//			printstr("\nOut_Torque: ");
-//			printintln(InOut.out_torque);
-//		}
-
 
 	   InOutOld.ctrl_motor 	= InOut.ctrl_motor;
 	   InOutOld.in_position = InOut.in_position;

@@ -7,6 +7,7 @@
 int main()
 {
 	int i=0;
+	int j=0;
 
 	unsigned int old_cmd=0;
 	int16_t old_value=0;
@@ -14,6 +15,7 @@ int main()
 		init_master(&master_setup, slv_handles, 1);
 	while(1)
 	{
+		j++;
 		handleEcat(&master_setup,slv_handles, NUM_SLAVES, 1000);
 
 
@@ -38,7 +40,7 @@ int main()
 		case 0: setSlave(0,CTRL_TORQUE,0,true,slv_handles);
 		break;
 
-		case 1: setSlave(0,SET_SETPOINT_TORQUE,-100,true,slv_handles);
+		case 1: setSlave(0,SET_SETPOINT_TORQUE,0,true,slv_handles);
 		break;
 
 		case 2: setSlave(0,SET_SETPOINT_POSITION,200,true,slv_handles);

@@ -111,6 +111,11 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 			 		//printstrln("STRQ");
 					outval=InOut.in_torque;
 				break;
+			default:
+//					printstr("Unknown-State! Output:");
+//					printhexln(output);
+//					printhexln(value);
+				break;
 			}
 
 			output&=0xFF;
