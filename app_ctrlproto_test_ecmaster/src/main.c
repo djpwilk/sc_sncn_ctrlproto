@@ -11,6 +11,7 @@ int main()
 	unsigned int old_cmd=0;
 	int16_t old_value=0;
 
+		init_master(&master_setup, slv_handles, 1);
 	while(1)
 	{
 		handleEcat(&master_setup,slv_handles, NUM_SLAVES, 1000);
@@ -31,7 +32,7 @@ int main()
 		}
 
 
-		if(master_setup.opFlag)
+		//if(master_setup.opFlag)
 		switch(i)
 		{
 		case 0: setSlave(0,CTRL_TORQUE,0,true,slv_handles);
@@ -46,7 +47,7 @@ int main()
 		case 3: setSlave(0,SET_SETPOINT_SPEED,-300,true,slv_handles);
 		break;
 
-		case 4: setSlave(0,GET_POSITION,-300,true,slv_handles);
+		case 4: setSlave(0,GET_POSITION,0,true,slv_handles);
 		break;
 		}
 		i++;

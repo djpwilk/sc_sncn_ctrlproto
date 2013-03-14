@@ -2,10 +2,21 @@
 #include <string.h>
 #include <stdio.h>
 #include <ecrt.h>
+#include <errno.h>
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 
 #define SOMANET_ID 0x000022d2, 0x00000201
-
-
+static unsigned int user_alarms = 0;
+static unsigned int sig_alarms = 0;
+static struct itimerval tv;
+struct sigaction sa;
 
 int16_t fromFloat(float value)
 {
@@ -17,6 +28,13 @@ float toFloat(int16_t value)
 	return (float)(value/1000);
 }
 
+void signal_handler(int signum) {
+    switch (signum) {
+        case SIGALRM:
+            sig_alarms++;
+            break;
+    }
+}
 
 
 void init_master(master_setup_variables_t *master_setup,
@@ -52,7 +70,17 @@ void init_master(master_setup_variables_t *master_setup,
 			fprintf(stderr, "Failed to get slave configuration.\n");
 			exit (-1);
 		}
+
+
+	    if (ecrt_slave_config_pdos(slv_handles[slv].slave_config, EC_END, slv_handles[slv].__sync_info)) {
+	        fprintf(stderr, "Failed to configure PDOs.\n");
+	    	exit (-1);
+	    }
 	}
+
+
+
+
 
 	printf("Registering pdo entry list...");
 	if (ecrt_domain_reg_pdo_entry_list(master_setup->domain, master_setup->domain_regs))
@@ -92,8 +120,36 @@ void init_master(master_setup_variables_t *master_setup,
 	printf("Link is %s.\n", master_setup->master_state.link_up ? "up" : "down");
 
 	ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
-}
 
+
+#if PRIORITY
+    pid_t pid = getpid();
+    if (setpriority(PRIO_PROCESS, pid, -19))
+        fprintf(stderr, "Warning: Failed to set priority: %s\n",
+                strerror(errno));
+#endif
+
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    if (sigaction(SIGALRM, &sa, 0)) {
+        fprintf(stderr, "Failed to install signal handler!\n");
+        exit(-1);
+    }
+
+    printf("Starting timer...\n");
+    tv.it_interval.tv_sec = 0;
+    tv.it_interval.tv_usec = 1000000 / 100; //FREQUENCY
+    tv.it_value.tv_sec = 0;
+    tv.it_value.tv_usec = 1000;
+
+    if (setitimer(ITIMER_REAL, &tv, NULL)) {
+    	printf("FAILED TO START TIMER!");
+//        fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
+//        return 1;
+    }
+
+}
 
 
 void handleEcat(master_setup_variables_t *master_setup,
@@ -110,52 +166,53 @@ void handleEcat(master_setup_variables_t *master_setup,
 		//Sending values out
 	    for(slv=0;slv<slave_num;++slv)
 	    {
+
 	    	//Write slave values
 	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out_1,slv_handles[slv].out[0]);
 	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out_2,slv_handles[slv].out[1]);
+
 	    }
-		ecrt_master_send(master_setup->master);
 		ecrt_domain_queue(master_setup->domain);
+		ecrt_master_send(master_setup->master);
 	}
 	else
 	{
-		init_master(master_setup, slv_handles, slave_num);
-	}
-
-	//LOOP BEGIN -->
-	ecrt_master_receive(master_setup->master);
-    ecrt_domain_process(master_setup->domain);
-	if(!master_setup->nFirstRun)
-	{
 		master_setup->nFirstRun=1;
 	}
+	//EC CYCLE BEGIN -->
+//	 pause();
 
-	//Receiving
-	for(slv=0;slv<slave_num;++slv)
-	{
-		slv_handles[slv].in[0]=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in_1);
-		slv_handles[slv].in[1]=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in_2);
-		uint8_t hb=(uint8_t)(slv_handles[slv].in[0]&0xFF00);
-		slv_handles[slv].in[0]&=0xFF;
+//	while (sig_alarms != user_alarms)
+//	{
+		//ecrt_master_sync_slave_clocks(master_setup->master);
+		ecrt_master_receive(master_setup->master);
+		ecrt_domain_process(master_setup->domain);
 
-		if(slv_handles[slv].is_responding!=false)
-		slv_handles[slv].is_responding=slv_handles[slv].__last_heartbeat_value!=hb;
-	}
 
-	//Check for master und domain state
-	ecrt_master_state(master_setup->master, &master_setup->master_state);
-	ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
-	if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
-	{
-		printf("Operational!\n");
-			master_setup->opFlag = 1;
-	}
+		//Receiving
+		for(slv=0;slv<slave_num;++slv)
+		{
+			slv_handles[slv].in[0]=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in_1);
+			slv_handles[slv].in[1]=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in_2);
+			uint8_t hb=((uint8_t)(slv_handles[slv].in[0]&0xFF00)>>8);
+			slv_handles[slv].in[0]&=0xFF;
 
-	if(!master_setup->opFlag)
-	{
+			if(!slv_handles[slv].is_responding)
+			{
+				slv_handles[slv].is_responding=(slv_handles[slv].__last_heartbeat_value  !=   hb);
+				slv_handles[slv].__last_heartbeat_value=hb;
+			}
+
+		}
+
+		//Check for master und domain state
+		ecrt_master_state(master_setup->master, &master_setup->master_state);
 		ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
-	}
-
+		if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
+		{
+			printf("Operational!\n");
+				master_setup->opFlag = 1;
+		}
 }
 
 bool setSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t cmd, int16_t value, bool force_write, ctrlproto_slv_handle *slv_handles)
@@ -181,12 +238,5 @@ bool getSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t *what, int16_t *value
 	*what=ptr->in[0]&0xFF;
 	*value=ptr->in[1];
 
-	if(!ptr->is_responding)
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	return ptr->is_responding;
 }

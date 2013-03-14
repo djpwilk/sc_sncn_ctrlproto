@@ -79,8 +79,6 @@ typedef struct
 	 */
 	ec_slave_config_t *slave_config;
 
-
-
 	/**
 	 * The slave alias
 	 */
@@ -155,6 +153,11 @@ typedef struct
 	uint8_t *domain_pd;
 
 }master_setup_variables_t;
+
+
+void init_master(master_setup_variables_t *master_setup,
+				 ctrlproto_slv_handle *slv_handles,
+				 unsigned int slave_num);
 
 /**
  * This function handles the ethercat master communication,
