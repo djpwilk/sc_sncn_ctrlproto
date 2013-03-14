@@ -105,6 +105,8 @@ on stdcore[0]: in  port ecatBUSY = XS1_PORT_1J;
 on stdcore[0]: in  port ecatIRQ = XS1_PORT_1I;
 //on stdcore[0]: in port ecatEEPROM = XS1_PORT_???;
 /* reset ??? */
+on stdcore[0]: out port ecatRST = XS1_PORT_1F;
+
 
 on stdcore[0]: out port ecatAddress = XS1_PORT_16B;
 on stdcore[0]:     port ecatData = XS1_PORT_16A;
@@ -697,6 +699,8 @@ int ecat_init(void)
 	ecatWR <: 1;
 	ecatRD <: 1;
 	ecatData <: 0x0000;
+
+	ecatRST <: 0;
 
 	for (i=0; i<EC_FMMU_COUNT; i++) {
 		fmmu[i].logical_start = 0;
