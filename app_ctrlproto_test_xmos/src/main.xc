@@ -375,7 +375,7 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 {
 	timer t;
 
-	const unsigned int delay = 1000000;
+	const unsigned int delay = 125000;
 	unsigned int time = 0;
 
 	static int16_t i=0;

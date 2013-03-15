@@ -13,13 +13,13 @@ int main()
 	{
 		j++;
 		handleEcat(&master_setup,slv_handles, NUM_SLAVES);
-    	slv_handles[0].motorctrl_cmd_out=9;
-      	slv_handles[0].torque_out=200003;
-      	slv_handles[0].speed_out=300002;
-      	slv_handles[0].position_out=400001;
-      	slv_handles[0].userdef_out=500004;
+    	slv_handles[0].motorctrl_cmd=CTRL_F_POSITION | CTRL_F_SPEED | CTRL_F_TORQUE;
+      	slv_handles[0].torque_setpoint=200003;
+      	slv_handles[0].speed_setpoint=300002;
+      	slv_handles[0].position_setpoint=400001;
+      	slv_handles[0].userdef_setpoint=500004;
 
-      	printf("%i\n",slv_handles[0].motorctrl_cmd_in);
+      	printf("%i\n",slv_handles[0].motorctrl_cmd_readback);
       	printf("%i\n",slv_handles[0].speed_in);
       	printf("%i\n",slv_handles[0].torque_in);
 		printf("%i\n",slv_handles[0].position_in);

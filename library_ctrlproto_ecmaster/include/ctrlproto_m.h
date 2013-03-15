@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <ecrt.h>
 #include <inttypes.h>
+#include "../../common_cmd/cmds.h"
 
 
 #ifdef __cplusplus
@@ -91,32 +92,32 @@ typedef struct
 	/**
 	 * outgoing commands
 	 */
-	uint16_t motorctrl_cmd_out;
+	uint16_t motorctrl_cmd;
+
+	/**
+	 * outgoing torque (use fromFloatFunction to set it)
+	 */
+	uint32_t torque_setpoint;
 
 	/**
 	 * outgoing torque
 	 */
-	uint32_t torque_out;
-
-	/**
-	 * outgoing torque
-	 */
-	uint32_t speed_out;
+	uint32_t speed_setpoint;
 
 	/**
 	 * outgoing position
 	 */
-	uint32_t position_out;
+	uint32_t position_setpoint;
 
 	/**
 	 * outgoing userdefined value
 	 */
-	uint32_t userdef_out;
+	uint32_t userdef_setpoint;
 
 	/**
 	 * outgoing commands
 	 */
-	uint16_t motorctrl_cmd_in;
+	uint16_t motorctrl_cmd_readback;
 
 	/**
 	 * incoming torque
