@@ -23,105 +23,69 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 	unsigned int count=0;
 	unsigned int outCount=0;
 	unsigned int tmp;
-	static uint16_t cmd, cmd_old;
-	static int16_t value, value_old;
 	unsigned ready = 0;
 	int i;
 
-	static int16_t output,  outval;
-	static uint8_t  heartbeat;
 
+	count = 0;
 
+	pdo_in <: DATA_REQUEST;
+	pdo_in :> count;
+	for (i=0; i<count; i++) {
+		pdo_in :> inBuffer[i];
+	}
 
-		count = 0;
+	//Test for matching number of words
+	if(count==9)
+	{
+		InOut.ctrl_motor=inBuffer[0]&&0xFF;
+		InOut.command_number=(inBuffer[0]&&0xFF00)>>8;
+		InOut.in_torque=(inBuffer[1]<<16)  | (inBuffer[2]);
+		InOut.in_speed=(inBuffer[3]<<16)  | (inBuffer[4]);
+		InOut.in_position=(inBuffer[5]<<16)  | (inBuffer[6]);
+		InOut.in_userdefined=(inBuffer[7]<<16)  | (inBuffer[8]);
+	}
 
-		pdo_in <: DATA_REQUEST;
-		pdo_in :> count;
-		for (i=0; i<count; i++) {
-			pdo_in :> inBuffer[i];
-		}
-
-		if(count==2)
+	if(count==9)
+	{
+		pdo_out <: count;
+		for (i=0; i<count; i++)
 		{
-			cmd=inBuffer[0];
-			value=inBuffer[1];
-		}
-		if(cmd_old != cmd || value != value_old)
-		{
-			cmd_old = cmd;
-			value_old=value;
-			heartbeat++;
-		}
-
-
-		if(cmd<=__ENUM_MC_END) //Motor control command
+			unsigned int pdo_tmp=0;
+			switch(i)
 			{
-				InOut.ctrl_motor=cmd;
-			}
-			if(cmd<__ENUM_SET_END) //Select output command
-			{
-				switch(cmd)
-				{
-				case SET_SETPOINT_SPEED:
-					InOut.in_speed=value;
-					break;
-				case SET_SETPOINT_TORQUE:
-					InOut.in_torque=value;
-					break;
-				case SET_SETPOINT_POSITION:
-					InOut.in_position=value;
-					break;
-				}
-			}
-			else if(cmd <__ENUM_OUT_END)
-			{
-				output=cmd; //Set output
-			}
-
-			switch(output)
-			{
-			case GET_POSITION:
-					//printstrln("POS");
-					outval=InOut.out_position;
+			case 0:
+				pdo_tmp=InOut.command_number<<8 | InOut.ctrl_motor;
 				break;
-			case GET_SPEED:
-					//printstrln("SPE");
-					outval=InOut.out_speed;
+			case 1:
+				pdo_tmp=(InOut.out_torque&0xFFFF0000>>16);
 				break;
-			case GET_TORQUE:
-					//printstrln("TRQ");
-					outval=InOut.out_torque;
+			case 2:
+				pdo_tmp=InOut.out_torque&0x0000FFFF;
 				break;
-			case GET_SETPOINT_POSITION:
-				 	//printstrln("SPOS");
-					outval=InOut.in_position;
+			case 3:
+				pdo_tmp=(InOut.out_speed&0xFFFF0000>>16);
 				break;
-			case GET_SETPOINT_SPEED:
-			 		//printstrln("SSPE");
-					outval=InOut.in_speed;
+			case 4:
+				pdo_tmp=InOut.out_speed&0x0000FFFF;
 				break;
-			case GET_SETPOINT_TORQUE:
-			 		//printstrln("STRQ");
-					outval=InOut.in_torque;
+			case 5:
+				pdo_tmp=(InOut.out_position&0xFFFF0000>>16);
+				break;
+			case 6:
+				pdo_tmp=InOut.out_position&0x0000FFFF;
+				break;
+			case 7:
+				pdo_tmp=(InOut.out_userdefined&0xFFFF0000>>16);
+				break;
+			case 8:
+				pdo_tmp=InOut.out_userdefined&0x0000FFFF;
 				break;
 			default:
+				pdo_tmp=0xEEEEEEEE;
 				break;
 			}
-
-			output&=0xFF;
-			tmp=output|(heartbeat<<8);
-
-			inBuffer[0]=tmp;
-			tmp = outval;
-			inBuffer[1]=tmp;
-
-		if (count>0) {
-			pdo_out <: count;
-			for (i=0; i<count; i++)
-			{
-				pdo_out <: inBuffer[i];
-			}
+			pdo_out <: pdo_tmp;
 		}
-
-//	}
+	}
 }

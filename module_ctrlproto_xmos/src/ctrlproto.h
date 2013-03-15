@@ -7,13 +7,16 @@
  */
 typedef struct
 {
-	int16_t out_speed;			//!< 	Sensored speed
-	int16_t out_torque;			//!< 	Sensored torque
-	int16_t out_position;		//!<  	Sensored position
-	uint16_t ctrl_motor;		//!< 	Output which controlling methods shall be used. Flag based, see CTRL_ values in the enum.
-	int16_t in_speed;			//!< 	Speed value setting
-	int16_t in_torque;			//!< 	Torque value setting
-	int16_t in_position;		//!< 	Position value setting
+	int32_t out_speed;			//!< 	Sensored speed
+	int32_t out_torque;			//!< 	Sensored torque
+	int32_t out_position;		//!<  	Sensored position
+	uint8_t ctrl_motor;			//!< 	Output which controlling methods shall be used.
+	int32_t in_speed;			//!< 	Speed value setting
+	int32_t in_torque;			//!< 	Torque value setting
+	int32_t in_position;		//!< 	Position value setting
+	uint8_t	command_number;		//!< 	Command number
+	uint32_t in_userdefined;	//!< 	Userdefined in
+	uint32_t out_userdefined;	//!< 	Userdefined out
 } ctrl_proto_values_t;
 
 /**
