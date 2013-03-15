@@ -420,7 +420,7 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 	   InOutOld.out_speed 	= InOut.out_speed;
 	   InOutOld.out_torque 	= InOut.out_torque;
 
-		t when timerafter(time+delay) :> void;
+
 	}
 
 }

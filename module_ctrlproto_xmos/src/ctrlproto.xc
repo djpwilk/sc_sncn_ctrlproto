@@ -31,14 +31,7 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 	static int16_t output,  outval;
 	static uint8_t  heartbeat;
 
-	timer t;
-	const unsigned int delay = 100;
-	unsigned int time = 0;
 
-
-	t :> time;
-
-	t when timerafter(time+delay) :> void;
 
 		count = 0;
 
@@ -112,9 +105,6 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 					outval=InOut.in_torque;
 				break;
 			default:
-//					printstr("Unknown-State! Output:");
-//					printhexln(output);
-//					printhexln(value);
 				break;
 			}
 
