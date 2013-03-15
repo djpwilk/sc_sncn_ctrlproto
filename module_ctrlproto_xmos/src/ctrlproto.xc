@@ -10,9 +10,11 @@ void init_ctrl_proto(ctrl_proto_values_t &InOut)
 	InOut.in_position=0;
 	InOut.in_speed=0;
 	InOut.in_torque=0;
+	InOut.in_userdefined=0;
 	InOut.out_position=0;
 	InOut.out_speed=0;
 	InOut.out_torque=0;
+	InOut.out_userdefined=0;
 }
 
 void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)

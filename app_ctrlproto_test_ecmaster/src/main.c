@@ -23,6 +23,7 @@ int main()
       	printf("%i\n",slv_handles[0].speed_in);
       	printf("%i\n",slv_handles[0].torque_in);
 		printf("%i\n",slv_handles[0].position_in);
+		printf("%i\n",slv_handles[0].userdef_in);
 	}
 	return 0;
 }
