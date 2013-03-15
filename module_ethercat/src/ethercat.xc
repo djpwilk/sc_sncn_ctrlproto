@@ -791,7 +791,7 @@ int ecat_reset(void)
  * };
  *
  */
-#define PDO_BUFFER    4
+#define PDO_BUFFER    64
 
 void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 			chanend c_eoe_r, chanend c_eoe_s, chanend c_eoe_sig,
