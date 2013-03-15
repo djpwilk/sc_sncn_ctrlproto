@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <ecrt.h>
 #include <inttypes.h>
-#include <ctrlproto_command.h>
+
 
 #ifdef __cplusplus
 extern "C"
@@ -27,15 +27,15 @@ typedef struct
 	 * This links to the output variable inside the
 	 * ec_pdo_entry_reg_t array for the somanet slave
 	 */
-	unsigned int __ecat_slave_out_1;
-	unsigned int __ecat_slave_out_2;
+	unsigned int __ecat_slave_out[5];
+
 
 	/**
 	 * This links to the input variable inside the
 	 * ec_pdo_entry_reg_t array for the somanet slave
 	 */
-	unsigned int __ecat_slave_in_1;
-	unsigned int __ecat_slave_in_2;
+	unsigned int __ecat_slave_in[5];
+
 
 	/**
 	 * The PDO entries
@@ -99,15 +99,25 @@ typedef struct
 	 */
 	uint32_t slave_productid;
 
-	/**
-	 * Variable for data received from the slave (2 times 16 Bit)
-	 */
-	uint16_t out[2];
 
 	/**
-	 * Variable for outgoing data
+	 * TODO
 	 */
-	uint16_t in[2];
+	uint16_t motorctrl_cmd_out;
+	uint32_t torque_out;
+	uint32_t speed_out;
+	uint32_t position_out;
+	uint32_t userdef_out;
+
+	/**
+	 * TODO
+	 */
+	uint16_t motorctrl_cmd_in;
+	uint32_t torque_in;
+	uint32_t speed_in;
+	uint32_t position_in;
+	uint32_t userdef_in;
+
 }ctrlproto_slv_handle;
 
 typedef struct
@@ -179,7 +189,7 @@ void handleEcat(master_setup_variables_t *master_setup,
  * @param value The float value
  * @return Float multiplied with 1000
  */
-int16_t fromFloat(float value);
+int32_t fromFloat(float value);
 
 /**
  * Devides a 16 Bit integer by 1000 and returns a float value.
@@ -187,27 +197,7 @@ int16_t fromFloat(float value);
  * @param value Integer value from slave (torque)
  * @return Integer value
  */
-float toFloat(int16_t value);
-
-/**
- * Sends a command to a slave.
- *
- * @param slave_no Number of the slave handle inside the array (NO SIZE CHECK!).
- * @param cmd a command defined in the given struct
- * @param value The value to be sent with the command
- * @param force_write This will write the value, even if the slave is not responding
- * @param slv_handles The array for the slave handles
- */
-bool setSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t cmd, int16_t value, bool force_write, ctrlproto_slv_handle *slv_handles);
-
-/**
- * @param slave_no Number of the slave handle inside the array (NO SIZE CHECK!).
- * @param cmd a command defined in the given struct, only will contain commands beginning with GET
- * @param value The read value
- * @param slv_handles The array for the slave handles
- */
-bool getSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t *what, int16_t *value, ctrlproto_slv_handle *slv_handles);
-
+float toFloat(int32_t value);
 
 #ifdef __cplusplus
 }

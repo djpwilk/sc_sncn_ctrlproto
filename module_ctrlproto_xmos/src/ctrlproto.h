@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <ctrlproto_command.h>
 
 
 /**

@@ -18,15 +18,21 @@
  */
 
 ec_pdo_entry_info_t slave_0_pdo_entries[] = {
-    {0x6000, 0x01, 16}, /*  */
-    {0x6000, 0x02, 16}, /*  */
-    {0x7000, 0x01, 16}, /*  */
-    {0x7000, 0x02, 16}, /*  */
+    {0x7000, 0x01, 16}, /* ECAT Out1 */
+    {0x7000, 0x02, 32}, /* ECAT Out2 */
+    {0x7000, 0x03, 32}, /* ECAT Out2 */
+    {0x7000, 0x04, 32}, /* ECAT Out2 */
+    {0x7000, 0x05, 32}, /* ECAT Out2 */
+    {0x6000, 0x01, 16}, /* ECAT In1 */
+    {0x6000, 0x02, 32}, /* ECAT In2 */
+    {0x6000, 0x03, 32}, /* ECAT In2 */
+    {0x6000, 0x04, 32}, /* ECAT In2 */
+    {0x6000, 0x05, 32}, /* ECAT In2 */
 };
 
 ec_pdo_info_t slave_0_pdos[] = {
-    {0x1600, 2, slave_0_pdo_entries + 0}, /* Rx PDO Mapping */
-    {0x1a00, 2, slave_0_pdo_entries + 2}, /* Tx PDO Mapping */
+    {0x1a00, 5, slave_0_pdo_entries + 0}, /* Outputs */
+    {0x1600, 5, slave_0_pdo_entries + 5}, /* Inputs */
 };
 
 ec_sync_info_t slave_0_syncs[] = {
@@ -44,10 +50,8 @@ static ctrlproto_slv_handle slv_handles[]=
 {
 		//Slave 0
 		{
-			0,
-			0,
-			0,
-			0,
+			{0,0,0,0,0},
+			{0,0,0,0,0},
 			slave_0_pdo_entries,
 			slave_0_pdos,
 			slave_0_syncs,
@@ -58,8 +62,16 @@ static ctrlproto_slv_handle slv_handles[]=
 			0,
 			SOMANET_0_Pos,
 			SOMANET_ID,
-			{0,0},
-			{0,0}
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
 		},
 };
 
@@ -68,10 +80,16 @@ static ctrlproto_slv_handle slv_handles[]=
  * Use the starting addresses for the digital I/O (see Output of ethercat -> pdo_entries[] )
  */
 const static ec_pdo_entry_reg_t domain_regs[] = {
-{SOMANET_0_Pos, SOMANET_ID, 0x6000, 1, &(slv_handles[0].__ecat_slave_out_1)},
-{SOMANET_0_Pos, SOMANET_ID, 0x6000, 2, &(slv_handles[0].__ecat_slave_out_2)},
-{SOMANET_0_Pos, SOMANET_ID, 0x7000, 1, &(slv_handles[0].__ecat_slave_in_1)},
-{SOMANET_0_Pos, SOMANET_ID, 0x7000, 2, &(slv_handles[0].__ecat_slave_in_2)},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 1, &(slv_handles[0].__ecat_slave_out[0])},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 2, &(slv_handles[0].__ecat_slave_out[1])},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 3, &(slv_handles[0].__ecat_slave_out[2])},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 4, &(slv_handles[0].__ecat_slave_out[3])},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 5, &(slv_handles[0].__ecat_slave_out[4])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 1, &(slv_handles[0].__ecat_slave_in[0])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 2, &(slv_handles[0].__ecat_slave_in[1])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 3, &(slv_handles[0].__ecat_slave_in[2])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 4, &(slv_handles[0].__ecat_slave_in[3])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 5, &(slv_handles[0].__ecat_slave_in[4])},
 {}
 };
 

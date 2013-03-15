@@ -18,14 +18,14 @@ static unsigned int sig_alarms = 0;
 static struct itimerval tv;
 struct sigaction sa;
 
-int16_t fromFloat(float value)
+int32_t fromFloat(float value)
 {
-	return (int16_t)(value*1000);
+	return (int32_t)(value*10000);
 }
 
-float toFloat(int16_t value)
+float toFloat(int32_t value)
 {
-	return (float)(value/1000);
+	return (float)(value/10000);
 }
 
 void signal_handler(int signum) {
@@ -166,11 +166,12 @@ void handleEcat(master_setup_variables_t *master_setup,
 		//Sending values out
 	    for(slv=0;slv<slave_num;++slv)
 	    {
-
 	    	//Write slave values
-	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out_1,slv_handles[slv].out[0]);
-	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out_2,slv_handles[slv].out[1]);
-
+	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[0],slv_handles[slv].motorctrl_cmd_out);
+	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[1],slv_handles[slv].torque_out);
+	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[2],slv_handles[slv].speed_out);
+	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[3],slv_handles[slv].position_out);
+	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[4],slv_handles[slv].userdef_out);
 	    }
 		ecrt_domain_queue(master_setup->domain);
 		ecrt_master_send(master_setup->master);
@@ -193,10 +194,13 @@ void handleEcat(master_setup_variables_t *master_setup,
 		//Receiving
 		for(slv=0;slv<slave_num;++slv)
 		{
-			slv_handles[slv].in[0]=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in_1);
-			slv_handles[slv].in[1]=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in_2);
-			uint8_t hb=((uint8_t)(slv_handles[slv].in[0]&0xFF00)>>8);
-			slv_handles[slv].in[0]&=0xFF;
+			slv_handles[slv].motorctrl_cmd_in=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[0])&0xFF;
+			slv_handles[slv].torque_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[1]);
+			slv_handles[slv].speed_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[2]);
+			slv_handles[slv].position_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[3]);
+			slv_handles[slv].userdef_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[4]);
+
+			uint8_t hb=((uint8_t)(slv_handles[slv].motorctrl_cmd_in&0xFF00)>>8);
 
 			if(!slv_handles[slv].is_responding)
 			{
@@ -214,30 +218,4 @@ void handleEcat(master_setup_variables_t *master_setup,
 			printf("Operational!\n");
 				master_setup->opFlag = 1;
 		}
-}
-
-bool setSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t cmd, int16_t value, bool force_write, ctrlproto_slv_handle *slv_handles)
-{
-	ctrlproto_slv_handle* ptr=slv_handles+slave_no;
-	if(!ptr->is_responding && !force_write)
-	{
-		return false;
-	}
-	int ret=ptr->is_responding;
-	if(cmd != slv_handles[slave_no].out[0] || value != slv_handles[slave_no].out[1])
-	{
-		ptr->is_responding=false;
-		ptr->out[0]=cmd;
-		ptr->out[1]=value;
-	}
-	return ret;
-}
-
-bool getSlave(unsigned int slave_no, ctrl_proto_xmos_cmd_t *what, int16_t *value, ctrlproto_slv_handle *slv_handles)
-{
-	ctrlproto_slv_handle* ptr=slv_handles+slave_no;
-	*what=ptr->in[0]&0xFF;
-	*value=ptr->in[1];
-
-	return ptr->is_responding;
 }
