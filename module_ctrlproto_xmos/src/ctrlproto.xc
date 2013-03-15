@@ -19,14 +19,8 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 {
 
 	unsigned int inBuffer[64];
-	unsigned int outBuffer[64];
 	unsigned int count=0;
-	unsigned int outCount=0;
-	unsigned int tmp;
-	unsigned ready = 0;
 	int i;
-
-
 	count = 0;
 
 	pdo_in <: DATA_REQUEST;
@@ -38,12 +32,12 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 	//Test for matching number of words
 	if(count==9)
 	{
-		InOut.ctrl_motor=inBuffer[0]&&0xFF;
-		InOut.command_number=(inBuffer[0]&&0xFF00)>>8;
-		InOut.in_torque=(inBuffer[1]<<16)  | (inBuffer[2]);
-		InOut.in_speed=(inBuffer[3]<<16)  | (inBuffer[4]);
-		InOut.in_position=(inBuffer[5]<<16)  | (inBuffer[6]);
-		InOut.in_userdefined=(inBuffer[7]<<16)  | (inBuffer[8]);
+		InOut.ctrl_motor=inBuffer[0]&0xFF;
+		InOut.command_number=(inBuffer[0]&0xFF00)>>8;
+		InOut.in_torque=(inBuffer[1])  | (inBuffer[2]<<16);
+		InOut.in_speed=(inBuffer[3])  | (inBuffer[4]<<16);
+		InOut.in_position=(inBuffer[5])  | (inBuffer[6]<<16);
+		InOut.in_userdefined=(inBuffer[7])  | (inBuffer[8]<<16);
 	}
 
 	if(count==9)
@@ -58,28 +52,28 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 				pdo_tmp=InOut.command_number<<8 | InOut.ctrl_motor;
 				break;
 			case 1:
-				pdo_tmp=(InOut.out_torque&0xFFFF0000>>16);
-				break;
-			case 2:
 				pdo_tmp=InOut.out_torque&0x0000FFFF;
 				break;
-			case 3:
-				pdo_tmp=(InOut.out_speed&0xFFFF0000>>16);
+			case 2:
+				pdo_tmp=(InOut.out_torque&0xFFFF0000)>>16;
 				break;
-			case 4:
+			case 3:
 				pdo_tmp=InOut.out_speed&0x0000FFFF;
 				break;
-			case 5:
-				pdo_tmp=(InOut.out_position&0xFFFF0000>>16);
+			case 4:
+				pdo_tmp=(InOut.out_speed&0xFFFF0000)>>16;
 				break;
-			case 6:
+			case 5:
 				pdo_tmp=InOut.out_position&0x0000FFFF;
 				break;
+			case 6:
+				pdo_tmp=(InOut.out_position&0xFFFF0000)>>16;
+				break;
 			case 7:
-				pdo_tmp=(InOut.out_userdefined&0xFFFF0000>>16);
+				pdo_tmp=InOut.out_userdefined&0x0000FFFF;
 				break;
 			case 8:
-				pdo_tmp=InOut.out_userdefined&0x0000FFFF;
+				pdo_tmp=(InOut.out_userdefined&0xFFFF0000)>>16;
 				break;
 			default:
 				pdo_tmp=0xEEEEEEEE;

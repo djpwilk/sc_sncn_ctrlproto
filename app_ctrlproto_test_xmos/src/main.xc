@@ -375,7 +375,7 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 {
 	timer t;
 
-	const unsigned int delay = 100;
+	const unsigned int delay = 1000000;
 	unsigned int time = 0;
 
 	static int16_t i=0;
@@ -383,11 +383,16 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 	ctrl_proto_values_t InOutOld;
 	init_ctrl_proto(InOut);
 
+
 	while(1)
 	{
 		i++;
-		if(i>=11)i=0;
+		if(i>=1000)i=0;
 		InOut.out_position=i;
+		InOut.out_torque=i;
+		InOut.out_speed=i;
+
+
 		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
 		t :> time;
 
@@ -396,17 +401,20 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 			printstr("\nMotor: ");
 			printintln(InOut.ctrl_motor);
 		}
-		else if(InOutOld.in_position != InOut.in_position )
+
+		if(InOutOld.in_position != InOut.in_position )
 		{
 			printstr("\nPosition: ");
 			printintln(InOut.in_position);
 		}
-		else if(InOutOld.in_speed != InOut.in_speed )
+
+		if(InOutOld.in_speed != InOut.in_speed )
 		{
 			printstr("\nSpeed: ");
 			printintln(InOut.in_speed);
 		}
-		else if(InOutOld.in_torque != InOut.in_torque )
+
+		if(InOutOld.in_torque != InOut.in_torque )
 		{
 			printstr("\nTorque: ");
 			printintln(InOut.in_torque);
@@ -420,26 +428,13 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 	   InOutOld.out_speed 	= InOut.out_speed;
 	   InOutOld.out_torque 	= InOut.out_torque;
 
-
-	}
-
-}
-
-static void led_handler(void)
-{
-	timer t;
-	const unsigned int delay = 50000000;
-	unsigned int time = 0;
-	int blueOn = 0;
-
-	while (1) {
-		t :> time;
 		t when timerafter(time+delay) :> void;
-
-		ledBlue <: blueOn;
-		blueOn = ~blueOn & 0x1;
+		t:>time;
 	}
+
 }
+
+
 
 int main(void) {
 	chan coe_in;   ///< CAN from module_ethercat to consumer
@@ -465,12 +460,6 @@ int main(void) {
 		on stdcore[1] : {
 			check_file(foe_out, foe_in);
 		}
-
-		/*
-		on stdcore[1] : {
-			led_handler();
-		}
-		*/
 
 		on stdcore[1] : {
 			pdo_handler(pdo_out, pdo_in);

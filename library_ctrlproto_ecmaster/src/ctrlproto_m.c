@@ -154,8 +154,7 @@ void init_master(master_setup_variables_t *master_setup,
 
 void handleEcat(master_setup_variables_t *master_setup,
 		        ctrlproto_slv_handle *slv_handles,
-		        unsigned int slave_num,
-		        unsigned int pause_betw_loops)
+		        unsigned int slave_num)
 {
 	int slv;
 
@@ -183,39 +182,32 @@ void handleEcat(master_setup_variables_t *master_setup,
 	}
 	//EC CYCLE BEGIN -->
 
+	if(sig_alarms == user_alarms) pause();
 
-	 if(sig_alarms == user_alarms) pause();
-
-		//ecrt_master_sync_slave_clocks(master_setup->master);
-		ecrt_master_receive(master_setup->master);
-		ecrt_domain_process(master_setup->domain);
+	//ecrt_master_sync_slave_clocks(master_setup->master);
+	ecrt_master_receive(master_setup->master);
+	ecrt_domain_process(master_setup->domain);
 
 
-		//Receiving
-		for(slv=0;slv<slave_num;++slv)
-		{
-			slv_handles[slv].motorctrl_cmd_in=EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[0])&0xFF;
-			slv_handles[slv].torque_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[1]);
-			slv_handles[slv].speed_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[2]);
-			slv_handles[slv].position_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[3]);
-			slv_handles[slv].userdef_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[4]);
+	//Receiving
+	for(slv=0;slv<slave_num;++slv)
+	{
+		slv_handles[slv].motorctrl_cmd_in=(EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[0]))&0xFF;
+		slv_handles[slv].torque_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[1]);
+		slv_handles[slv].speed_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[2]);
+		slv_handles[slv].position_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[3]);
+		slv_handles[slv].userdef_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[4]);
 
-			uint8_t hb=((uint8_t)(slv_handles[slv].motorctrl_cmd_in&0xFF00)>>8);
+//		uint8_t numfromslave=((EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[0]))&0xFF00)>>8;
+//		slv_handles[slv].is_responding= (  numfromslave==slv_handles[slv].msg_num  );
+	}
 
-			if(!slv_handles[slv].is_responding)
-			{
-				slv_handles[slv].is_responding=(slv_handles[slv].__last_heartbeat_value  !=   hb);
-				slv_handles[slv].__last_heartbeat_value=hb;
-			}
-
-		}
-
-		//Check for master und domain state
-		ecrt_master_state(master_setup->master, &master_setup->master_state);
-		ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
-		if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
-		{
-			printf("Operational!\n");
-				master_setup->opFlag = 1;
-		}
+	//Check for master und domain state
+	ecrt_master_state(master_setup->master, &master_setup->master_state);
+	ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
+	if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
+	{
+		printf("Operational!\n");
+			master_setup->opFlag = 1;
+	}
 }

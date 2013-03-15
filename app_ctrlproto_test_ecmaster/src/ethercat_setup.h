@@ -55,9 +55,7 @@ static ctrlproto_slv_handle slv_handles[]=
 			slave_0_pdo_entries,
 			slave_0_pdos,
 			slave_0_syncs,
-			0,
 			false,
-			0,
 			false,
 			0,
 			SOMANET_0_Pos,
@@ -80,16 +78,16 @@ static ctrlproto_slv_handle slv_handles[]=
  * Use the starting addresses for the digital I/O (see Output of ethercat -> pdo_entries[] )
  */
 const static ec_pdo_entry_reg_t domain_regs[] = {
-{SOMANET_0_Pos, SOMANET_ID, 0x6000, 1, &(slv_handles[0].__ecat_slave_out[0])},
-{SOMANET_0_Pos, SOMANET_ID, 0x6000, 2, &(slv_handles[0].__ecat_slave_out[1])},
-{SOMANET_0_Pos, SOMANET_ID, 0x6000, 3, &(slv_handles[0].__ecat_slave_out[2])},
-{SOMANET_0_Pos, SOMANET_ID, 0x6000, 4, &(slv_handles[0].__ecat_slave_out[3])},
-{SOMANET_0_Pos, SOMANET_ID, 0x6000, 5, &(slv_handles[0].__ecat_slave_out[4])},
-{SOMANET_0_Pos, SOMANET_ID, 0x7000, 1, &(slv_handles[0].__ecat_slave_in[0])},
-{SOMANET_0_Pos, SOMANET_ID, 0x7000, 2, &(slv_handles[0].__ecat_slave_in[1])},
-{SOMANET_0_Pos, SOMANET_ID, 0x7000, 3, &(slv_handles[0].__ecat_slave_in[2])},
-{SOMANET_0_Pos, SOMANET_ID, 0x7000, 4, &(slv_handles[0].__ecat_slave_in[3])},
-{SOMANET_0_Pos, SOMANET_ID, 0x7000, 5, &(slv_handles[0].__ecat_slave_in[4])},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 1, &(slv_handles[0].__ecat_slave_in[0])},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 2, &(slv_handles[0].__ecat_slave_in[1])},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 3, &(slv_handles[0].__ecat_slave_in[2])},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 4, &(slv_handles[0].__ecat_slave_in[3])},
+{SOMANET_0_Pos, SOMANET_ID, 0x6000, 5, &(slv_handles[0].__ecat_slave_in[4])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 1, &(slv_handles[0].__ecat_slave_out[0])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 2, &(slv_handles[0].__ecat_slave_out[1])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 3, &(slv_handles[0].__ecat_slave_out[2])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 4, &(slv_handles[0].__ecat_slave_out[3])},
+{SOMANET_0_Pos, SOMANET_ID, 0x7000, 5, &(slv_handles[0].__ecat_slave_out[4])},
 {}
 };
 

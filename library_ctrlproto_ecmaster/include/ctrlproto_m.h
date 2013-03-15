@@ -52,22 +52,10 @@ typedef struct
 	 */
 	ec_sync_info_t *__sync_info;
 
-
-	/**
-	 * This variable counts lost packages for each slave,
-	 * when output heartbeat did not change between the last iteration
-	 */
-	uint64_t __lost_packages_cnt;
-
 	/**
 	 * Internal variable for system start
 	 */
 	bool __start;
-
-	/**
-	 * The heartbeat value from last iteration
-	 */
-	uint8_t __last_heartbeat_value;
 
 	/**
 	 * The user variable to query for if the slave was responding
@@ -101,21 +89,53 @@ typedef struct
 
 
 	/**
-	 * TODO
+	 * outgoing commands
 	 */
 	uint16_t motorctrl_cmd_out;
+
+	/**
+	 * outgoing torque
+	 */
 	uint32_t torque_out;
+
+	/**
+	 * outgoing torque
+	 */
 	uint32_t speed_out;
+
+	/**
+	 * outgoing position
+	 */
 	uint32_t position_out;
+
+	/**
+	 * outgoing userdefined value
+	 */
 	uint32_t userdef_out;
 
 	/**
-	 * TODO
+	 * outgoing commands
 	 */
 	uint16_t motorctrl_cmd_in;
+
+	/**
+	 * incoming torque
+	 */
 	uint32_t torque_in;
+
+	/**
+	 * incoming speed
+	 */
 	uint32_t speed_in;
+
+	/**
+	 * incoming position
+	 */
 	uint32_t position_in;
+
+	/**
+	 * incoming userdefined value
+	 */
 	uint32_t userdef_in;
 
 }ctrlproto_slv_handle;
@@ -176,12 +196,10 @@ void init_master(master_setup_variables_t *master_setup,
  * @param master_setup A struct containing the variables for the master
  * @param slv_handles The handle array for the slaves
  * @param slave_num The size of the handle array
- * @param pause_betw_loops The variable defining the sleep time between each loop
  */
 void handleEcat(master_setup_variables_t *master_setup,
 		        ctrlproto_slv_handle *slv_handles,
-		        unsigned int slave_num,
-		        unsigned int pause_betw_loops);
+		        unsigned int slave_num);
 
 /**
  * Multiplies a float value with 1000 and outputs it as 16 Bit integer.
