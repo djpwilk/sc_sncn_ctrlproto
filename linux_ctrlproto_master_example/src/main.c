@@ -27,12 +27,14 @@ int main()
 			printf("Motor: %i\n",slv_handles[0].motorctrl_cmd);
 			printf("Position: %i\n",slv_handles[0].position_in);
 			printf("Speed: %i\n",slv_handles[0].speed_in);
-			printf("Torque: %i\n",slv_handles[0].torque_in);
+			printf("Torque: %f\n",toFloat(slv_handles[0].torque_in));
 			printf("Userdef: %i\n",slv_handles[0].userdef_in);
 
 		}
 		else
 		{
+			//This is just a example what CAN be done when the master recognizes
+			//that, for example, a slave is now missing...
 			slv_handles[0].motorctrl_cmd= CTRL_STOP;
 			slv_handles[0].torque_setpoint=0;
 			slv_handles[0].speed_setpoint=0;
