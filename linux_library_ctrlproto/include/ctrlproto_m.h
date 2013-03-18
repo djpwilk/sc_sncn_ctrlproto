@@ -52,22 +52,27 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 
 /**
  * This creates a entry for the domain register for a SOMANET device running CTRLPROTO
+ * @param ALIAS The slaves alias
+ * @param POSITION The position of the slave in the ethercat chain
+ * @param ARRAY_POSITION The position of the entry of the slave inside the handles array
  */
-#define SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(ALIAS, POSITION)\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 1, &(slv_handles[POSITION].__ecat_slave_in[0])},\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 2, &(slv_handles[POSITION].__ecat_slave_in[1])},\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 3, &(slv_handles[POSITION].__ecat_slave_in[2])},\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 4, &(slv_handles[POSITION].__ecat_slave_in[3])},\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 5, &(slv_handles[POSITION].__ecat_slave_in[4])},\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 1, &(slv_handles[POSITION].__ecat_slave_out[0])},\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 2, &(slv_handles[POSITION].__ecat_slave_out[1])},\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 3, &(slv_handles[POSITION].__ecat_slave_out[2])},\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 4, &(slv_handles[POSITION].__ecat_slave_out[3])},\
-{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 5, &(slv_handles[POSITION].__ecat_slave_out[4])}
+#define SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(ALIAS, POSITION, ARRAY_POSITION)\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 1, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[0])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 2, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[1])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 3, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[2])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 4, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[3])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 5, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[4])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 1, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[0])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 2, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[1])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 3, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[2])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 4, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[3])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 5, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[4])}
 
 
 /**
  * This creates a entry for the domain entry register for a SOMANET device running CTRLPROTO
+ * @param ALIAS The slaves alias
+ * @param POSITION The position of the slave in the ethercat chain
  */
 #define SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(ALIAS, POSITION)\
 {\
