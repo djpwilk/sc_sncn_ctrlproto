@@ -28,11 +28,11 @@ XMOS_MAKE_PATH ?= ../..
 #Build the masterstuff with the xmos stuff
 all: build_masterstuff
 build_masterstuff:
-	cd ../app_ctrlproto_test_ecmaster; make;
+	cd ../linux_ctrlproto_master_example; make;
 
 #Clean masterstuff with the xmos stuff
 clean:clean_masterstuff
 
 clean_masterstuff:
-	cd  ../app_ctrlproto_test_ecmaster; make clean;
-	cd  ../library_ctrlproto_ecmaster; make clean;
+	cd  ../linux_library_ctrlproto; make clean;
+	cd  ../linux_ctrlproto_master_example; make clean;

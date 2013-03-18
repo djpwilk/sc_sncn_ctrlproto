@@ -7,10 +7,10 @@ SOURCES += src/main.c
 
 INCLUDE_DIRS += -I ../common_include 
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
-INCLUDE_DIRS += -I ../library_ctrlproto_ecmaster/include
+INCLUDE_DIRS += -I ../linux_library_ctrlproto/include
 
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
-LIB_DIRS += -L ../library_ctrlproto_ecmaster/lib
+LIB_DIRS += -L ../linux_library_ctrlproto/lib
 
 LIBS += -lsncn_ctrlproto
 LIBS += -lethercat
@@ -19,7 +19,7 @@ FLAGS = -static
 
 
 all:
-	@cd ../library_ctrlproto_ecmaster; make
+		@cd ../linux_library_ctrlproto; make
 ifneq "$(UNAME)" "Linux"
 		@echo
 		@echo "------------------------------------------------------------------------------------------------------"
@@ -30,7 +30,7 @@ else
 		@if test -d $(MASTER_INSTALLDIR); \
 		then \
 		mkdir bin -p;\
-		gcc $(SOURCES) $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS) $(FLAGS) -o bin/app_ctrlproto_test_ecmaster ; \
+		gcc $(SOURCES) $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS) $(FLAGS) -o bin/linux_ctrlproto_ecmaster_example ; \
 		else echo \
 		"\n\
 		-----------------------------------------------------------------------------------------------------------------\n\
@@ -42,4 +42,4 @@ endif
 ##Add clean Master Application
 clean: masterAppClean
 masterAppClean:
-	rm -f bin/app_ctrlproto_test_ecmaster
+	rm -f bin/linux_ctrlproto_ecmaster_example
