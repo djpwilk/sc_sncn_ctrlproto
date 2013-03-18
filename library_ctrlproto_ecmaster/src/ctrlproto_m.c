@@ -36,7 +36,6 @@ void signal_handler(int signum) {
     }
 }
 
-
 void init_master(master_setup_variables_t *master_setup,
 				 ctrlproto_slv_handle *slv_handles,
 				 unsigned int slave_num)
@@ -137,16 +136,19 @@ void init_master(master_setup_variables_t *master_setup,
         exit(-1);
     }
 
-    printf("Starting timer...\n");
+    printf("Starting timer...");
     tv.it_interval.tv_sec = 0;
     tv.it_interval.tv_usec = 1000000 / 100; //FREQUENCY
     tv.it_value.tv_sec = 0;
     tv.it_value.tv_usec = 1000;
 
     if (setitimer(ITIMER_REAL, &tv, NULL)) {
-    	printf("FAILED TO START TIMER!");
-//        fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
-//        return 1;
+    	printf("\nFailed to start timer!\n");
+    	exit(-1);
+    }
+    else
+    {
+    	printf("ok \n");
     }
 
 }
@@ -197,9 +199,6 @@ void handleEcat(master_setup_variables_t *master_setup,
 		slv_handles[slv].speed_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[2]);
 		slv_handles[slv].position_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[3]);
 		slv_handles[slv].userdef_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[4]);
-
-//		uint8_t numfromslave=((EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[0]))&0xFF00)>>8;
-//		slv_handles[slv].is_responding= (  numfromslave==slv_handles[slv].msg_num  );
 	}
 
 	//Check for master und domain state
@@ -207,7 +206,15 @@ void handleEcat(master_setup_variables_t *master_setup,
 	ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
 	if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
 	{
-		printf("Operational!\n");
+		printf("System up!\n");
 			master_setup->opFlag = 1;
+	}
+	else
+	{
+		if(master_setup->domain_state.wc_state != EC_WC_COMPLETE && master_setup->opFlag)
+		{
+			printf("System down!\n");
+			master_setup->opFlag = 0;
+		}
 	}
 }
