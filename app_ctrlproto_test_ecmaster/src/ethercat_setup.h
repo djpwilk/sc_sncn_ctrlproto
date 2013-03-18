@@ -21,9 +21,16 @@ const static ec_pdo_entry_reg_t domain_regs[] = {
 {}
 };
 
-//This keeps the variables needed for the master
-master_setup_variables_t master_setup={
-		false,false,NULL,{},0,{},domain_regs,NULL,
-};
+/*
+ * Master setup struct
+ */
+MASTER_SETUP_INIT();
+
+
+/**
+ * Increase priority of the master process
+ * !! YOU WILL NEED TO RUN THIS AS ROOT OTHERWISE THE PRIORITY WILL NOT CHANGE!!
+ */
+//#define PRIORITY
 
 #endif /* ETHERCAT_SETUP_H_ */

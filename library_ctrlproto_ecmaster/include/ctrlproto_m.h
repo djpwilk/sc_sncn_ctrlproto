@@ -94,6 +94,14 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 }
 
 /**
+ * Creates and initializes the master setup struct
+ */
+#define MASTER_SETUP_INIT()\
+master_setup_variables_t master_setup={\
+		false,false,NULL,{},0,{},domain_regs,NULL,\
+};
+
+/**
  * This struct is for creating a slave handle for each Somanet Module
  */
 typedef struct
