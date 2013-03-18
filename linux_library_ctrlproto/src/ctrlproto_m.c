@@ -20,12 +20,12 @@ struct sigaction sa;
 
 int32_t fromFloat(float value)
 {
-	return (int32_t)(value*10000);
+	return (int32_t)(value*1000);
 }
 
 float toFloat(int32_t value)
 {
-	return (float)(value/10000);
+	return (float)(value/1000);
 }
 
 void signal_handler(int signum) {
