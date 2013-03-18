@@ -20,6 +20,80 @@ extern "C"
 #endif
 
 /**
+ * This creates the defines for a SOMANET device running CTRLPROTO
+ */
+#define SOMANET_C22_CTRLPROTO_CSTRUCT()\
+ec_pdo_entry_info_t ctrlproto_pdo_entries[] = {\
+    {0x7000, 0x01, 16},\
+    {0x7000, 0x02, 32},\
+    {0x7000, 0x03, 32},\
+    {0x7000, 0x04, 32},\
+    {0x7000, 0x05, 32},\
+    {0x6000, 0x01, 16},\
+    {0x6000, 0x02, 32},\
+    {0x6000, 0x03, 32},\
+    {0x6000, 0x04, 32},\
+    {0x6000, 0x05, 32},\
+};\
+\
+ec_pdo_info_t ctrlproto_pdos[] = {\
+    {0x1a00, 5, ctrlproto_pdo_entries + 0},\
+    {0x1600, 5, ctrlproto_pdo_entries + 5},\
+};\
+\
+ec_sync_info_t ctrlproto_syncs[] = {\
+    {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},\
+    {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},\
+    {2, EC_DIR_OUTPUT, 1, ctrlproto_pdos + 0, EC_WD_DISABLE},\
+    {3, EC_DIR_INPUT, 1, ctrlproto_pdos + 1, EC_WD_DISABLE},\
+    {0xff}\
+}
+
+
+/**
+ * This creates a entry for the domain register for a SOMANET device running CTRLPROTO
+ */
+#define SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(ALIAS, POSITION)\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 1, &(slv_handles[POSITION].__ecat_slave_in[0])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 2, &(slv_handles[POSITION].__ecat_slave_in[1])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 3, &(slv_handles[POSITION].__ecat_slave_in[2])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 4, &(slv_handles[POSITION].__ecat_slave_in[3])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x6000, 5, &(slv_handles[POSITION].__ecat_slave_in[4])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 1, &(slv_handles[POSITION].__ecat_slave_out[0])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 2, &(slv_handles[POSITION].__ecat_slave_out[1])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 3, &(slv_handles[POSITION].__ecat_slave_out[2])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 4, &(slv_handles[POSITION].__ecat_slave_out[3])},\
+{ALIAS, POSITION, 0x000022d2, 0x00000201, 0x7000, 5, &(slv_handles[POSITION].__ecat_slave_out[4])}
+
+
+/**
+ * This creates a entry for the domain entry register for a SOMANET device running CTRLPROTO
+ */
+#define SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(ALIAS, POSITION)\
+{\
+	{0,0,0,0,0},\
+	{0,0,0,0,0},\
+	ctrlproto_pdo_entries,\
+	ctrlproto_pdos,\
+	ctrlproto_syncs,\
+	false,\
+	false,\
+	0,\
+	ALIAS, POSITION,\
+	0x000022d2, 0x00000201,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+	0,\
+}
+
+/**
  * This struct is for creating a slave handle for each Somanet Module
  */
 typedef struct
@@ -140,6 +214,8 @@ typedef struct
 	uint32_t userdef_in;
 
 }ctrlproto_slv_handle;
+
+
 
 typedef struct
 {
