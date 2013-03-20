@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "../common_cmd/cmds.h"
+#include "../../common_cmd/cmds.h"
 
 /**
  *	In/Output Struct for ctrlproto
