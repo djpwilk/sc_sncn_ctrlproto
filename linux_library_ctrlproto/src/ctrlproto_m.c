@@ -168,7 +168,7 @@ void handleEcat(master_setup_variables_t *master_setup,
 	    for(slv=0;slv<slave_num;++slv)
 	    {
 	    	//Write slave values
-	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[0],slv_handles[slv].motorctrl_cmd);
+	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[0],slv_handles[slv].motorctrl_out);
 	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[1],slv_handles[slv].torque_setpoint);
 	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[2],slv_handles[slv].speed_setpoint);
 	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[3],slv_handles[slv].position_setpoint);
@@ -194,7 +194,7 @@ void handleEcat(master_setup_variables_t *master_setup,
 	//Receiving
 	for(slv=0;slv<slave_num;++slv)
 	{
-		slv_handles[slv].motorctrl_cmd_readback=(EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[0]))&0xFF;
+		slv_handles[slv].motorctrl_in=(EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[0]))&0xFF;
 		slv_handles[slv].torque_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[1]);
 		slv_handles[slv].speed_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[2]);
 		slv_handles[slv].position_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[3]);

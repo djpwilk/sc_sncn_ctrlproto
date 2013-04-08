@@ -5,7 +5,7 @@ MASTER_INSTALLDIR := /opt/etherlab
 
 SOURCES += src/main.c
 
-INCLUDE_DIRS += -I ../common_include 
+INCLUDE_DIRS += -I ../common_cmd 
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I ../linux_library_ctrlproto/include
 

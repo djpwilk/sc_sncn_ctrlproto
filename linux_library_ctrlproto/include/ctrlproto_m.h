@@ -179,52 +179,52 @@ typedef struct
 	/**
 	 * outgoing commands
 	 */
-	uint16_t motorctrl_cmd;
+	int16_t motorctrl_out;
 
 	/**
 	 * outgoing torque (use fromFloatFunction to set it)
 	 */
-	uint32_t torque_setpoint;
+	int32_t torque_setpoint;
 
 	/**
 	 * outgoing torque
 	 */
-	uint32_t speed_setpoint;
+	int32_t speed_setpoint;
 
 	/**
 	 * outgoing position
 	 */
-	uint32_t position_setpoint;
+	int32_t position_setpoint;
 
 	/**
 	 * outgoing userdefined value
 	 */
-	uint32_t userdef_setpoint;
+	int32_t userdef_setpoint;
 
 	/**
-	 * outgoing commands
+	 * incoming motorctrl command (readback)
 	 */
-	uint16_t motorctrl_cmd_readback;
+	int16_t motorctrl_in;
 
 	/**
 	 * incoming torque
 	 */
-	uint32_t torque_in;
+	int32_t torque_in;
 
 	/**
 	 * incoming speed
 	 */
-	uint32_t speed_in;
+	int32_t speed_in;
 
 	/**
 	 * incoming position
 	 */
-	uint32_t position_in;
+	int32_t position_in;
 
 	/**
 	 * incoming userdefined value
 	 */
-	uint32_t userdef_in;
+	int32_t userdef_in;
 
 }ctrlproto_slv_handle;
 
