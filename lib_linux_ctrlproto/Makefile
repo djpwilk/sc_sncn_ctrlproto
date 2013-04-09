@@ -1,7 +1,7 @@
 UNAME := $(shell uname)
 MASTER_INSTALLDIR := /opt/etherlab
 INCLUDE_DIRS = -I include
-INCLUDE_DIRS += -I ../common_include/
+INCLUDE_DIRS += -I ../inc_ctrlproto-common/
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
 
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib

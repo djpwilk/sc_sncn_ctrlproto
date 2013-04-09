@@ -5,12 +5,12 @@ MASTER_INSTALLDIR := /opt/etherlab
 
 SOURCES += src/main.c
 
-INCLUDE_DIRS += -I ../common_cmd 
+INCLUDE_DIRS += -I ../inc_ctrlproto-common
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
-INCLUDE_DIRS += -I ../linux_library_ctrlproto/include
+INCLUDE_DIRS += -I ../lib_linux_ctrlproto/include
 
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
-LIB_DIRS += -L ../linux_library_ctrlproto/lib
+LIB_DIRS += -L ../lib_linux_ctrlproto/lib
 
 LIBS += -lsncn_ctrlproto
 LIBS += -lethercat
@@ -19,7 +19,7 @@ FLAGS = -static
 
 
 all:
-		@cd ../linux_library_ctrlproto; make
+		@cd ../lib_linux_ctrlproto; make
 ifneq "$(UNAME)" "Linux"
 		@echo
 		@echo "------------------------------------------------------------------------------------------------------"
@@ -30,7 +30,7 @@ else
 		@if test -d $(MASTER_INSTALLDIR); \
 		then \
 		mkdir bin -p;\
-		gcc $(SOURCES) $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS) $(FLAGS) -o bin/linux_ctrlproto_ecmaster_example ; \
+		gcc $(SOURCES) $(LIBS) $(INCLUDE_DIRS) $(LIB_DIRS) $(FLAGS) -o bin/app_linux_ctrlproto-master-example ; \
 		else echo \
 		"\n\
 		-----------------------------------------------------------------------------------------------------------------\n\
@@ -42,4 +42,4 @@ endif
 ##Add clean Master Application
 clean: masterAppClean
 masterAppClean:
-	rm -f bin/linux_ctrlproto_ecmaster_example
+	rm -f bin/app_linux_ctrlproto-master-example

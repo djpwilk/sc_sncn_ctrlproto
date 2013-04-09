@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <ecrt.h>
 #include <inttypes.h>
-#include "../../common_cmd/cmds.h"
+#include <cmds.h>
 
 
 #ifdef __cplusplus
