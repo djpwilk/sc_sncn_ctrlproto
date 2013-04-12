@@ -1,14 +1,14 @@
-# The TARGET variable determines what target system the application is 
+# The TARGET variable determines what target system the application is
 # compiled for. It either refers to an XN file in the source directories
 # or a valid argument for the --target option when compiling.
 
 TARGET = C22
 
 # The APP_NAME variable determines the name of the final .xe file. It should
-# not include the .xe postfix. If left blank the name will default to 
+# not include the .xe postfix. If left blank the name will default to
 # the project name
 
-APP_NAME =
+APP_NAME = 
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:
@@ -23,9 +23,9 @@ APP_NAME =
 XCC_FLAGS_full = -g -report -DCONFIG_FULL -save-temps
 #XCC_FLAGS_lite = -g -report -DCONFIG_LITE -save-temps
 
-# The USED_MODULES variable lists other module used by the application. 
+# The USED_MODULES variable lists other module used by the application.
 
-USED_MODULES = module_ethercat module_ethernet module_otp_board_info
+USED_MODULES = sc_sncn_ethercat/module_ethercat
 
 #=============================================================================
 # The following part of the Makefile includes the common build infrastructure
