@@ -8,5 +8,15 @@
 *.swp
 *.out
 
+## ignore build directories
+## and binary stuff ...
+.build_*
+*.d
+*.a
+*.so
+*.xe
+*.o
+bin/
+
 ## ignore KDE files
 .directory
