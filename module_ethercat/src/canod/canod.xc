@@ -41,6 +41,15 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 	/* assigned PDO objects */
 	{ 0x6000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Rx PDO Assingnment" },
 	{ 0x7000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Tx PDO Assingnment" },
+#ifdef CIA402
+	{ 0x6040, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_VAR, "Controlword" },
+	{ 0x6041, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_VAR, "Statusword" },
+	// 0x6042-0x6044 if vlp is supported
+	{ 0x6060, DEFTYPE_SIGNED8, 0, CANOD_TYPE_VAR, "Modes of Operation" }, /* ??? correct type? */
+	{ 0x6061, DEFTYPE_SIGNED8, 0, CANOD_TYPE_VAR, "Modes of Operation Display" }, /* ??? correct type? */
+	/*{ 0x6502, DEFTYPE_SIGNED8, 0, CANOD_TYPE_ARRAY, "Supported drive modes" }, / * recommendet to implement, at least one of  csp, csv, cst must be impl. */
+	// plus the operation profile specific and optional objects.
+#endif
 	{ 0, 0, 0, 0, {0}}
 };
 
@@ -83,6 +92,10 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x7000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Tx PDOs" },
 	{ 0x7000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0287, 0x0010, "Tx PDOs" }, /* the values are stored in application */
 	{ 0x7000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0287, 0x0020, "Tx PDOs" }, /* the values are stored in application */
+	/* CiA objects */
+	/* index, sub, value info, datatype, bitlength, object access, value, name */
+	{ 0x6040, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "CiA402 Control Word" }, /* map to PDO */
+	{ 0x6041, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "CiA402 Status Word" },  /* map to PDO */
 	{ 0, 0, 0, 0, 0, 0, 0, "\0" }
 };
 
