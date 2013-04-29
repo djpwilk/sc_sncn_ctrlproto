@@ -29,18 +29,23 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 	{ 0x1000, DEFTYPE_UNSIGNED32, 0, CANOD_TYPE_VAR , "Device Type" },
 	{ 0x1018, DEFSTRUCT_IDENTITY, 4, CANOD_TYPE_RECORD, "Identity" },
 	{ 0x1C00, DEFTYPE_UNSIGNED8,  4, CANOD_TYPE_ARRAY, "Sync Manager Communication Type" },
-	/* FIXME add 0x160x record Rx PDO Mapping */
+#if CIA402
+	{ 0x1600, DEFSTRUCT_PDO_MAPPING, 5, CANOD_TYPE_RECORD, "Rx PDO Mapping" },
+	{ 0x1A00, DEFSTRUCT_PDO_MAPPING, 5, CANOD_TYPE_RECORD, "Tx PDO Mapping" },
+#else
 	{ 0x1600, DEFSTRUCT_PDO_MAPPING, 2, CANOD_TYPE_RECORD, "Rx PDO Mapping" },
-	/* FIXME add 0x1A0x record Tx PDO Mapping */
 	{ 0x1A00, DEFSTRUCT_PDO_MAPPING, 2, CANOD_TYPE_RECORD, "Tx PDO Mapping" },
+#endif
 	/* FIXME add 0x1C1x Syncmanager x PDO Assignment */
 	{ 0x1C10, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_ARRAY, "SM0 PDO Assing" },
 	{ 0x1C11, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_ARRAY, "SM1 PDO Assing" },
 	{ 0x1C12, DEFTYPE_UNSIGNED16, 1, CANOD_TYPE_ARRAY, "SM2 PDO Assing" },
 	{ 0x1C13, DEFTYPE_UNSIGNED16, 1, CANOD_TYPE_ARRAY, "SM3 PDO Assing" },
 	/* assigned PDO objects */
+#ifndef CIA402
 	{ 0x6000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Rx PDO Assingnment" },
 	{ 0x7000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Tx PDO Assingnment" },
+#endif
 #ifdef CIA402
 	{ CIA402_CONTROLWORD, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_VAR, "Controlword" },
 	{ CIA402_STATUSWORD, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_VAR, "Statusword" },
@@ -58,13 +63,14 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 	{ CIA402_VELOCITY_OFFSET, DEFTYPE_INTEGER32, 0, CANOD_TYPE_VAR, "Velocity Offset" },
 	{ CIA402_TORQUE_OFFSET, DEFTYPE_INTEGER32, 0, CANOD_TYPE_VAR, "Torque Offset" },
 	{ CIA402_INTERPOL_TIME_PERIOD, 0x80/*???*/, 2, CANOD_TYPE_RECORD, "Interpolation Time Period"},
-	/* { CIA402_FOLLOWING_ERROR, , , , }, -- no object description available */
+	/* { CIA402_FOLLOWING_ERROR, , , , }, -- no object description available but recommendet in csp, csv, cst mode*/
 	{ CIA402_TARGET_VELOCITY, DEFTYPE_INTEGER32, 0, CANOD_TYPE_VAR, "Target Velocity" },
 	{ CIA402_SUPPORTED_DRIVE_MODES, DEFTYPE_UNSIGNED32, 0, CANOD_TYPE_VAR, "Supported drive modes" },
 #endif
 	{ 0, 0, 0, 0, {0}}
 };
 
+#define PDOMAPING(idx,sub,bit)    ( (uint32_t)(idx<<16)|(sub<<8)|bit )
 
 /* static list of od entries description and value */
 struct _sdoinfo_entry_description SDO_Info_Entries[] = {
@@ -82,13 +88,31 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1018, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x0a000002, "Revision Number" }, /* Revision Number */
 	{ 0x1018, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x000000dd, "Serial Number" }, /* Serial Number */
 	/* FIXME special index 0xff: { 0x1018, 0xff, 0, DEFTYPE_UNSIGNED32, ..., ..., ...} */
-	/* PDO Mapping RX and TX */
+#ifdef CIA402
+	/* RxPDO Mapping */
+	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 5, "Rx PDO Mapping" }, /* input */
+	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, PDOMAPING(CIA402_CONTROLWORD,0,8), "Rx PDO Mapping Controlword" },
+	{ 0x1600, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, PDOMAPING(CIA402_OP_MODES,0,8), "Rx PDO Mapping Opmode" },
+	{ 0x1600, 3, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, PDOMAPING(CIA402_TARGET_TORQUE,0,16), "Rx PDO Mapping Target Torque" },
+	{ 0x1600, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_TARGET_POSITION,0,32), "Rx PDO Mapping Target Position" },
+	{ 0x1600, 5, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_TARGET_VELOCITY,0,32), "Rx PDO Mapping Target Velocity" },
+	/* TxPDO Mapping */
+	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 5, "Tx PDO Mapping" }, /* output */
+	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, PDOMAPING(CIA402_STATUSWORD,0,8), "Tx PDO Mapping Statusword" },
+	{ 0x1A00, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, PDOMAPING(CIA402_OP_MODES_DISP,0,8), "Tx PDO Mapping Modes Display" },
+	{ 0x1A00, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_POSITION_VALUE,0,32), "Tx PDO Mapping Position Value" },
+	{ 0x1A00, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_VELOCITY_VALUE,0,32), "Tx PDO Mapping Velocity Value" },
+	{ 0x1A00, 5, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, PDOMAPING(CIA402_TORQUE_VALUE,0,16), "Tx PDO Mapping Torque Value" },
+#else
+	/* RxPDO Mapping */
 	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Rx PDO Mapping" }, /* input */
-	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000110, "Rx PDO Mapping" }, /* see comment on PDO Mapping value below */
-	{ 0x1600, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000210, "Rx PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000120, "Rx PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1600, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x60000220, "Rx PDO Mapping" }, /* see comment on PDO Mapping value below */
+	/* TxPDO Mapping */
 	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Tx PDO Mapping" }, /* output */
-	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000110, "Tx PDO Mapping" }, /* see comment on PDO Mapping value below */
-	{ 0x1A00, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000210, "Tx PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000120, "Tx PDO Mapping" }, /* see comment on PDO Mapping value below */
+	{ 0x1A00, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x70000220, "Tx PDO Mapping" }, /* see comment on PDO Mapping value below */
+#endif
 	/* SyncManager Communication Type */
 	{ 0x1C00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 4, "SyncManager Comm" },
 	{ 0x1C00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0x01, "SyncManager Comm" }, /* mailbox receive */
@@ -102,6 +126,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1C12, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1600, "SyncMan 2 assignment" },
 	{ 0x1C13, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 1, "SyncMan 3 assignment"}, /* assignment of SyncMan 3 */
 	{ 0x1C13, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, 0x1A00, "SyncMan 3 assignment" },
+#ifndef CIA402
 	/* objects describing RxPDOs */
 	{ 0x6000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Rx PDOs" },
 	{ 0x6000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0247, 0x0001, "Rx PDOs" }, /* the values are stored in application */
@@ -110,20 +135,21 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x7000, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Tx PDOs" },
 	{ 0x7000, 1, 0, DEFTYPE_UNSIGNED16, 16, 0x0287, 0x0010, "Tx PDOs" }, /* the values are stored in application */
 	{ 0x7000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0287, 0x0020, "Tx PDOs" }, /* the values are stored in application */
+#endif
 	/* CiA objects */
 	/* index, sub, value info, datatype, bitlength, object access, value, name */
-	{ CIA402_CONTROLWORD, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207 /* fixme PDO & writeable */, 0, "CiA402 Control Word" }, /* map to PDO */
-	{ CIA402_STATUSWORD, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207 /* fixme PDO */, 0, "CiA402 Status Word" },  /* map to PDO */
+	{ CIA402_CONTROLWORD, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207 |COD_RXPDO_MAPABLE|COD_WR_OP_STATE, 0, "CiA402 Control Word" }, /* map to PDO */
+	{ CIA402_STATUSWORD, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207|COD_TXPDO_MAPABLE, 0, "CiA402 Status Word" },  /* map to PDO */
 	{ CIA402_SUPPORTED_DRIVE_MODES, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x0280 /* csv, csp, cst */, "Supported drive modes" },
-	{ CIA402_OP_MODES, 0, 0, DEFTYPE_INTEGER8, 8, 0x0207, CIA402_OP_MODE_CSP, "Operating mode" },
-	{ CIA402_OP_MODES_DISP, 0, 0, DEFTYPE_INTEGER8, 8, 0x0207, CIA402_OP_MODE_CSP, "Operating mode" },
-	{ CIA402_POSITION_VALUE, 0, 0,  DEFTYPE_INTEGER32, 32, 0x0207, 0, "Position Value" }, /* FIXME PDO */
+	{ CIA402_OP_MODES, 0, 0, DEFTYPE_INTEGER8, 8, 0x0207|COD_RXPDO_MAPABLE|COD_WR_OP_STATE/* writeable? */, CIA402_OP_MODE_CSP, "Operating mode" },
+	{ CIA402_OP_MODES_DISP, 0, 0, DEFTYPE_INTEGER8, 8, 0x0207|COD_TXPDO_MAPABLE, CIA402_OP_MODE_CSP, "Operating mode" },
+	{ CIA402_POSITION_VALUE, 0, 0,  DEFTYPE_INTEGER32, 32, 0x0207|COD_TXPDO_MAPABLE, 0, "Position Value" }, /* FIXME PDO */
 	{ CIA402_FOLLOWING_ERROR_WINDOW, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0, "Following Error Window"},
 	{ CIA402_FOLLOWING_ERROR_TIMEOUT, 0, 0, DEFTYPE_UNSIGNED16, 16, 0x207, 0, "Following Error Timeout"},
-	{ CIA402_VELOCITY_VALUE, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Velocity Value"},
-	{ CIA402_TARGET_TORQUE, 0, 0, DEFTYPE_INTEGER16, 16, 0x0207, 0, "Target Torque"},
-	{ CIA402_TORQUE_VALUE, 0, 0, DEFTYPE_INTEGER16, 16, 0x0207, 0, "Torque actual Value"},
-	{ CIA402_TARGET_POSITION, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Target Position" },
+	{ CIA402_VELOCITY_VALUE, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207|COD_TXPDO_MAPABLE, 0, "Velocity Value"},
+	{ CIA402_TARGET_TORQUE, 0, 0, DEFTYPE_INTEGER16, 16, 0x0207|COD_RXPDO_MAPABLE|COD_WR_OP_STATE, 0, "Target Torque"},
+	{ CIA402_TORQUE_VALUE, 0, 0, DEFTYPE_INTEGER16, 16, 0x0207|COD_TXPDO_MAPABLE, 0, "Torque actual Value"},
+	{ CIA402_TARGET_POSITION, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207|COD_RXPDO_MAPABLE|COD_WR_OP_STATE, 0, "Target Position" },
 	{ CIA402_POSITION_RANGELIMIT, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 2, "Postition Range Limits"},
 	{ CIA402_POSITION_RANGELIMIT, 1, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Min Postition Range Limit"},
 	{ CIA402_POSITION_RANGELIMIT, 2, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Max Postition Range Limit"},
@@ -135,7 +161,7 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ CIA402_INTERPOL_TIME_PERIOD, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 2, "Interpolation Time Period"},
 	{ CIA402_INTERPOL_TIME_PERIOD, 1, 0, DEFTYPE_INTEGER32, 32, 0x0207, 1, "Interpolation Time Unit"}, /* value range: 1..255msec */
 	{ CIA402_INTERPOL_TIME_PERIOD, 2, 0, DEFTYPE_INTEGER32, 32, 0x0207, -3, "Interpolation Time Index"}, /* value range: -3, -4 (check!)*/
-	{ CIA402_TARGET_VELOCITY, 0, 0,  DEFTYPE_INTEGER32, 32, 0x0207, 0, "Target Velocity" },
+	{ CIA402_TARGET_VELOCITY, 0, 0,  DEFTYPE_INTEGER32, 32, 0x0207|COD_RXPDO_MAPABLE|COD_WR_OP_STATE, 0, "Target Velocity" },
 	{ 0, 0, 0, 0, 0, 0, 0, "\0" }
 };
 
