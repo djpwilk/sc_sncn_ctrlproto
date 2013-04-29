@@ -141,6 +141,16 @@ struct _sdoinfo_entry_description {
  * Bit 9: object can be used for settings
  * Bit 10 - 15: reserved
  */
+#define COD_RD_PO_STATE         0x0001
+#define COD_RD_SO_STATE         0x0002
+#define COD_RD_OP_STATE         0x0004
+#define COD_WR_PO_STATE         0x0008
+#define COD_WR_SO_STATE         0x0010
+#define COD_WR_OP_STATE         0x0020
+#define COD_RXPDO_MAPABLE       0x0040
+#define COD_TXPDO_MAPABLE       0x0080
+#define COD_USED_BACKUP         0x0100
+#define COD_USED_SETTINGS       0x0200
 
 /* ad PDO Mapping value (at index 0x200[01]):
  * bit 0-7: length of the mapped objects in bits
