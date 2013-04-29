@@ -42,13 +42,25 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 	{ 0x6000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Rx PDO Assingnment" },
 	{ 0x7000, DEFTYPE_UNSIGNED16, 2, CANOD_TYPE_ARRAY, "Tx PDO Assingnment" },
 #ifdef CIA402
-	{ 0x6040, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_VAR, "Controlword" },
-	{ 0x6041, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_VAR, "Statusword" },
-	// 0x6042-0x6044 if vlp is supported
-	{ 0x6060, DEFTYPE_SIGNED8, 0, CANOD_TYPE_VAR, "Modes of Operation" }, /* ??? correct type? */
-	{ 0x6061, DEFTYPE_SIGNED8, 0, CANOD_TYPE_VAR, "Modes of Operation Display" }, /* ??? correct type? */
-	/*{ 0x6502, DEFTYPE_SIGNED8, 0, CANOD_TYPE_ARRAY, "Supported drive modes" }, / * recommendet to implement, at least one of  csp, csv, cst must be impl. */
-	// plus the operation profile specific and optional objects.
+	{ CIA402_CONTROLWORD, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_VAR, "Controlword" },
+	{ CIA402_STATUSWORD, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_VAR, "Statusword" },
+	{ CIA402_OP_MODES, DEFTYPE_INTEGER8, 0, CANOD_TYPE_VAR, "Modes of Operation" }, /* ??? correct type? */
+	{ CIA402_OP_MODES_DISP, DEFTYPE_INTEGER8, 0, CANOD_TYPE_VAR, "Modes of Operation Display" }, /* ??? correct type? */
+	{ CIA402_POSITION_VALUE, DEFTYPE_INTEGER32, 0, CANOD_TYPE_VAR, "Position Value"},
+	{ CIA402_FOLLOWING_ERROR_WINDOW, DEFTYPE_UNSIGNED32, 0, CANOD_TYPE_VAR, "Following Error Window"},
+	{ CIA402_FOLLOWING_ERROR_TIMEOUT, DEFTYPE_UNSIGNED16, 0, CANOD_TYPE_VAR, "Following Error Timeout"},
+	{ CIA402_VELOCITY_VALUE, DEFTYPE_INTEGER32, 0, CANOD_TYPE_VAR, "Position Value"},
+	{ CIA402_TARGET_TORQUE, DEFTYPE_INTEGER16, 0, CANOD_TYPE_VAR, "Target Torque"},
+	{ CIA402_TORQUE_VALUE, DEFTYPE_INTEGER16, 0, CANOD_TYPE_VAR, "Torque actual Value"},
+	{ CIA402_TARGET_POSITION, DEFTYPE_INTEGER32, 0, CANOD_TYPE_VAR, "Target Position" },
+	{ CIA402_POSITION_RANGELIMIT, DEFTYPE_INTEGER32, 2, CANOD_TYPE_ARRAY, "Postition Range Limits"},
+	{ CIA402_SOFTWARE_POSITION_LIMIT, DEFTYPE_INTEGER32, 2, CANOD_TYPE_ARRAY, "Software Postition Range Limits"},
+	{ CIA402_VELOCITY_OFFSET, DEFTYPE_INTEGER32, 0, CANOD_TYPE_VAR, "Velocity Offset" },
+	{ CIA402_TORQUE_OFFSET, DEFTYPE_INTEGER32, 0, CANOD_TYPE_VAR, "Torque Offset" },
+	{ CIA402_INTERPOL_TIME_PERIOD, 0x80/*???*/, 2, CANOD_TYPE_RECORD, "Interpolation Time Period"},
+	/* { CIA402_FOLLOWING_ERROR, , , , }, -- no object description available */
+	{ CIA402_TARGET_VELOCITY, DEFTYPE_INTEGER32, 0, CANOD_TYPE_VAR, "Target Velocity" },
+	{ CIA402_SUPPORTED_DRIVE_MODES, DEFTYPE_UNSIGNED32, 0, CANOD_TYPE_VAR, "Supported drive modes" },
 #endif
 	{ 0, 0, 0, 0, {0}}
 };
@@ -56,7 +68,13 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 
 /* static list of od entries description and value */
 struct _sdoinfo_entry_description SDO_Info_Entries[] = {
+#ifndef CIA402
 	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000001, "Device Type" },
+#else
+	/* device type value: Mode bits (8bits) | type (8bits) | device profile number (16bits)
+	                      *                 | 0x02 (Servo) | 0x0192 */
+	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00020192, "Device Type" },
+#endif
 	/* identity object */
 	{ 0x1018, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 4, "Identity" },
 	{ 0x1018, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x000022d2, "Vendor ID" }, /* Vendor ID (by ETG) */
@@ -94,8 +112,30 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x7000, 2, 0, DEFTYPE_UNSIGNED16, 16, 0x0287, 0x0020, "Tx PDOs" }, /* the values are stored in application */
 	/* CiA objects */
 	/* index, sub, value info, datatype, bitlength, object access, value, name */
-	{ 0x6040, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "CiA402 Control Word" }, /* map to PDO */
-	{ 0x6041, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 0, "CiA402 Status Word" },  /* map to PDO */
+	{ CIA402_CONTROLWORD, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207 /* fixme PDO & writeable */, 0, "CiA402 Control Word" }, /* map to PDO */
+	{ CIA402_STATUSWORD, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207 /* fixme PDO */, 0, "CiA402 Status Word" },  /* map to PDO */
+	{ CIA402_SUPPORTED_DRIVE_MODES, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0x0280 /* csv, csp, cst */, "Supported drive modes" },
+	{ CIA402_OP_MODES, 0, 0, DEFTYPE_INTEGER8, 8, 0x0207, CIA402_OP_MODE_CSP, "Operating mode" },
+	{ CIA402_OP_MODES_DISP, 0, 0, DEFTYPE_INTEGER8, 8, 0x0207, CIA402_OP_MODE_CSP, "Operating mode" },
+	{ CIA402_POSITION_VALUE, 0, 0,  DEFTYPE_INTEGER32, 32, 0x0207, 0, "Position Value" }, /* FIXME PDO */
+	{ CIA402_FOLLOWING_ERROR_WINDOW, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, 0, "Following Error Window"},
+	{ CIA402_FOLLOWING_ERROR_TIMEOUT, 0, 0, DEFTYPE_UNSIGNED16, 16, 0x207, 0, "Following Error Timeout"},
+	{ CIA402_VELOCITY_VALUE, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Velocity Value"},
+	{ CIA402_TARGET_TORQUE, 0, 0, DEFTYPE_INTEGER16, 16, 0x0207, 0, "Target Torque"},
+	{ CIA402_TORQUE_VALUE, 0, 0, DEFTYPE_INTEGER16, 16, 0x0207, 0, "Torque actual Value"},
+	{ CIA402_TARGET_POSITION, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Target Position" },
+	{ CIA402_POSITION_RANGELIMIT, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 2, "Postition Range Limits"},
+	{ CIA402_POSITION_RANGELIMIT, 1, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Min Postition Range Limit"},
+	{ CIA402_POSITION_RANGELIMIT, 2, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Max Postition Range Limit"},
+	{ CIA402_SOFTWARE_POSITION_LIMIT, 0, 0,  DEFTYPE_INTEGER32, 32, 0x0207, 2, "Software Postition Range Limits"},
+	{ CIA402_SOFTWARE_POSITION_LIMIT, 1, 0,  DEFTYPE_INTEGER32, 32, 0x0207, 0, "Min Software Postition Range Limit"},
+	{ CIA402_SOFTWARE_POSITION_LIMIT, 2, 0,  DEFTYPE_INTEGER32, 32, 0x0207, 0, "Max Software Postition Range Limit"},
+	{ CIA402_VELOCITY_OFFSET, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Velocity Offset" },
+	{ CIA402_TORQUE_OFFSET, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 0, "Torque Offset" },
+	{ CIA402_INTERPOL_TIME_PERIOD, 0, 0, DEFTYPE_INTEGER32, 32, 0x0207, 2, "Interpolation Time Period"},
+	{ CIA402_INTERPOL_TIME_PERIOD, 1, 0, DEFTYPE_INTEGER32, 32, 0x0207, 1, "Interpolation Time Unit"}, /* value range: 1..255msec */
+	{ CIA402_INTERPOL_TIME_PERIOD, 2, 0, DEFTYPE_INTEGER32, 32, 0x0207, -3, "Interpolation Time Index"}, /* value range: -3, -4 (check!)*/
+	{ CIA402_TARGET_VELOCITY, 0, 0,  DEFTYPE_INTEGER32, 32, 0x0207, 0, "Target Velocity" },
 	{ 0, 0, 0, 0, 0, 0, 0, "\0" }
 };
 

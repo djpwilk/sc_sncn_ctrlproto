@@ -41,6 +41,49 @@
 #define CANOD_LIST_REPLACE    0x04  ///< objects which has to stored for a device replacement ???
 #define CANOD_LIST_STARTUP    0x05  ///< objects which can be used as startup parameter
 
+/* object dictionary address defines for CIA 402 */
+#define CIA402_CONTROLWORD              0x6040 /* RPDO */
+#define CIA402_STATUSWORD               0x6041 /* TPDO */
+#define CIA402_OP_MODES                 0x6060 /* RPDO */
+#define CIA402_OP_MODES_DISP            0x6061 /* TPDO */
+
+#define CIA402_POSITION_VALUE           0x6064 /* TPDO - used with csp and csv*/
+#define CIA402_FOLLOWING_ERROR_WINDOW   0x6065 /* used with csp */
+#define CIA402_FOLLOWING_ERROR_TIMEOUT  0x6066 /* used with csp */
+#define CIA402_VELOCITY_VALUE           0x606C /* TPDO - recommended if csv is used */
+#define CIA402_TARGET_TORQUE            0x6071 /* RPDO - used with cst */
+#define CIA402_TORQUE_VALUE             0x6077 /* TPDO - used with csp and csv */
+
+#define CIA402_TARGET_POSITION          0x607A /* RPDO - used with csp */
+#define CIA402_POSITION_RANGELIMIT      0x607B /* used with csp */
+#define CIA402_SOFTWARE_POSITION_LIMIT  0x607D /* recommended with csp */
+
+//#define CIA402_POSITION_OFFSET          0x60B0 - optional
+#define CIA402_VELOCITY_OFFSET          0x60B1 /* recommended with csp */
+#define CIA402_TORQUE_OFFSET            0x60B2 /* recommended with csp or csv */
+
+#define CIA402_INTERPOL_TIME_PERIOD     0x60C2  /* recommended if csp, csv or cst is used */
+#define CIA402_FOLLOWING_ERROR          0x60F4 /* TPDO - recommended if csp is used */
+
+#define CIA402_TARGET_VELOCITY          0x60FF /* RPDO  - mandatory if csv is used */
+
+
+/* only if touch probe is supported */
+//#define CIA402_MAX_TORQUE        0x6072 /* RPDO */
+//#define CIA402_TOUCHPROBE_FUNC   0x60B8 /* RPDO */
+//#define CIA402_TOUCHPROBE_STAT   0x60B9 /* TPDO */
+//#define CIA402_TOUCHPROBE_VALUE  0x60BA /* TPDO - depends on touchprobe conf! */
+//#define CIA402_TOUCHPROBE_VALUE  0x60BB /* TPDO - depends on touchprobe conf! */
+//#define CIA402_TOUCHPROBE_VALUE  0x60BC /* TPDO - depends on touchprobe conf! */
+//#define CIA402_TOUCHPROBE_VALUE  0x60BD /* TPDO - depends on touchprobe conf! */
+
+#define CIA402_SUPPORTED_DRIVE_MODES  0x6502 /* recommendet */
+
+/* Operating modes for use in objects CIA402_OP_MODES and CIA402_OP_MODES_DISPLAY */
+#define CIA402_OP_MODE_CSP    8
+#define CIA402_OP_MODE_CSV    9
+#define CIA402_OP_MODE_CSV   10
+
 #if 0
 struct _sdoinfo_service {
 	unsigned opcode;                   ///< OD operation code
