@@ -367,7 +367,7 @@ int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned
 
 int canod_set_entry(unsigned index, unsigned subindex, unsigned value, unsigned type)
 {
-	for (int i; SOD_Info_Entries[i].index != 0x0; i++) {
+	for (int i; SDO_Info_Entries[i].index != 0x0; i++) {
 		if (SDO_Info_Entries[i].index == index
 				&& SDO_Info_Entries[i].subindex == subindex) {
 			SDO_Info_Entries[i].value = value;
