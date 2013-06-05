@@ -185,25 +185,25 @@ int canod_get_object_description(struct _sdoinfo_object_description &obj, unsign
 int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valueinfo, struct _sdoinfo_entry_description &desc);
 
 /**
- * Get/Set OD entry values
+ * Get OD entry values
  *
  * @param index
  * @param subindex
- * @param &value     read/write the values from this array.
+ * @param &value     read the values from this array from the object dictionary.
  * @param &type      the type of &value
  * @return 0 on success
  */
 int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned &type);
 
 /**
- * Get/Set OD entry values
+ * Set OD entry values
  *
  * @note This function is currently unused.
  *
  * @param index
  * @param subindex
- * @param &value     read/write the values from this array.
- * @param &type      the type of &value
+ * @param value     write the values from this array to the object dictionary.
+ * @param type      the type of &value
  * @return 0 on success
  */
 int canod_set_entry(unsigned index, unsigned subindex, unsigned value, unsigned type);
