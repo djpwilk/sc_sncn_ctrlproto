@@ -78,8 +78,11 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00000001, "Device Type" },
 #else
 	/* device type value: Mode bits (8bits) | type (8bits) | device profile number (16bits)
-	                      *                 | 0x02 (Servo) | 0x0192 */
-	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x00020192, "Device Type" },
+	 *                    *                 | 0x02 (Servo) | 0x0192
+	 *
+	 * Mode Bits: csp, csv, cst
+	 */
+	{ 0x1000, 0, 0, DEFTYPE_UNSIGNED32, 32, 0x0203, 0x70020192, "Device Type" },
 #endif
 	/* identity object */
 	{ 0x1018, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 4, "Identity" },
