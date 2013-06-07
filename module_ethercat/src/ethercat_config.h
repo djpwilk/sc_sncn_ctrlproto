@@ -10,4 +10,7 @@
 //#define ECAT_HAS_FOE  1
 //#define ECAT_HAS_VOE  1
 
+/* support for CIA402 */
+#define CIA402          1
+
 #endif /* ETHERCAT_CONFIG_H */

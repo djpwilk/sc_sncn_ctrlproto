@@ -8,6 +8,7 @@
 
 #include "canod.h"
 #include "canod_datatypes.h"
+#include "ethercat_config.h"
 #include <xs1.h>
 
 /* static object dictionary */
@@ -25,7 +26,7 @@
  */
 
 /* object descriptions */
-static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
+static struct _sdoinfo_object_description SDO_Info_Objects[] =  {
 	{ 0x1000, DEFTYPE_UNSIGNED32, 0, CANOD_TYPE_VAR , "Device Type" },
 	{ 0x1018, DEFSTRUCT_IDENTITY, 4, CANOD_TYPE_RECORD, "Identity" },
 	{ 0x1C00, DEFTYPE_UNSIGNED8,  4, CANOD_TYPE_ARRAY, "Sync Manager Communication Type" },
@@ -70,7 +71,7 @@ static struct _sdoinfo_object_description SDO_Info_Objects[14] =  {
 	{ 0, 0, 0, 0, {0}}
 };
 
-#define PDOMAPING(idx,sub,bit)    ( (uint32_t)(idx<<16)|(sub<<8)|bit )
+#define PDOMAPING(idx,sub,bit)    ( ((unsigned)idx<<16) | ((unsigned)sub<<8) | bit )
 
 /* static list of od entries description and value */
 struct _sdoinfo_entry_description SDO_Info_Entries[] = {
@@ -94,18 +95,18 @@ struct _sdoinfo_entry_description SDO_Info_Entries[] = {
 #ifdef CIA402
 	/* RxPDO Mapping */
 	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 5, "Rx PDO Mapping" }, /* input */
-	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, PDOMAPING(CIA402_CONTROLWORD,0,8), "Rx PDO Mapping Controlword" },
-	{ 0x1600, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, PDOMAPING(CIA402_OP_MODES,0,8), "Rx PDO Mapping Opmode" },
-	{ 0x1600, 3, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, PDOMAPING(CIA402_TARGET_TORQUE,0,16), "Rx PDO Mapping Target Torque" },
+	{ 0x1600, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_CONTROLWORD,0,8), "Rx PDO Mapping Controlword" },
+	{ 0x1600, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_OP_MODES,0,8), "Rx PDO Mapping Opmode" },
+	{ 0x1600, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_TARGET_TORQUE,0,16), "Rx PDO Mapping Target Torque" },
 	{ 0x1600, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_TARGET_POSITION,0,32), "Rx PDO Mapping Target Position" },
 	{ 0x1600, 5, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_TARGET_VELOCITY,0,32), "Rx PDO Mapping Target Velocity" },
 	/* TxPDO Mapping */
 	{ 0x1A00, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 5, "Tx PDO Mapping" }, /* output */
-	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, PDOMAPING(CIA402_STATUSWORD,0,8), "Tx PDO Mapping Statusword" },
-	{ 0x1A00, 2, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, PDOMAPING(CIA402_OP_MODES_DISP,0,8), "Tx PDO Mapping Modes Display" },
+	{ 0x1A00, 1, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_STATUSWORD,0,8), "Tx PDO Mapping Statusword" },
+	{ 0x1A00, 2, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_OP_MODES_DISP,0,8), "Tx PDO Mapping Modes Display" },
 	{ 0x1A00, 3, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_POSITION_VALUE,0,32), "Tx PDO Mapping Position Value" },
 	{ 0x1A00, 4, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_VELOCITY_VALUE,0,32), "Tx PDO Mapping Velocity Value" },
-	{ 0x1A00, 5, 0, DEFTYPE_UNSIGNED16, 16, 0x0207, PDOMAPING(CIA402_TORQUE_VALUE,0,16), "Tx PDO Mapping Torque Value" },
+	{ 0x1A00, 5, 0, DEFTYPE_UNSIGNED32, 32, 0x0207, PDOMAPING(CIA402_TORQUE_VALUE,0,16), "Tx PDO Mapping Torque Value" },
 #else
 	/* RxPDO Mapping */
 	{ 0x1600, 0, 0, DEFTYPE_UNSIGNED8, 8, 0x0207, 2, "Rx PDO Mapping" }, /* input */
