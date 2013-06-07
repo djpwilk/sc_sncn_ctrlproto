@@ -11,6 +11,8 @@
 #include "foe.h"
 #include "eoe.h"
 #include "coe.h"
+#include "coecmd.h"
+#include "canod/canod.h"
 
 #include <platform.h>
 #include <xs1.h>
@@ -954,6 +956,56 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 		if (pending_mailbox != 1) {
 			select {
 			case c_coe_r :> otmp :
+				switch (otmp) {
+				case CAN_GET_OBJECT:
+					{
+					unsigned index;
+					unsigned value;
+					unsigned type;
+
+					c_coe_r :> index;
+
+					canod_get_entry((index>>8), index&0xff, value, type);
+					c_coe_r <: value;
+					}
+					break;
+
+				case CAN_SET_OBJECT:
+					{
+					unsigned index;
+					unsigned value;
+					unsigned type = 0;
+
+					c_coe_r :> index;
+					c_coe_r :> value;
+
+					canod_get_entry((index>>8), index&0xff, value, type);
+					c_coe_r <: value;
+					}
+					break;
+
+				case CAN_OBJECT_TYPE:
+					{
+					unsigned index;
+					unsigned value;
+					unsigned type;
+
+					c_coe_r :> index;
+
+					canod_get_entry((index>>8), index&0xff, value, type);
+					c_coe_r <: type;
+					}
+					break;
+
+				case CAN_MAX_SUBINDEX:
+					c_coe_r <: CAN_ERROR_UNKNOWN; /* FIXME implement */
+					break;
+
+				default:
+					c_coe_r <: CAN_ERROR_UNKNOWN;
+					break;
+				}
+#if 0
 				printstr("DEBUG: processing outgoing CoE packets\n");
 				out_type = COE_PACKET;
 				out_size = (otmp&0xffff)*2; /* otmp is number of 16-bit words,  */
@@ -963,6 +1015,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 					out_buffer[i] = otmp&0xffff;
 				}
 				pending_mailbox=1;
+#endif
 				break;
 
 			case c_eoe_r :> otmp :
