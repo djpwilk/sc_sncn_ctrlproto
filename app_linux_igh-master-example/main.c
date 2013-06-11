@@ -52,8 +52,9 @@
 #define PRIORITY 1
 
 // Optional features
-#define CONFIGURE_PDOS  1
-#define SDO_ACCESS      0
+#define CONFIGURE_PDOS  0
+#define SDO_ACCESS      1
+#define CIA402          1
 
 /****************************************************************************/
 
@@ -98,10 +99,24 @@ static uint8_t *domain1_pd = NULL;
  */
 
 // offsets for PDO entries
+#ifdef CIA402
+static unsigned int off_pdo1_in;
+static unsigned int off_pdo2_in;
+static unsigned int off_pdo3_in;
+static unsigned int off_pdo4_in;
+static unsigned int off_pdo5_in;
+
+static unsigned int off_pdo1_out;
+static unsigned int off_pdo2_out;
+static unsigned int off_pdo3_out;
+static unsigned int off_pdo4_out;
+static unsigned int off_pdo5_out;
+#else
 static unsigned int off_pdo1_in;
 static unsigned int off_pdo2_in;
 static unsigned int off_pdo1_out;
 static unsigned int off_pdo2_out;
+#endif
 
 /*
 static unsigned int off_ana_in_status;
@@ -110,6 +125,23 @@ static unsigned int off_ana_out;
 static unsigned int off_dig_out;
  */
 
+#ifdef CIA402
+const static ec_pdo_entry_reg_t domain1_regs[] = {
+	/* RX */
+	{SomanetPos, SOMANET_ID, 0x6040, 0, &off_pdo1_in},
+	{SomanetPos, SOMANET_ID, 0x6060, 0, &off_pdo2_in},
+	{SomanetPos, SOMANET_ID, 0x6071, 0, &off_pdo3_in},
+	{SomanetPos, SOMANET_ID, 0x607a, 0, &off_pdo4_in},
+	{SomanetPos, SOMANET_ID, 0x60ff, 0, &off_pdo5_in},
+	/* TX */
+	{SomanetPos, SOMANET_ID, 0x6041, 0, &off_pdo1_out},
+	{SomanetPos, SOMANET_ID, 0x6061, 0, &off_pdo2_out},
+	{SomanetPos, SOMANET_ID, 0x6064, 0, &off_pdo3_out},
+	{SomanetPos, SOMANET_ID, 0x606c, 0, &off_pdo4_out},
+	{SomanetPos, SOMANET_ID, 0x6077, 0, &off_pdo5_out},
+    {0}
+};
+#else
 const static ec_pdo_entry_reg_t domain1_regs[] = {
 	{SomanetPos, SOMANET_ID, 0x6000, 1, &off_pdo1_in},
 	{SomanetPos, SOMANET_ID, 0x6000, 2, &off_pdo2_in},
@@ -123,6 +155,7 @@ const static ec_pdo_entry_reg_t domain1_regs[] = {
     	*/
     {0}
 };
+#endif
 
 static unsigned int counter = 0;
 static unsigned int blink = 0;
@@ -359,8 +392,17 @@ void cyclic_task()
 #define TESTWORD4   0xa5a5
     // write process data
     //EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
-    EC_WRITE_U16(domain1_pd + off_pdo1_out, blink ? TESTWORD1 : TESTWORD2);
-    EC_WRITE_U16(domain1_pd + off_pdo2_out, blink ? TESTWORD3 : TESTWORD4);
+    
+#ifdef CIA402
+	EC_WRITE_U8(domain1_pd + off_pdo1_out, (blink ? TESTWORD1 : TESTWORD2)&0xff);
+	EC_WRITE_U8(domain1_pd + off_pdo2_out, (blink ? TESTWORD3 : TESTWORD4)&0xff);
+	EC_WRITE_U16(domain1_pd + off_pdo3_out, blink ? TESTWORD3 : TESTWORD4);
+	EC_WRITE_U32(domain1_pd + off_pdo4_out, blink ? TESTWORD3 : TESTWORD4);
+	EC_WRITE_U32(domain1_pd + off_pdo5_out, blink ? TESTWORD3 : TESTWORD4);
+#else
+	EC_WRITE_U16(domain1_pd + off_pdo1_out, blink ? TESTWORD1 : TESTWORD2);
+	EC_WRITE_U16(domain1_pd + off_pdo2_out, blink ? TESTWORD3 : TESTWORD4);
+#endif
 
     // send process data
     ecrt_domain_queue(domain1);
@@ -402,7 +444,7 @@ int main(int argc, char **argv)
 
 #if SDO_ACCESS
     fprintf(stderr, "Creating SDO requests...\n");
-    if (!(sdo = ecrt_slave_config_create_sdo_request(sc_ana_in, 0x3102, 2, 2))) {
+    if (!(sdo = ecrt_slave_config_create_sdo_request(sc_data_in, 0x6041, 0, 2))) {
         fprintf(stderr, "Failed to create SDO request.\n");
         return -1;
     }
