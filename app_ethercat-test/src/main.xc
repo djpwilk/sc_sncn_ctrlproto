@@ -16,6 +16,8 @@
 //#include <uip.h>
 //#include <xtcp.h>
 
+#define CIA402_APP    1
+
 #define MAX_BUFFER_SIZE   1024
 
 on stdcore[1] : out port ledBlue = LED_BLUE;
@@ -23,8 +25,11 @@ on stdcore[1] : out port ledGreen = LED_GREEN;
 on stdcore[1] : out port ledRed = LED_RED;
 
 /* example consumer */
-static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eoe_out
-			/*, chanend foe_in, chanend foe_out, chanend pdo_in, chanend pdo_out*/)
+static void consumer(
+#ifndef CIA402_APP
+	chanend coe_in, chanend coe_out,
+#endif
+	chanend eoe_in, chanend eoe_out)
 {
 	timer t;
 	const unsigned int delay = 10;
@@ -49,6 +54,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 	while (1) {
 		/* Receive data */
 		select {
+#ifndef CIA402_APP
 		case coe_in :> tmp :
 			/* the CoE packets are handled within module_ethercat, currently
 			 * no data is provided for the application layer.
@@ -64,7 +70,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			}
 
 			break;
-
+#endif
 		case eoe_in :> tmp :
 			inBuffer[0] = tmp&0xffff;
 			printstr("[APP] Received EOE packet\n");
@@ -80,6 +86,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 
 		/* send data */
 		switch (outType /*outBuffer[0]*/) {
+#ifndef CIA402_APP
 		case COE_PACKET:
 			/* Sending of CoE packets isn't provided, the low level CoE handling
 			 * is performed by module_ethercat.
@@ -94,7 +101,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			outBuffer[0] = 0;
 			outType = -1;
 			break;
-
+#endif
 		case EOE_PACKET:
 			count=0;
 			//printstr("DEBUG send EoE packet\n");
@@ -115,7 +122,6 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 		t when timerafter(time+delay) :> void;
 	}
 }
-
 
 /*
  * FoE Example handling
@@ -250,6 +256,55 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 }
 
 
+#ifdef CIA402_APP
+/* example implementation of CIA402 facility
+ *
+ * read PDOs and read/update OD entries
+ */
+static void cia402_example(chanend coe_od, chanend coe_out, chanend pdo_in, chanend pdo_out)
+{
+	unsigned char status = 0;
+	unsigned torque = 0;
+	unsigned value = 0;
+	unsigned position = 0;
+	unsigned coein;
+
+	unsigned int inBuffer[64];
+	unsigned int outBuffer[64];
+	unsigned int count=0;
+	unsigned int outCount=0;
+	unsigned int tmp;
+	unsigned ready = 0;
+	int i;
+
+	timer t;
+	const unsigned int delay = 100;
+	unsigned int time = 0;
+
+	while (1) {
+		count = 0;
+
+		pdo_in <: DATA_REQUEST;
+		pdo_in :> count;
+		for (i=0; i<count; i++) {
+			pdo_in :> inBuffer[i];
+			printstr("data "); printint(i);
+			printstr(": "); printhexln(inBuffer[i]);
+		}
+
+		if (count>0) {
+			pdo_out <: count;
+			for (i=0; i<count; i++) {
+				pdo_out <: inBuffer[i];
+			}
+		}
+
+		t :> time;
+		t when timerafter(time+delay) :> void;
+	}
+}
+#else
+
 /*
  * example PDO handling - receive and reply values
  */
@@ -290,6 +345,7 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 		t when timerafter(time+delay) :> void;
 	}
 }
+#endif
 
 static void led_handler(void)
 {
@@ -325,7 +381,11 @@ int main(void) {
 		}
 
 		on stdcore[0] : {
-			consumer(coe_in, coe_out, eoe_in, eoe_out  /*, foe_in, foe_out, pdo_in, pdo_out*/);
+			consumer(
+#ifndef CIA402_APP
+				coe_in, coe_out,
+#endif
+				eoe_in, eoe_out  /*, foe_in, foe_out, pdo_in, pdo_out*/);
 		}
 
 		on stdcore[1] : {
@@ -339,7 +399,11 @@ int main(void) {
 		*/
 
 		on stdcore[1] : {
+#ifdef CIA402_APP
+			cia402_example(coe_in, coe_out, pdo_in, pdo_out);
+#else
 			pdo_handler(pdo_out, pdo_in);
+#endif
 		}
 	}
 
