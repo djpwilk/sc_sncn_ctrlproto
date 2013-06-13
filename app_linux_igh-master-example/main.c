@@ -177,7 +177,6 @@ static unsigned int blink = 0;
 #if CONFIGURE_PDOS
 
 #ifdef CIA402
-
 /* Master 0, Slave 0, "Synapticon-ECAT"
  * Vendor ID:       0x000022d2
  * Product code:    0x00000201
@@ -185,16 +184,16 @@ static unsigned int blink = 0;
  */
 
 ec_pdo_entry_info_t slave_0_pdo_entries[] = {
-    {0x6040, 0x00, 8}, /*  */
-    {0x6060, 0x00, 8}, /*  */
-    {0x6071, 0x00, 16}, /*  */
-    {0x607a, 0x00, 32}, /*  */
-    {0x60ff, 0x00, 32}, /*  */
-    {0x6041, 0x00, 8}, /*  */
-    {0x6061, 0x00, 8}, /*  */
-    {0x6064, 0x00, 32}, /*  */
-    {0x606c, 0x00, 32}, /*  */
-    {0x6077, 0x00, 16}, /*  */
+    {0x6040, 0x00, 8}, /* control word */
+    {0x6060, 0x00, 8}, /* operating modes */
+    {0x6071, 0x00, 16}, /* torque target */
+    {0x607a, 0x00, 32}, /* position target */
+    {0x60ff, 0x00, 32}, /* velocity target */
+    {0x6041, 0x00, 8}, /* status */
+    {0x6061, 0x00, 8}, /* modes display */
+    {0x6064, 0x00, 32}, /* position value */
+    {0x606c, 0x00, 32}, /* velocity value */
+    {0x6077, 0x00, 16}, /* torque value */
 };
 
 ec_pdo_info_t slave_0_pdos[] = {
