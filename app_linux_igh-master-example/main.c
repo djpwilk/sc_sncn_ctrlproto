@@ -100,17 +100,17 @@ static uint8_t *domain1_pd = NULL;
 
 // offsets for PDO entries
 #ifdef CIA402
-static unsigned int off_pdo1_in;
-static unsigned int off_pdo2_in;
-static unsigned int off_pdo3_in;
-static unsigned int off_pdo4_in;
-static unsigned int off_pdo5_in;
+static unsigned int off_pdo1_in; /* status word 8 bit */
+static unsigned int off_pdo2_in; /* op modes display 8 bit */
+static unsigned int off_pdo3_in; /* position value 32 bit */
+static unsigned int off_pdo4_in; /* velocity value 32 bit */
+static unsigned int off_pdo5_in; /* torque value 16 bit */
 
-static unsigned int off_pdo1_out;
-static unsigned int off_pdo2_out;
-static unsigned int off_pdo3_out;
-static unsigned int off_pdo4_out;
-static unsigned int off_pdo5_out;
+static unsigned int off_pdo1_out; /* control word 8 bit */
+static unsigned int off_pdo2_out; /* op modes 8 bit */
+static unsigned int off_pdo3_out; /* target torque 16 bit */
+static unsigned int off_pdo4_out; /* target position 32 bit */
+static unsigned int off_pdo5_out; /* target velocity 32 bit */
 #else
 static unsigned int off_pdo1_in;
 static unsigned int off_pdo2_in;
@@ -126,19 +126,31 @@ static unsigned int off_dig_out;
  */
 
 #ifdef CIA402
+#define CAN_OD_CONTROL_WORD       0x6040 /* RX; 8 bit */
+#define CAN_OD_STATUS_WORD        0x6041 /* TX; 8 bit */
+#define CAN_OD_MODES              0x6060 /* RX; 8 bit */
+#define CAN_OD_MODES_DISP         0x6061 /* TX; 8 bit */
+
+#define CAN_OD_POS_VALUE          0x6064 /* TX; 32 bit */
+#define CAN_OD_POS_TARGET         0x607A /* RX; 32 bit */
+#define CAN_OD_VEL_VALUE          0x606C /* TX; 32 bit */
+#define CAN_OD_VEL_TARGET         0x60ff /* RX; 32 bit */
+#define CAN_OD_TOR_VALUE          0x6077 /* TX; 16 bit */
+#define CAN_OD_TOR_TARGET         0x6071 /* RX; 16 bit */
+
 const static ec_pdo_entry_reg_t domain1_regs[] = {
 	/* RX */
-	{SomanetPos, SOMANET_ID, 0x6040, 0, &off_pdo1_in},
-	{SomanetPos, SOMANET_ID, 0x6060, 0, &off_pdo2_in},
-	{SomanetPos, SOMANET_ID, 0x6071, 0, &off_pdo3_in},
-	{SomanetPos, SOMANET_ID, 0x607a, 0, &off_pdo4_in},
-	{SomanetPos, SOMANET_ID, 0x60ff, 0, &off_pdo5_in},
+	{SomanetPos, SOMANET_ID, CAN_OD_CONTROL_WORD, 0, &off_pdo1_out},
+	{SomanetPos, SOMANET_ID, CAN_OD_MODES, 0, &off_pdo2_out},
+	{SomanetPos, SOMANET_ID, CAN_OD_TOR_TARGET, 0, &off_pdo3_out},
+	{SomanetPos, SOMANET_ID, CAN_OD_POS_TARGET, 0, &off_pdo4_out},
+	{SomanetPos, SOMANET_ID, CAN_OD_VEL_TARGET, 0, &off_pdo5_out},
 	/* TX */
-	{SomanetPos, SOMANET_ID, 0x6041, 0, &off_pdo1_out},
-	{SomanetPos, SOMANET_ID, 0x6061, 0, &off_pdo2_out},
-	{SomanetPos, SOMANET_ID, 0x6064, 0, &off_pdo3_out},
-	{SomanetPos, SOMANET_ID, 0x606c, 0, &off_pdo4_out},
-	{SomanetPos, SOMANET_ID, 0x6077, 0, &off_pdo5_out},
+	{SomanetPos, SOMANET_ID, CAN_OD_STATUS_WORD, 0, &off_pdo1_in},
+	{SomanetPos, SOMANET_ID, CAN_OD_MODES_DISP, 0, &off_pdo2_in},
+	{SomanetPos, SOMANET_ID, CAN_OD_POS_VALUE, 0, &off_pdo3_in},
+	{SomanetPos, SOMANET_ID, CAN_OD_VEL_VALUE, 0, &off_pdo4_in},
+	{SomanetPos, SOMANET_ID, CAN_OD_TOR_VALUE, 0, &off_pdo5_in},
     {0}
 };
 #else
@@ -396,7 +408,7 @@ void cyclic_task()
 #ifdef CIA402
 	EC_WRITE_U8(domain1_pd + off_pdo1_out, (blink ? TESTWORD1 : TESTWORD2)&0xff);
 	EC_WRITE_U8(domain1_pd + off_pdo2_out, (blink ? TESTWORD3 : TESTWORD4)&0xff);
-	EC_WRITE_U16(domain1_pd + off_pdo3_out, blink ? TESTWORD3 : TESTWORD4);
+	EC_WRITE_U16(domain1_pd + off_pdo3_out, (blink ? TESTWORD3 : TESTWORD4)&0xffff);
 	EC_WRITE_U32(domain1_pd + off_pdo4_out, blink ? TESTWORD3 : TESTWORD4);
 	EC_WRITE_U32(domain1_pd + off_pdo5_out, blink ? TESTWORD3 : TESTWORD4);
 #else
@@ -444,7 +456,7 @@ int main(int argc, char **argv)
 
 #if SDO_ACCESS
     fprintf(stderr, "Creating SDO requests...\n");
-    if (!(sdo = ecrt_slave_config_create_sdo_request(sc_data_in, 0x6041, 0, 2))) {
+    if (!(sdo = ecrt_slave_config_create_sdo_request(sc_data_in, 0x6041, 0, 1))) {
         fprintf(stderr, "Failed to create SDO request.\n");
         return -1;
     }
