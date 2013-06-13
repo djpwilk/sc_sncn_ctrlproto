@@ -12,6 +12,7 @@
 
 #include <ethercat.h>
 #include <foefs.h>
+#include <coecmd.h>
 
 //#include <uip.h>
 //#include <xtcp.h>
@@ -261,12 +262,28 @@ static void check_file(chanend foe_comm, chanend foe_signal)
  *
  * read PDOs and read/update OD entries
  */
+
+/* TX Objects */
+#define CANOD_STATUS            0x6041
+#define CANOD_VELOCITY          0x606c
+#define CANOD_POSITION          0x6064
+#define CANOD_TORQUE            0x6077
+#define CANOD_OP_MODE_DISP      0x6061
+
+/* RX Objects */
+#define CANOD_CONTROL           0x6040
+#define CANOD_TARGET_VELOCITY   0x60ff
+#define CANOD_TARGET_POSITION   0x607a
+#define CANOD_TARGET_TORQUE     0x6071
+#define CANOD_OP_MODE           0x6060
+
 static void cia402_example(chanend coe_od, chanend coe_out, chanend pdo_in, chanend pdo_out)
 {
 	unsigned char status = 0;
 	unsigned torque = 0;
-	unsigned value = 0;
+	unsigned velocity = 0;
 	unsigned position = 0;
+	unsigned opmodes = 0;
 	unsigned coein;
 
 	unsigned int inBuffer[64];
@@ -280,6 +297,27 @@ static void cia402_example(chanend coe_od, chanend coe_out, chanend pdo_in, chan
 	timer t;
 	const unsigned int delay = 100;
 	unsigned int time = 0;
+
+	/* read initial states */
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_STATUS, 0);
+	coe_od :> status;
+
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_TORQUE, 0);
+	coe_od :> torque;
+
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_VELOCITY, 0);
+	coe_od :> velocity;
+
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_POSITION, 0);
+	coe_od :> position;
+
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_OP_MODE, 0);
+	coe_od :> position;
 
 	while (1) {
 		count = 0;
