@@ -52,7 +52,7 @@
 #define PRIORITY 1
 
 // Optional features
-#define CONFIGURE_PDOS  0
+#define CONFIGURE_PDOS  1
 #define SDO_ACCESS      1
 #define CIA402          1
 
@@ -176,6 +176,42 @@ static unsigned int blink = 0;
 
 #if CONFIGURE_PDOS
 
+#ifdef CIA402
+
+/* Master 0, Slave 0, "Synapticon-ECAT"
+ * Vendor ID:       0x000022d2
+ * Product code:    0x00000201
+ * Revision number: 0x0a000002
+ */
+
+ec_pdo_entry_info_t slave_0_pdo_entries[] = {
+    {0x6040, 0x00, 8}, /*  */
+    {0x6060, 0x00, 8}, /*  */
+    {0x6071, 0x00, 16}, /*  */
+    {0x607a, 0x00, 32}, /*  */
+    {0x60ff, 0x00, 32}, /*  */
+    {0x6041, 0x00, 8}, /*  */
+    {0x6061, 0x00, 8}, /*  */
+    {0x6064, 0x00, 32}, /*  */
+    {0x606c, 0x00, 32}, /*  */
+    {0x6077, 0x00, 16}, /*  */
+};
+
+ec_pdo_info_t slave_0_pdos[] = {
+    {0x1600, 5, slave_0_pdo_entries + 0}, /* Rx PDO Mapping */
+    {0x1a00, 5, slave_0_pdo_entries + 5}, /* Tx PDO Mapping */
+};
+
+ec_sync_info_t slave_0_syncs[] = {
+    {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
+    {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
+    {2, EC_DIR_OUTPUT, 1, slave_0_pdos + 0, EC_WD_DISABLE},
+    {3, EC_DIR_INPUT, 1, slave_0_pdos + 1, EC_WD_DISABLE},
+    {0xff}
+};
+
+#else
+
 /* Master 0, Slave 0, "Synapticon-ECAT"
  * Vendor ID:       0x000022d2
  * Product code:    0x00000201
@@ -205,6 +241,7 @@ static ec_sync_info_t slave_0_syncs[] = {
     {3, EC_DIR_INPUT, 1, slave_0_pdos + 1, EC_WD_DISABLE},
     {0xff}
 };
+#endif
 
 
 #if 0 /* original foo */
