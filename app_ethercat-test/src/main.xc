@@ -12,9 +12,12 @@
 
 #include <ethercat.h>
 #include <foefs.h>
+#include <coecmd.h>
 
 //#include <uip.h>
 //#include <xtcp.h>
+
+#define CIA402_APP    1
 
 #define MAX_BUFFER_SIZE   1024
 
@@ -23,8 +26,11 @@ on stdcore[1] : out port ledGreen = LED_GREEN;
 on stdcore[1] : out port ledRed = LED_RED;
 
 /* example consumer */
-static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eoe_out
-			/*, chanend foe_in, chanend foe_out, chanend pdo_in, chanend pdo_out*/)
+static void consumer(
+#ifndef CIA402_APP
+	chanend coe_in, chanend coe_out,
+#endif
+	chanend eoe_in, chanend eoe_out)
 {
 	timer t;
 	const unsigned int delay = 10;
@@ -49,6 +55,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 	while (1) {
 		/* Receive data */
 		select {
+#ifndef CIA402_APP
 		case coe_in :> tmp :
 			/* the CoE packets are handled within module_ethercat, currently
 			 * no data is provided for the application layer.
@@ -64,7 +71,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			}
 
 			break;
-
+#endif
 		case eoe_in :> tmp :
 			inBuffer[0] = tmp&0xffff;
 			printstr("[APP] Received EOE packet\n");
@@ -80,6 +87,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 
 		/* send data */
 		switch (outType /*outBuffer[0]*/) {
+#ifndef CIA402_APP
 		case COE_PACKET:
 			/* Sending of CoE packets isn't provided, the low level CoE handling
 			 * is performed by module_ethercat.
@@ -94,7 +102,7 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 			outBuffer[0] = 0;
 			outType = -1;
 			break;
-
+#endif
 		case EOE_PACKET:
 			count=0;
 			//printstr("DEBUG send EoE packet\n");
@@ -115,7 +123,6 @@ static void consumer(chanend coe_in, chanend coe_out, chanend eoe_in, chanend eo
 		t when timerafter(time+delay) :> void;
 	}
 }
-
 
 /*
  * FoE Example handling
@@ -250,6 +257,152 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 }
 
 
+#ifdef CIA402_APP
+/* example implementation of CIA402 facility
+ *
+ * read PDOs and read/update OD entries
+ */
+
+/* TX Objects */
+#define CANOD_STATUS            0x6041
+#define CANOD_VELOCITY          0x606c
+#define CANOD_POSITION          0x6064
+#define CANOD_TORQUE            0x6077
+#define CANOD_OP_MODE_DISP      0x6061
+
+/* RX Objects */
+#define CANOD_CONTROL           0x6040
+#define CANOD_TARGET_VELOCITY   0x60ff
+#define CANOD_TARGET_POSITION   0x607a
+#define CANOD_TARGET_TORQUE     0x6071
+#define CANOD_OP_MODE           0x6060
+
+struct _cia402_values {
+	unsigned char status;
+	unsigned char modes;
+	unsigned torque; /* 16 bit value !!! */
+	unsigned position;
+	unsigned velocity;
+};
+
+static void cia402_example(chanend coe_od, chanend coe_in, chanend pdo_in, chanend pdo_out)
+{
+	unsigned char status = 0;
+	unsigned torque = 0;
+	unsigned velocity = 0;
+	unsigned position = 0;
+	unsigned opmodes = 0;
+	unsigned coein;
+
+	unsigned int inBuffer[64];
+	unsigned int outBuffer[64];
+	unsigned int count=0;
+	unsigned int outCount=0;
+	unsigned int tmp;
+	unsigned ready = 0;
+	int i;
+
+	struct _cia402_values values;
+
+	timer t;
+	const unsigned int delay = 100;
+	unsigned int time = 0;
+
+	/* read initial states */
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_STATUS, 0);
+	coe_od :> tmp;
+	status = (unsigned char)(tmp&0xff);
+	if (status == 0) {
+		coe_od <: CAN_SET_OBJECT;
+		coe_od <: CAN_OBJ_ADR(CANOD_STATUS, 0);
+		status = 0xaf;
+		coe_od <: (unsigned)status;
+		coe_od :> tmp;
+		if (tmp == status) {
+			printstr("successfully set status\n");
+		}
+	}
+
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_TORQUE, 0);
+	coe_od :> torque;
+
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_VELOCITY, 0);
+	coe_od :> velocity;
+
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_POSITION, 0);
+	coe_od :> position;
+
+	coe_od <: CAN_GET_OBJECT;
+	coe_od <: CAN_OBJ_ADR(CANOD_OP_MODE, 0);
+	coe_od :> position;
+
+	while (1) {
+		count = 0;
+
+		pdo_in <: DATA_REQUEST;
+		pdo_in :> count;
+		for (i=0; i<count; i++) {
+			pdo_in :> inBuffer[i];
+			/*
+			printstr("data "); printint(i);
+			printstr(": "); printhexln(inBuffer[i]);
+			 */
+		}
+
+		if (count>0) {
+			values.status = inBuffer[0]&0xff;
+			values.modes = (inBuffer[0]>>8)&0xff;
+			values.torque = inBuffer[1]&0xffff;
+			values.position = (inBuffer[2]<<16) | inBuffer[3];
+			values.velocity = (inBuffer[4]<<16) | inBuffer[5];
+
+			/* set the objects in the object dictionary */
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_STATUS, 0);
+			coe_od <: (unsigned)values.status;
+			coe_od :> tmp;
+
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_OP_MODE, 0);
+			coe_od <: (unsigned)values.modes;
+			coe_od :> tmp;
+
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_TORQUE, 0);
+			coe_od <: (unsigned)values.torque;
+			coe_od :> tmp;
+
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_POSITION, 0);
+			coe_od <: (unsigned)values.position;
+			coe_od :> tmp;
+
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_VELOCITY, 0);
+			coe_od <: (unsigned)values.velocity;
+			coe_od :> tmp;
+
+
+			/* build reply - attention the parameter order is different than the receive side */
+			pdo_out <: 6;
+			pdo_out <: ((unsigned)values.modes<<8) | values.status;
+			pdo_out <: values.position&0xffff;
+			pdo_out <: (values.position>>16)&0xffff;
+			pdo_out <: values.velocity&0xffff;
+			pdo_out <: (values.velocity>>16)&0xffff;
+			pdo_out <: values.torque;
+		}
+
+		t :> time;
+		t when timerafter(time+delay) :> void;
+	}
+}
+#else
+
 /*
  * example PDO handling - receive and reply values
  */
@@ -290,6 +443,7 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 		t when timerafter(time+delay) :> void;
 	}
 }
+#endif
 
 static void led_handler(void)
 {
@@ -325,7 +479,11 @@ int main(void) {
 		}
 
 		on stdcore[0] : {
-			consumer(coe_in, coe_out, eoe_in, eoe_out  /*, foe_in, foe_out, pdo_in, pdo_out*/);
+			consumer(
+#ifndef CIA402_APP
+				coe_in, coe_out,
+#endif
+				eoe_in, eoe_out  /*, foe_in, foe_out, pdo_in, pdo_out*/);
 		}
 
 		on stdcore[1] : {
@@ -339,7 +497,11 @@ int main(void) {
 		*/
 
 		on stdcore[1] : {
+#ifdef CIA402_APP
+			cia402_example(coe_out, coe_in, pdo_in, pdo_out);
+#else
 			pdo_handler(pdo_out, pdo_in);
+#endif
 		}
 	}
 

@@ -4,7 +4,7 @@
  *
  * 2013 Synapticon GmbH
  *
- * Author: Frank Jeschke <jeschke@fjes.de>
+ * Author: Frank Jeschke <fjeschke@synapticon.de>
  *
  * DRAFT
  */

@@ -979,7 +979,7 @@ void ecat_handler(chanend c_coe_r, chanend c_coe_s,
 					c_coe_r :> index;
 					c_coe_r :> value;
 
-					canod_get_entry((index>>8), index&0xff, value, type);
+					canod_set_entry((index>>8), index&0xff, value, type);
 					c_coe_r <: value;
 					}
 					break;

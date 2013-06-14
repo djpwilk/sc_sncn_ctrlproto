@@ -26,13 +26,4 @@ XMOS_MAKE_PATH ?= ../..
 -include $(XMOS_MAKE_PATH)/xcommon/module_xcommon/build/Makefile.common
 
 #Build the masterstuff with the xmos stuff
-all: build_masterstuff
-build_masterstuff:
-	cd ../app_linux_ctrlproto-master-example; make;
-
-#Clean masterstuff with the xmos stuff
-clean:clean_masterstuff
-
-clean_masterstuff:
-	cd  ../lib_linux_ctrlproto; make clean;
-	cd  ../app_linux_ctrlproto-master-example; make clean;
+all:
