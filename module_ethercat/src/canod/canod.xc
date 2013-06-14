@@ -380,13 +380,27 @@ int canod_get_entry_description(unsigned index, unsigned subindex, unsigned valu
 int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned &bitlength)
 {
 	int i;
+	unsigned mask = 0xffffffff;
 
 	/* FIXME handle special subindex 0xff to request object type -> see also CiA 301 */
 
 	for (i=0; SDO_Info_Entries[i].index != 0x0; i++) {
 		if (SDO_Info_Entries[i].index == index
 		    && SDO_Info_Entries[i].subindex == subindex) {
-			value = SDO_Info_Entries[i].value;
+			switch (SDO_Info_Entries[i].bitLength) {
+			case 8:
+				mask = 0xff;
+				break;
+			case 16:
+				mask = 0xffff;
+				break;
+			case 32:
+				mask = 0xffffffff;
+				break;
+			default:
+				break;
+			}
+			value = SDO_Info_Entries[i].value & mask;
 			bitlength = SDO_Info_Entries[i].bitLength; /* alternative bitLength */
 
 			return 0;
@@ -398,10 +412,25 @@ int canod_get_entry(unsigned index, unsigned subindex, unsigned &value, unsigned
 
 int canod_set_entry(unsigned index, unsigned subindex, unsigned value, unsigned type)
 {
-	for (int i; SDO_Info_Entries[i].index != 0x0; i++) {
+	unsigned mask = 0xffffffff;
+
+	for (int i=0; SDO_Info_Entries[i].index != 0x0; i++) {
 		if (SDO_Info_Entries[i].index == index
 				&& SDO_Info_Entries[i].subindex == subindex) {
-			SDO_Info_Entries[i].value = value;
+			switch (SDO_Info_Entries[i].bitLength) {
+			case 8:
+				mask = 0xff;
+				break;
+			case 16:
+				mask = 0xffff;
+				break;
+			case 32:
+				mask = 0xffffffff;
+				break;
+			default:
+				break;
+			}
+			SDO_Info_Entries[i].value = value & mask;
 			return 0;
 		}
 	}
