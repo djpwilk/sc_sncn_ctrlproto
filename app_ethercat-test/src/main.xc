@@ -277,7 +277,15 @@ static void check_file(chanend foe_comm, chanend foe_signal)
 #define CANOD_TARGET_TORQUE     0x6071
 #define CANOD_OP_MODE           0x6060
 
-static void cia402_example(chanend coe_od, chanend coe_out, chanend pdo_in, chanend pdo_out)
+struct _cia402_values {
+	unsigned char status;
+	unsigned char modes;
+	unsigned torque; /* 16 bit value !!! */
+	unsigned position;
+	unsigned velocity;
+};
+
+static void cia402_example(chanend coe_od, chanend coe_in, chanend pdo_in, chanend pdo_out)
 {
 	unsigned char status = 0;
 	unsigned torque = 0;
@@ -294,6 +302,8 @@ static void cia402_example(chanend coe_od, chanend coe_out, chanend pdo_in, chan
 	unsigned ready = 0;
 	int i;
 
+	struct _cia402_values values;
+
 	timer t;
 	const unsigned int delay = 100;
 	unsigned int time = 0;
@@ -301,7 +311,18 @@ static void cia402_example(chanend coe_od, chanend coe_out, chanend pdo_in, chan
 	/* read initial states */
 	coe_od <: CAN_GET_OBJECT;
 	coe_od <: CAN_OBJ_ADR(CANOD_STATUS, 0);
-	coe_od :> status;
+	coe_od :> tmp;
+	status = (unsigned char)(tmp&0xff);
+	if (status == 0) {
+		coe_od <: CAN_SET_OBJECT;
+		coe_od <: CAN_OBJ_ADR(CANOD_STATUS, 0);
+		status = 0xaf;
+		coe_od <: (unsigned)status;
+		coe_od :> tmp;
+		if (tmp == status) {
+			printstr("successfully set status\n");
+		}
+	}
 
 	coe_od <: CAN_GET_OBJECT;
 	coe_od <: CAN_OBJ_ADR(CANOD_TORQUE, 0);
@@ -326,15 +347,54 @@ static void cia402_example(chanend coe_od, chanend coe_out, chanend pdo_in, chan
 		pdo_in :> count;
 		for (i=0; i<count; i++) {
 			pdo_in :> inBuffer[i];
+			/*
 			printstr("data "); printint(i);
 			printstr(": "); printhexln(inBuffer[i]);
+			 */
 		}
 
 		if (count>0) {
-			pdo_out <: count;
-			for (i=0; i<count; i++) {
-				pdo_out <: inBuffer[i];
-			}
+			values.status = inBuffer[0]&0xff;
+			values.modes = (inBuffer[0]>>8)&0xff;
+			values.torque = inBuffer[1]&0xffff;
+			values.position = (inBuffer[2]<<16) | inBuffer[3];
+			values.velocity = (inBuffer[4]<<16) | inBuffer[5];
+
+			/* set the objects in the object dictionary */
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_STATUS, 0);
+			coe_od <: (unsigned)values.status;
+			coe_od :> tmp;
+
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_OP_MODE, 0);
+			coe_od <: (unsigned)values.modes;
+			coe_od :> tmp;
+
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_TORQUE, 0);
+			coe_od <: (unsigned)values.torque;
+			coe_od :> tmp;
+
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_POSITION, 0);
+			coe_od <: (unsigned)values.position;
+			coe_od :> tmp;
+
+			coe_od <: CAN_SET_OBJECT;
+			coe_od <: CAN_OBJ_ADR(CANOD_VELOCITY, 0);
+			coe_od <: (unsigned)values.velocity;
+			coe_od :> tmp;
+
+
+			/* build reply - attention the parameter order is different than the receive side */
+			pdo_out <: 6;
+			pdo_out <: ((unsigned)values.modes<<8) | values.status;
+			pdo_out <: values.position&0xffff;
+			pdo_out <: (values.position>>16)&0xffff;
+			pdo_out <: values.velocity&0xffff;
+			pdo_out <: (values.velocity>>16)&0xffff;
+			pdo_out <: values.torque;
 		}
 
 		t :> time;
@@ -438,7 +498,7 @@ int main(void) {
 
 		on stdcore[1] : {
 #ifdef CIA402_APP
-			cia402_example(coe_in, coe_out, pdo_in, pdo_out);
+			cia402_example(coe_out, coe_in, pdo_in, pdo_out);
 #else
 			pdo_handler(pdo_out, pdo_in);
 #endif
