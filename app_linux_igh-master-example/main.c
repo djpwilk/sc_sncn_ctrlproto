@@ -378,10 +378,16 @@ void cyclic_task()
     // write process data
     //EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
     
+#define STATUSW1   0x88
+#define STATUSW2   0xAA
+#define OPMODES    0xff
+#define TORVAL1    0xadad
+#define TORVAL2    0xdada
+
 #ifdef CIA402
-	EC_WRITE_U8(domain1_pd + off_pdo1_out, (blink ? TESTWORD1 : TESTWORD2)&0xff);
-	EC_WRITE_U8(domain1_pd + off_pdo2_out, (blink ? TESTWORD3 : TESTWORD4)&0xff);
-	EC_WRITE_U16(domain1_pd + off_pdo3_out, (blink ? TESTWORD3 : TESTWORD4)&0xffff);
+	EC_WRITE_U8(domain1_pd + off_pdo1_out, (blink ? STATUSW1 : STATUSW2)&0xff);
+	EC_WRITE_U8(domain1_pd + off_pdo2_out, (blink ? OPMODES : OPMODES)&0xff);
+	EC_WRITE_U16(domain1_pd + off_pdo3_out, (blink ? TORVAL1 : TORVAL2)&0xffff);
 	EC_WRITE_U32(domain1_pd + off_pdo4_out, blink ? TESTWORD3 : TESTWORD4);
 	EC_WRITE_U32(domain1_pd + off_pdo5_out, blink ? TESTWORD3 : TESTWORD4);
 #else
