@@ -47,6 +47,8 @@
 
 /****************************************************************************/
 
+#define DEBUGLVL  3
+
 // Application parameters
 #define FREQUENCY 100
 #define PRIORITY 1
@@ -363,6 +365,18 @@ void cyclic_task()
 #endif
 
     }
+
+	/* DEBUG read process data */
+	unsigned char sn_status = EC_READ_U8(domain1_pd + off_pdo1_in);
+	unsigned char sn_modes = EC_READ_U8(domain1_pd + off_pdo2_in);
+	unsigned int sn_position = EC_READ_U32(domain1_pd + off_pdo3_in);
+	unsigned int sn_velocity = EC_READ_U32(domain1_pd + off_pdo4_in);
+	unsigned int sn_torque = EC_READ_U16(domain1_pd + off_pdo5_in);
+	if (DEBUGLVL > 2) {
+		printf("[REC] 0x%2x 0x%2x 0x%8x 0x%8x 0x%4x\n",
+				sn_status, sn_modes,
+				sn_position, sn_velocity, sn_torque);
+	}
 
 #if 0
     // read process data
