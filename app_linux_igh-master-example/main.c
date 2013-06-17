@@ -380,16 +380,21 @@ void cyclic_task()
     
 #define STATUSW1   0x88
 #define STATUSW2   0xAA
-#define OPMODES    0xff
+#define OPMODES1   0xf1
+#define OPMODES2   0x1f
 #define TORVAL1    0xadad
 #define TORVAL2    0xdada
+#define VELVAL1    0x2d2d2d2d
+#define VELVAL2    0xd2d2d2d2
+#define POSVAL1    0xe4e4e4e4
+#define POSVAL2    0x4e4e4e4e
 
 #ifdef CIA402
 	EC_WRITE_U8(domain1_pd + off_pdo1_out, (blink ? STATUSW1 : STATUSW2)&0xff);
-	EC_WRITE_U8(domain1_pd + off_pdo2_out, (blink ? OPMODES : OPMODES)&0xff);
+	EC_WRITE_U8(domain1_pd + off_pdo2_out, (blink ? OPMODES1 : OPMODES2)&0xff);
 	EC_WRITE_U16(domain1_pd + off_pdo3_out, (blink ? TORVAL1 : TORVAL2)&0xffff);
-	EC_WRITE_U32(domain1_pd + off_pdo4_out, blink ? TESTWORD3 : TESTWORD4);
-	EC_WRITE_U32(domain1_pd + off_pdo5_out, blink ? TESTWORD3 : TESTWORD4);
+	EC_WRITE_U32(domain1_pd + off_pdo4_out, blink ? POSVAL1 : POSVAL2);
+	EC_WRITE_U32(domain1_pd + off_pdo5_out, blink ? VELVAL1 : VELVAL2);
 #else
 	EC_WRITE_U16(domain1_pd + off_pdo1_out, blink ? TESTWORD1 : TESTWORD2);
 	EC_WRITE_U16(domain1_pd + off_pdo2_out, blink ? TESTWORD3 : TESTWORD4);
