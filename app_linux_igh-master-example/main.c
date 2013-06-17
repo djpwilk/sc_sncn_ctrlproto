@@ -338,40 +338,40 @@ void cyclic_task()
 	/* sync the dc clock of the slaves */
 	ecrt_master_sync_slave_clocks(master);
 
-    // receive process data
-    ecrt_master_receive(master);
-    ecrt_domain_process(domain1);
+	// receive process data
+	ecrt_master_receive(master);
+	ecrt_domain_process(domain1);
 
-    // check process data state (optional)
-    check_domain1_state();
+	// check process data state (optional)
+	check_domain1_state();
 
-    if (counter) {
-        counter--;
-    } else { // do this at 1 Hz
-        counter = FREQUENCY;
+	if (counter) {
+		counter--;
+	} else { // do this at 1 Hz
+		counter = FREQUENCY;
 
-        // calculate new process data
-        blink = !blink;
+		// calculate new process data
+		blink = !blink;
 
-        // check for master state (optional)
-        check_master_state();
+		// check for master state (optional)
+		check_master_state();
 
-        // check for islave configuration state(s) (optional)
-        check_slave_config_states();
+		// check for islave configuration state(s) (optional)
+		check_slave_config_states();
 
 #if SDO_ACCESS
-        // read process data SDO
-        read_sdo();
+		// read process data SDO
+		read_sdo();
 #endif
+	}
 
-    }
-
-	/* DEBUG read process data */
+	/* Read process data */
 	unsigned char sn_status = EC_READ_U8(domain1_pd + off_pdo1_in);
 	unsigned char sn_modes = EC_READ_U8(domain1_pd + off_pdo2_in);
 	unsigned int sn_position = EC_READ_U32(domain1_pd + off_pdo3_in);
 	unsigned int sn_velocity = EC_READ_U32(domain1_pd + off_pdo4_in);
 	unsigned int sn_torque = EC_READ_U16(domain1_pd + off_pdo5_in);
+
 	if (DEBUGLVL > 2) {
 		printf("[REC] 0x%2x 0x%2x 0x%8x 0x%8x 0x%4x\n",
 				sn_status, sn_modes,
@@ -415,10 +415,10 @@ void cyclic_task()
 	EC_WRITE_U16(domain1_pd + off_pdo2_out, blink ? TESTWORD3 : TESTWORD4);
 #endif
 
-    // send process data
-    ecrt_domain_queue(domain1);
-    ecrt_master_send(master);
-    //printf("Wrote %x to slave\n",  blink ? TESTWORD1 : TESTWORD2);
+	// send process data
+	ecrt_domain_queue(domain1);
+	ecrt_master_send(master);
+	//printf("Wrote %x to slave\n",  blink ? TESTWORD1 : TESTWORD2);
 }
 
 /****************************************************************************/
