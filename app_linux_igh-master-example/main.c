@@ -96,7 +96,7 @@
 /****************************************************************************/
 
 /* application global definitions */
-static int g_dbglvl = 0;
+static int g_dbglvl = 1;
 
 // EtherCAT
 static ec_master_t *master = NULL;
