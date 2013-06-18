@@ -71,6 +71,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 /****************************************************************************/
 
@@ -284,6 +285,8 @@ static ec_sync_info_t slave_0_syncs[] = {
 
 #endif
 
+static void logmsg(int lvl, const char *format, ...);
+
 /*****************************************************************************/
 
 #if SDO_ACCESS
@@ -299,9 +302,9 @@ void check_domain1_state(void)
     ecrt_domain_state(domain1, &ds);
 
     if (ds.working_counter != domain1_state.working_counter)
-        printf("Domain1: WC %u.\n", ds.working_counter);
+        logmsg(1, "Domain1: WC %u.\n", ds.working_counter);
     if (ds.wc_state != domain1_state.wc_state)
-        printf("Domain1: State %u.\n", ds.wc_state);
+        logmsg(1, "Domain1: State %u.\n", ds.wc_state);
 
     domain1_state = ds;
 }
@@ -315,11 +318,11 @@ void check_master_state(void)
     ecrt_master_state(master, &ms);
 
     if (ms.slaves_responding != master_state.slaves_responding)
-        printf("%u slave(s).\n", ms.slaves_responding);
+        logmsg(1, "%u slave(s).\n", ms.slaves_responding);
     if (ms.al_states != master_state.al_states)
-        printf("AL states: 0x%02X.\n", ms.al_states);
+        logmsg(1, "AL states: 0x%02X.\n", ms.al_states);
     if (ms.link_up != master_state.link_up)
-        printf("Link is %s.\n", ms.link_up ? "up" : "down");
+        logmsg(1, "Link is %s.\n", ms.link_up ? "up" : "down");
 
     master_state = ms;
 }
@@ -333,11 +336,11 @@ void check_slave_config_states(void)
     ecrt_slave_config_state(sc_data_in, &s);
 
     if (s.al_state != sc_data_in_state.al_state)
-        printf("AnaIn: State 0x%02X.\n", s.al_state);
+        logmsg(1, "AnaIn: State 0x%02X.\n", s.al_state);
     if (s.online != sc_data_in_state.online)
-        printf("AnaIn: %s.\n", s.online ? "online" : "offline");
+        logmsg(1, "AnaIn: %s.\n", s.online ? "online" : "offline");
     if (s.operational != sc_data_in_state.operational)
-        printf("AnaIn: %soperational.\n",
+        logmsg(1, "AnaIn: %soperational.\n",
                 s.operational ? "" : "Not ");
 
     sc_data_in_state = s;
@@ -356,7 +359,7 @@ void read_sdo(void)
             fprintf(stderr, "Still busy...\n");
             break;
         case EC_REQUEST_SUCCESS:
-            fprintf(stderr, "SDO value: 0x%04X\n",
+            logmsg(1, "SDO value: 0x%04X\n",
                     EC_READ_U16(ecrt_sdo_request_data(sdo)));
             ecrt_sdo_request_read(sdo); // trigger next read
             break;
@@ -409,11 +412,9 @@ void cyclic_task()
 	unsigned int sn_velocity = EC_READ_U32(domain1_pd + off_pdo4_in);
 	unsigned int sn_torque = EC_READ_U16(domain1_pd + off_pdo5_in);
 
-	if (g_dbglvl > 2) {
-		printf("[REC] 0x%2x 0x%2x 0x%8x 0x%8x 0x%4x\n",
-				sn_status, sn_modes,
-				sn_position, sn_velocity, sn_torque);
-	}
+	logmsg(2, "[REC] 0x%2x 0x%2x 0x%8x 0x%8x 0x%4x\n",
+			sn_status, sn_modes,
+			sn_position, sn_velocity, sn_torque);
 
 #if 0
     // read process data
@@ -469,6 +470,17 @@ void signal_handler(int signum) {
 }
 
 /****************************************************************************/
+
+static void logmsg(int lvl, const char *format, ...)
+{
+	if (lvl > g_dbglvl)
+		return;
+
+	va_list ap;
+	va_start(ap, format);
+	vprintf(format, ap);
+	va_end(ap);
+}
 
 static inline const char *_basename(const char *prog)
 {
@@ -563,7 +575,7 @@ int main(int argc, char **argv)
 #endif
 
 #if CONFIGURE_PDOS
-    printf("Configuring PDOs...\n");
+    logmsg(1, "Configuring PDOs...\n");
     if (ecrt_slave_config_pdos(sc_data_in, EC_END, slave_0_syncs)) {
         fprintf(stderr, "Failed to configure PDOs.\n");
         return -1;
@@ -604,7 +616,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    printf("Activating master...\n");
+    logmsg(1, "Activating master...\n");
     if (ecrt_master_activate(master))
         return -1;
 
@@ -627,7 +639,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    printf("Starting timer...\n");
+    logmsg(1, "Starting timer...\n");
     tv.it_interval.tv_sec = 0;
     tv.it_interval.tv_usec = 1000000 / FREQUENCY;
     tv.it_value.tv_sec = 0;
@@ -637,7 +649,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    printf("Started.\n");
+    logmsg(0, "Started.\n");
     while (1) {
         pause();
 
