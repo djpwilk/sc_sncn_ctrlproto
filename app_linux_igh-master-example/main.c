@@ -78,7 +78,10 @@
 
 /****************************************************************************/
 
-#define DEBUGLVL  3
+#define MAJOR 1
+#define MINOR 0
+
+#define MAXDBGLVL  3
 
 // Application parameters
 #define FREQUENCY 100
@@ -90,6 +93,9 @@
 #define CIA402          1
 
 /****************************************************************************/
+
+/* application global definitions */
+static int g_dbglvl = 0;
 
 // EtherCAT
 static ec_master_t *master = NULL;
@@ -403,7 +409,7 @@ void cyclic_task()
 	unsigned int sn_velocity = EC_READ_U32(domain1_pd + off_pdo4_in);
 	unsigned int sn_torque = EC_READ_U16(domain1_pd + off_pdo5_in);
 
-	if (DEBUGLVL > 2) {
+	if (g_dbglvl > 2) {
 		printf("[REC] 0x%2x 0x%2x 0x%8x 0x%8x 0x%4x\n",
 				sn_status, sn_modes,
 				sn_position, sn_velocity, sn_torque);
@@ -464,8 +470,71 @@ void signal_handler(int signum) {
 
 /****************************************************************************/
 
+static inline const char *_basename(const char *prog)
+{
+	const char *p = prog;
+	const char *i = p;
+	for (i = p; *i != '\0'; i++) {
+		if (*i == '/')
+			p = i+1;
+	}
+
+	return p;
+}
+
+static void printversion(const char *prog)
+{
+	printf("%s v%d.%d\n", _basename(prog), MAJOR, MINOR);
+}
+
+static void printhelp(const char *prog)
+{
+	printf("Usage: %s [-h] [-v] [-l <level>]\n", _basename(prog));
+	printf("\n");
+	printf("  -h           print this help and exit\n");
+	printf("  -v           print version and exit\n");
+	printf("  -l <level>   set log level (0..3)\n");
+}
+
+static void cmdline(int argc, char **argv)
+{
+	int flags, opt;
+	int nsecs, tfnd;
+
+	const char *options = "hvl:";
+
+	nsecs = 0;
+	tfnd = 0;
+	flags = 0;
+
+	while ((opt = getopt(argc, argv, options)) != -1) {
+		switch (opt) {
+		case 'v':
+			printversion(argv[0]);
+			exit(0);
+			break;
+
+		case 'l':
+			g_dbglvl = atoi(optarg);
+			if (g_dbglvl<0 || g_dbglvl>MAXDBGLVL) {
+				fprintf(stderr, "Error unsuported debug level %d.\n", g_dbglvl);
+				exit(1);
+			}
+			break;
+
+		case 'h':
+		default:
+			printhelp(argv[0]);
+			exit(1);
+			break;
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
+	cmdline(argc, argv);
+
     ec_slave_config_t *sc;
     struct sigaction sa;
     struct itimerval tv;
