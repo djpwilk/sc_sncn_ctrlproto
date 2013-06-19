@@ -291,6 +291,9 @@ static void logmsg(int lvl, const char *format, ...);
 
 #if SDO_ACCESS
 static ec_sdo_request_t *sdo;
+
+/* additional sdo requests */
+static ec_sdo_request_t *request[3];
 #endif
 
 /*****************************************************************************/
@@ -349,23 +352,23 @@ void check_slave_config_states(void)
 /*****************************************************************************/
 
 #if SDO_ACCESS
-void read_sdo(void)
+void read_sdo(ec_sdo_request_t *req)
 {
-    switch (ecrt_sdo_request_state(sdo)) {
+    switch (ecrt_sdo_request_state(req)) {
         case EC_REQUEST_UNUSED: // request was not used yet
-            ecrt_sdo_request_read(sdo); // trigger first read
+            ecrt_sdo_request_read(req); // trigger first read
             break;
         case EC_REQUEST_BUSY:
             fprintf(stderr, "Still busy...\n");
             break;
         case EC_REQUEST_SUCCESS:
-            logmsg(1, "SDO value: 0x%04X\n",
-                    EC_READ_U16(ecrt_sdo_request_data(sdo)));
-            ecrt_sdo_request_read(sdo); // trigger next read
+            logmsg(1, "SDO value: 0x%X\n",
+                    EC_READ_U16(ecrt_sdo_request_data(req)));
+            ecrt_sdo_request_read(req); // trigger next read
             break;
         case EC_REQUEST_ERROR:
             fprintf(stderr, "Failed to read SDO!\n");
-            ecrt_sdo_request_read(sdo); // retry reading
+            ecrt_sdo_request_read(req); // retry reading
             break;
     }
 }
@@ -401,7 +404,10 @@ void cyclic_task()
 
 #if SDO_ACCESS
 		// read process data SDO
-		read_sdo();
+		read_sdo(sdo);
+		read_sdo(request[0]);
+		read_sdo(request[1]);
+		read_sdo(request[2]);
 #endif
 	}
 
@@ -572,6 +578,24 @@ int main(int argc, char **argv)
         return -1;
     }
     ecrt_sdo_request_timeout(sdo, 500); // ms
+
+    if (!(request[0] = ecrt_slave_config_create_sdo_request(sc_data_in, CAN_OD_POS_VALUE, 0, 4))) {
+	    fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", CAN_OD_POS_VALUE);
+	    return -1;
+    }
+    ecrt_sdo_request_timeout(request[0], 500); // ms
+
+    if (!(request[1] = ecrt_slave_config_create_sdo_request(sc_data_in, CAN_OD_VEL_VALUE, 0, 4))) {
+	    fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", CAN_OD_VEL_VALUE);
+	    return -1;
+    }
+    ecrt_sdo_request_timeout(request[1], 500); // ms
+
+    if (!(request[2] = ecrt_slave_config_create_sdo_request(sc_data_in, CAN_OD_TOR_VALUE, 0, 2))) {
+	    fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", CAN_OD_TOR_VALUE);
+	    return -1;
+    }
+    ecrt_sdo_request_timeout(request[2], 500); // ms
 #endif
 
 #if CONFIGURE_PDOS
