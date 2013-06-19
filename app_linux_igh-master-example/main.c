@@ -431,12 +431,12 @@ void cyclic_task()
 #define STATUSW2   0xAA
 #define OPMODES1   0xf1
 #define OPMODES2   0x1f
-#define TORVAL1    0xadad
-#define TORVAL2    0xdada
-#define VELVAL1    0x2d2d2d2d
-#define VELVAL2    0xd2d2d2d2
-#define POSVAL1    0xe4e4e4e4
-#define POSVAL2    0x4e4e4e4e
+#define TORVAL1    0xabab
+#define TORVAL2    0xbaba
+#define VELVAL1    0x2d2d4d4d
+#define VELVAL2    0xd4d4d2d2
+#define POSVAL1    0xe4e4e2e2
+#define POSVAL2    0x2e2e4e4e
 
 	EC_WRITE_U8(domain1_pd + off_pdo1_out, (blink ? STATUSW1 : STATUSW2)&0xff);
 	EC_WRITE_U8(domain1_pd + off_pdo2_out, (blink ? OPMODES1 : OPMODES2)&0xff);
