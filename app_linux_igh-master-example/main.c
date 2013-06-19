@@ -363,7 +363,7 @@ void read_sdo(ec_sdo_request_t *req)
             break;
         case EC_REQUEST_SUCCESS:
             logmsg(1, "SDO value: 0x%X\n",
-                    EC_READ_U16(ecrt_sdo_request_data(req)));
+                    EC_READ_U32(ecrt_sdo_request_data(req)));
             ecrt_sdo_request_read(req); // trigger next read
             break;
         case EC_REQUEST_ERROR:
