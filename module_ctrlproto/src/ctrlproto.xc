@@ -30,21 +30,22 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 
 	pdo_in <: DATA_REQUEST;
 	pdo_in :> count;
+	//printintln(count);
 	for (i = 0; i < count; i++) {
 		pdo_in :> inBuffer[i];
 	}
 
 	//Test for matching number of words
-	if(count == 7)
+	if(count == 9)
 	{
 		InOut.control_word 	  = inBuffer[0];
 		InOut.operation_mode  = inBuffer[1] & 0xFF;
-		InOut.target_torque   = inBuffer[2];
+		InOut.target_torque   = (inBuffer[2] ) & 0xFFFF;
 		InOut.target_velocity = inBuffer[3]  | (inBuffer[4] << 16);
 		InOut.target_position = inBuffer[5]  | (inBuffer[6] << 16);
 	}
 
-	if(count == 7)
+	if(count == 9)
 	{
 		pdo_out <: count;
 		for (i=0; i<count; i++)
@@ -56,25 +57,32 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 					pdo_tmp = InOut.status_word;
 					break;
 				case 1:
-					pdo_tmp = InOut.operation_mode_display & 0xff;
+					pdo_tmp = InOut.operation_mode_display ;
 					break;
 				case 2:
-					pdo_tmp = InOut.position_actual & 0xffff;
+					pdo_tmp = InOut.torque_actual;
+
 					break;
 				case 3:
-					pdo_tmp = (InOut.position_actual >> 16) & 0xffff;
+					pdo_tmp = InOut.velocity_actual & 0xffff;
+
+
 					break;
 				case 4:
-					pdo_tmp = InOut.velocity_actual & 0xffff;
+					pdo_tmp = (InOut.velocity_actual >> 16) & 0xffff;
+
+
 					break;
 				case 5:
-					pdo_tmp = (InOut.velocity_actual >> 16) & 0xffff;
+					pdo_tmp = InOut.position_actual & 0xffff;
+
 					break;
 				case 6:
-					pdo_tmp = InOut.torque_actual;
+					pdo_tmp = (InOut.position_actual >> 16) & 0xffff;
+
 					break;
 				default:
-					pdo_tmp = 0xEEEEEEEE;
+					pdo_tmp = 0xEEEE;
 					break;
 			}
 			pdo_out <: pdo_tmp;
