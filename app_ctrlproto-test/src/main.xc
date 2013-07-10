@@ -15,21 +15,11 @@
 #include <ctrlproto.h>
 
 
-//#include <uip.h>
-//#include <xtcp.h>
-
-#define MAX_BUFFER_SIZE   1024
-
-on stdcore[1] : out port ledBlue = LED_BLUE;
-on stdcore[1] : out port ledGreen = LED_GREEN;
-on stdcore[1] : out port ledRed = LED_RED;
-
-
 static void pdo_handler(chanend pdo_out, chanend pdo_in)
 {
 	timer t;
 
-	const unsigned int delay = 125000;
+	const unsigned int delay = 100000;
 	unsigned int time = 0;
 
 	static int16_t i=0;
@@ -41,11 +31,13 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 	while(1)
 	{
 		i++;
-		if(i>=1000)i=0;
+		if(i>=1000)
+			i=0;
 		InOut.position_actual=i;
 		InOut.torque_actual=i;
 		InOut.velocity_actual=i;
 
+		InOut.status_word = 32000;	//undefined
 
 		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
 		t :> time;
@@ -54,6 +46,12 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 		{
 			printstr("\nMotor: ");
 			printintln(InOut.control_word);
+		}
+
+		if(InOutOld.operation_mode != InOut.operation_mode )
+		{
+			printstr("\nOperation mode: ");
+			printintln(InOut.operation_mode);
 		}
 
 		if(InOutOld.target_position != InOut.target_position)
@@ -78,6 +76,7 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 	   InOutOld.target_position = InOut.target_position;
 	   InOutOld.target_velocity = InOut.target_velocity;
 	   InOutOld.target_torque = InOut.target_torque;
+	   InOutOld.operation_mode = InOut.operation_mode;
 
 		t when timerafter(time+delay) :> void;
 		t:>time;
