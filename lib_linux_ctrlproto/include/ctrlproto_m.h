@@ -199,12 +199,12 @@ typedef struct
 	/**
 	 * outgoing modes of operation
 	 */
-	int16_t operation_mode;
+	int16_t operation_mode;		/*only 8 bits valid*/
 
 	/**
 	 * incoming motorctrl command (readback)
 	 */
-	int16_t motorctrl_status_in;  /*only 8 bits valid*/
+	int16_t motorctrl_status_in;
 
 	/**
 	 * incoming torque
@@ -224,9 +224,9 @@ typedef struct
 	/**
 	 * incoming display mode of operation
 	 */
-	int16_t operation_mode_disp;
+	int16_t operation_mode_disp;	/*only 8 bits valid*/
 
-}ctrlproto_slv_handle;
+}ctrlproto_slv_handle;/*only 8 bits valid*/
 
 
 
