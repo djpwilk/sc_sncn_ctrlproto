@@ -13,12 +13,12 @@ void init_ctrl_proto(ctrl_proto_values_t &InOut)
 	InOut.target_velocity = 0x0;
 	InOut.target_position = 0x0;
 
-	InOut.torque_actual   = 0x0;
-	InOut.target_velocity = 0x0;
-	InOut.target_position = 0x0;
-
 	InOut.status_word     = 0x0000;  		// not set
 	InOut.operation_mode_display = 0xff; 	// undefined
+
+	InOut.torque_actual   = 0x0;
+	InOut.velocity_actual = 0x0;
+	InOut.position_actual = 0x0;
 }
 
 void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
