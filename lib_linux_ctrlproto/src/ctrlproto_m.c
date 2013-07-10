@@ -159,6 +159,7 @@ void handleEcat(master_setup_variables_t *master_setup,
 		        unsigned int slave_num)
 {
 	int slv;
+	int buffer;
 
 	//If first Run, skip this.
 	if(master_setup->nFirstRun)
@@ -169,10 +170,9 @@ void handleEcat(master_setup_variables_t *master_setup,
 	    {
 	    	//Write slave values
 	    	EC_WRITE_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[0],slv_handles[slv].motorctrl_out);
-	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[1],slv_handles[slv].torque_setpoint);
-	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[2],slv_handles[slv].speed_setpoint);
+	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[1],(slv_handles[slv].torque_setpoint <<16)|slv_handles[slv].operation_mode);
+	       	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[2],slv_handles[slv].speed_setpoint );
 	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[3],slv_handles[slv].position_setpoint);
-	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[4],slv_handles[slv].userdef_setpoint);
 	    }
 		ecrt_domain_queue(master_setup->domain);
 		ecrt_master_send(master_setup->master);
@@ -194,11 +194,13 @@ void handleEcat(master_setup_variables_t *master_setup,
 	//Receiving
 	for(slv=0;slv<slave_num;++slv)
 	{
-		slv_handles[slv].motorctrl_in=(EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[0]))&0xFF;
-		slv_handles[slv].torque_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[1]);
-		slv_handles[slv].speed_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[2]);
+		slv_handles[slv].motorctrl_status_in=(EC_READ_U16(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[0]))&0xFFFF;
+		buffer = EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[1]);
+		slv_handles[slv].operation_mode_disp = buffer&0xffff;
+		slv_handles[slv].torque_in = ( buffer >> 16)&0xffff;
+		slv_handles[slv].speed_in =EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[2]);
 		slv_handles[slv].position_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[3]);
-		slv_handles[slv].userdef_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[4]);
+
 	}
 
 	//Check for master und domain state

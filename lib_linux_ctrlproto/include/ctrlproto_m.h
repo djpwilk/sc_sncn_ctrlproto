@@ -184,7 +184,7 @@ typedef struct
 	/**
 	 * outgoing torque (use fromFloatFunction to set it)
 	 */
-	int32_t torque_setpoint;
+	int16_t torque_setpoint;
 
 	/**
 	 * outgoing torque
@@ -197,19 +197,19 @@ typedef struct
 	int32_t position_setpoint;
 
 	/**
-	 * outgoing userdefined value
+	 * outgoing modes of operation
 	 */
-	int32_t userdef_setpoint;
+	int16_t operation_mode;
 
 	/**
 	 * incoming motorctrl command (readback)
 	 */
-	int16_t motorctrl_in;
+	int16_t motorctrl_status_in;  /*only 8 bits valid*/
 
 	/**
 	 * incoming torque
 	 */
-	int32_t torque_in;
+	int16_t torque_in;
 
 	/**
 	 * incoming speed
@@ -222,9 +222,9 @@ typedef struct
 	int32_t position_in;
 
 	/**
-	 * incoming userdefined value
+	 * incoming display mode of operation
 	 */
-	int32_t userdef_in;
+	int16_t operation_mode_disp;
 
 }ctrlproto_slv_handle;
 
