@@ -35,7 +35,7 @@ int main()
 		{
 			//This is just a example what CAN be done when the master recognizes
 			//that, for example, a slave is now missing...
-			slv_handles[0].motorctrl_out= CTRL_STOP;
+			slv_handles[0].motorctrl_out= 0;
 			slv_handles[0].torque_setpoint=0;
 			slv_handles[0].speed_setpoint=0;
 			slv_handles[0].position_setpoint=0;

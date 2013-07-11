@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <ecrt.h>
 #include <inttypes.h>
-#include <cmds.h>
+//#include <cmds.h>
 
 
 #ifdef __cplusplus
@@ -226,7 +226,7 @@ typedef struct
 	 */
 	int16_t operation_mode_disp;	/*only 8 bits valid*/
 
-}ctrlproto_slv_handle;/*only 8 bits valid*/
+}ctrlproto_slv_handle;
 
 
 
