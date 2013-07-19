@@ -9,7 +9,7 @@ TARGET = C22
 APP_NAME = app_ctrlproto-test
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = sc_sncn_ethercat/module_ctrlproto sc_sncn_ethercat/module_ethercat
+USED_MODULES = module_ctrlproto sc_sncn_ethercat/module_ethercat
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:
@@ -24,15 +24,3 @@ VERBOSE = 1
 
 XMOS_MAKE_PATH ?= ../..
 -include $(XMOS_MAKE_PATH)/xcommon/module_xcommon/build/Makefile.common
-
-#Build the masterstuff with the xmos stuff
-all: build_masterstuff
-build_masterstuff:
-	cd ../app_linux_ctrlproto-master-example; make;
-
-#Clean masterstuff with the xmos stuff
-clean:clean_masterstuff
-
-clean_masterstuff:
-	cd  ../lib_linux_ctrlproto; make clean;
-	cd  ../app_linux_ctrlproto-master-example; make clean;

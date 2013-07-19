@@ -23,7 +23,7 @@
                                 </outputEntries>
                             </builder>
                             <tool id="com.xmos.cdt.xc.compiler.1559267293" name="com.xmos.cdt.xc.compiler" superClass="com.xmos.cdt.xc.compiler">
-                                <option id="com.xmos.c.compiler.option.defined.symbols.1182021295" superClass="com.xmos.c.compiler.option.defined.symbols" valueType="definedSymbols">
+                                <option id="com.xmos.c.compiler.option.defined.symbols.1182021295" name="com.xmos.c.compiler.option.defined.symbols" superClass="com.xmos.c.compiler.option.defined.symbols" valueType="definedSymbols">
                                     <listOptionValue builtIn="false" value="__SHRT_MAX__=32767" />
                                     <listOptionValue builtIn="false" value="__SCHAR_MAX__=127" />
                                     <listOptionValue builtIn="false" value="__SIZE_TYPE__=unsigned" />
@@ -133,7 +133,7 @@
                                     <listOptionValue builtIn="false" value="__EXCEPTIONS=1" />
                                     <listOptionValue builtIn="false" value="__WCHAR_UNSIGNED__=1" />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.1962555815" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
+                                <option id="com.xmos.c.compiler.option.include.paths.1962555815" name="com.xmos.c.compiler.option.include.paths" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1&quot;' />
@@ -145,132 +145,120 @@
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
+                                </option>
+                                <option id="gnu.c.compiler.option.include.paths.11111" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                 </option>
                                 <inputType id="com.xmos.cdt.xc.compiler.input.358814829" name="XC Sources" superClass="com.xmos.cdt.xc.compiler.input" />
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
-                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
-                                </option>
                             </tool>
                             <tool id="com.xmos.cdt.xc.compiler.base.11111" name="com.xmos.cdt.xc.compiler.base" superClass="com.xmos.cdt.xc.compiler.base">
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
+                                <option id="gnu.c.compiler.option.include.paths.11111" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.11111" valueType="includePath" superClass="com.xmos.c.compiler.option.include.paths">
+                                <option id="com.xmos.c.compiler.option.include.paths.11111" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
                             </tool>
                             <tool id="com.xmos.cdt.c.compiler.base.11111" name="com.xmos.cdt.c.compiler.base" superClass="com.xmos.cdt.c.compiler.base">
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
+                                <option id="gnu.c.compiler.option.include.paths.11111" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.11111" valueType="includePath" superClass="com.xmos.c.compiler.option.include.paths">
+                                <option id="com.xmos.c.compiler.option.include.paths.11111" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
                             </tool>
                             <tool id="com.xmos.cdt.cpp.compiler.base.11111" name="com.xmos.cdt.cpp.compiler.base" superClass="com.xmos.cdt.cpp.compiler.base">
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
+                                <option id="gnu.c.compiler.option.include.paths.11111" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.11111" valueType="includePath" superClass="com.xmos.c.compiler.option.include.paths">
+                                <option id="com.xmos.c.compiler.option.include.paths.11111" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
                             </tool>
                             <tool id="com.xmos.cdt.core.assembler.base.11111" name="com.xmos.cdt.core.assembler.base" superClass="com.xmos.cdt.core.assembler.base">
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
+                                <option id="gnu.c.compiler.option.include.paths.11111" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.11111" valueType="includePath" superClass="com.xmos.c.compiler.option.include.paths">
+                                <option id="com.xmos.c.compiler.option.include.paths.11111" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
                             </tool>
                         </toolChain>
@@ -370,6 +358,7 @@
                     </scannerInfoProvider>
                 </profile>
             </storageModule>
+            <storageModule moduleId="org.eclipse.cdt.core.language.mapping" />
         </cconfiguration>
         <cconfiguration id="com.xmos.cdt.toolchain.924153031">
             <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.xmos.cdt.toolchain.924153031" moduleId="org.eclipse.cdt.core.settings" name="Release">
@@ -391,7 +380,7 @@
                                 </outputEntries>
                             </builder>
                             <tool id="com.xmos.cdt.xc.compiler.1896852488" name="com.xmos.cdt.xc.compiler" superClass="com.xmos.cdt.xc.compiler">
-                                <option id="com.xmos.c.compiler.option.defined.symbols.767811822" superClass="com.xmos.c.compiler.option.defined.symbols" valueType="definedSymbols">
+                                <option id="com.xmos.c.compiler.option.defined.symbols.767811822" name="com.xmos.c.compiler.option.defined.symbols" superClass="com.xmos.c.compiler.option.defined.symbols" valueType="definedSymbols">
                                     <listOptionValue builtIn="false" value="__SHRT_MAX__=32767" />
                                     <listOptionValue builtIn="false" value="__SCHAR_MAX__=127" />
                                     <listOptionValue builtIn="false" value="__SIZE_TYPE__=unsigned" />
@@ -501,7 +490,7 @@
                                     <listOptionValue builtIn="false" value="__EXCEPTIONS=1" />
                                     <listOptionValue builtIn="false" value="__WCHAR_UNSIGNED__=1" />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.1499031014" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
+                                <option id="com.xmos.c.compiler.option.include.paths.1499031014" name="com.xmos.c.compiler.option.include.paths" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1&quot;' />
@@ -513,132 +502,120 @@
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
+                                </option>
+                                <option id="gnu.c.compiler.option.include.paths.11111" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                 </option>
                                 <inputType id="com.xmos.cdt.xc.compiler.input.791062315" name="XC Sources" superClass="com.xmos.cdt.xc.compiler.input" />
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
-                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${XMOS_TOOL_PATH}/target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
-                                </option>
                             </tool>
                             <tool id="com.xmos.cdt.xc.compiler.base.11111" name="com.xmos.cdt.xc.compiler.base" superClass="com.xmos.cdt.xc.compiler.base">
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
+                                <option id="gnu.c.compiler.option.include.paths.11111" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.11111" valueType="includePath" superClass="com.xmos.c.compiler.option.include.paths">
+                                <option id="com.xmos.c.compiler.option.include.paths.11111" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
                             </tool>
                             <tool id="com.xmos.cdt.c.compiler.base.11111" name="com.xmos.cdt.c.compiler.base" superClass="com.xmos.cdt.c.compiler.base">
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
+                                <option id="gnu.c.compiler.option.include.paths.11111" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.11111" valueType="includePath" superClass="com.xmos.c.compiler.option.include.paths">
+                                <option id="com.xmos.c.compiler.option.include.paths.11111" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
                             </tool>
                             <tool id="com.xmos.cdt.cpp.compiler.base.11111" name="com.xmos.cdt.cpp.compiler.base" superClass="com.xmos.cdt.cpp.compiler.base">
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
+                                <option id="gnu.c.compiler.option.include.paths.11111" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.11111" valueType="includePath" superClass="com.xmos.c.compiler.option.include.paths">
+                                <option id="com.xmos.c.compiler.option.include.paths.11111" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
                             </tool>
                             <tool id="com.xmos.cdt.core.assembler.base.11111" name="com.xmos.cdt.core.assembler.base" superClass="com.xmos.cdt.core.assembler.base">
-                                <option id="gnu.c.compiler.option.include.paths.11111" valueType="includePath" superClass="gnu.c.compiler.option.include.paths">
+                                <option id="gnu.c.compiler.option.include.paths.11111" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
-                                <option id="com.xmos.c.compiler.option.include.paths.11111" valueType="includePath" superClass="com.xmos.c.compiler.option.include.paths">
+                                <option id="com.xmos.c.compiler.option.include.paths.11111" superClass="com.xmos.c.compiler.option.include.paths" valueType="includePath">
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/c++/4.2.1/xcore-xmos-elf&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${XMOS_DOC_PATH}/../target/include/gcc&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto_xmos/./src}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/../common_include}&quot;' />
+                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ctrlproto/module_ctrlproto/./src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src/canod}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat/src}&quot;' />
                                     <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ethercat}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/../common_include}&quot;' />
-                                    <listOptionValue builtIn="false" value='&quot;${workspace_loc:/sc_sncn_ethercat/module_ctrlproto/./src}&quot;' />
                                 </option>
                             </tool>
                         </toolChain>
@@ -739,6 +716,7 @@
                     </scannerInfoProvider>
                 </profile>
             </storageModule>
+            <storageModule moduleId="org.eclipse.cdt.core.language.mapping" />
         </cconfiguration>
     </storageModule>
     <storageModule moduleId="cdtBuildSystem" version="4.0.0">
