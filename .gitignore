@@ -18,5 +18,8 @@
 *.o
 bin/
 
+#settings directory
+.settings
+
 ## ignore KDE files
 .directory
