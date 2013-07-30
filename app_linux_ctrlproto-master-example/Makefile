@@ -3,7 +3,7 @@ SOURCE_DIRS = src
 
 MASTER_INSTALLDIR := /opt/etherlab
 
-SOURCES += src/main.c
+SOURCES += src/main.c src/drive_function.c 
 
 INCLUDE_DIRS += -I ../inc_ctrlproto-common
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
