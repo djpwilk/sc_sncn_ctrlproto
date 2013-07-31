@@ -5,7 +5,7 @@ MASTER_INSTALLDIR := /opt/etherlab
 
 SOURCES += src/main.c src/drive_function.c 
 
-INCLUDE_DIRS += -I ../module_ctrlproto/src  #drive_config.h is common for both slave & master
+INCLUDE_DIRS += -I ../inc_ctrlproto-common  
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I ../lib_linux_ctrlproto/include
 
