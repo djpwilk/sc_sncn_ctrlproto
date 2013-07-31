@@ -86,19 +86,5 @@
 #define OPERATION_MODE_SPECIFIC_STATE		0X1000	// 12 CSP/CSV/CST  13
 #define MANUFACTURER_SPECIFIC_STATES   		0XC000	// 14-15
 
-extern int init_state(void);
-
-extern int update_statusword(int current_status, int state_reached);
-
-extern int get_next_values(int in_state, int check_init, int ctrl_input, int fault);
-
-extern int read_controlword_switch_on(int control_word);
-
-extern int read_controlword_quick_stop(int control_word);
-
-extern int read_controlword_enable_op(int control_word);
-
-extern int read_controlword_fault_reset(int control_word);
-
 #endif /* DRIVE_CONFIG_H_*/
 
