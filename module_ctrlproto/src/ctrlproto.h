@@ -1,5 +1,4 @@
 #include <stdint.h>
-//#include "../../inc_ctrlproto-common/cmds.h"
 
 /**
  * \brief
@@ -43,4 +42,4 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
  *  \brief
  * 	 This function initializes a struct from the type of ctrl_proto_values_t
  */
-void init_ctrl_proto(ctrl_proto_values_t &InOut);
+ctrl_proto_values_t init_ctrl_proto(void);

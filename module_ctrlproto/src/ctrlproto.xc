@@ -4,8 +4,10 @@
 #include <ethercat.h>
 #include <foefs.h>
 
-void init_ctrl_proto(ctrl_proto_values_t &InOut)
+ctrl_proto_values_t init_ctrl_proto(void)
 {
+	ctrl_proto_values_t InOut;
+
 	InOut.control_word    = 0x0006;    		// shutdown
 	InOut.operation_mode  = 0xff;  			// undefined
 
@@ -19,6 +21,8 @@ void init_ctrl_proto(ctrl_proto_values_t &InOut)
 	InOut.torque_actual   = 0x0;
 	InOut.velocity_actual = 0x0;
 	InOut.position_actual = 0x0;
+
+	return InOut;
 }
 
 void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)

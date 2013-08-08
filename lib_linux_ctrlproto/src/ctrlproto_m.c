@@ -121,12 +121,12 @@ void init_master(master_setup_variables_t *master_setup,
 	ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
 
 
-#if PRIORITY
+//#if PRIORITY
     pid_t pid = getpid();
     if (setpriority(PRIO_PROCESS, pid, -19))
         fprintf(stderr, "Warning: Failed to set priority: %s\n",
                 strerror(errno));
-#endif
+//#endif
 
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
@@ -138,7 +138,7 @@ void init_master(master_setup_variables_t *master_setup,
 
     printf("Starting timer...");
     tv.it_interval.tv_sec = 0;
-    tv.it_interval.tv_usec = 1000000 / 100; //FREQUENCY
+    tv.it_interval.tv_usec = 1000000 / 1000; //FREQUENCY
     tv.it_value.tv_sec = 0;
     tv.it_value.tv_usec = 1000;
 
@@ -173,6 +173,7 @@ void handleEcat(master_setup_variables_t *master_setup,
 	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[1],(slv_handles[slv].torque_setpoint <<16)|slv_handles[slv].operation_mode);
 	       	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[2],slv_handles[slv].speed_setpoint );
 	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[3],slv_handles[slv].position_setpoint);
+	      	EC_WRITE_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_out[4],0);
 	    }
 		ecrt_domain_queue(master_setup->domain);
 		ecrt_master_send(master_setup->master);
@@ -200,7 +201,7 @@ void handleEcat(master_setup_variables_t *master_setup,
 		slv_handles[slv].torque_in = ( buffer >> 16)&0xffff;
 		slv_handles[slv].speed_in =EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[2]);
 		slv_handles[slv].position_in=EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[3]);
-
+		EC_READ_U32(master_setup->domain_pd+slv_handles[slv].__ecat_slave_in[4]);
 	}
 
 	//Check for master und domain state
