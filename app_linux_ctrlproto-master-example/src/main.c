@@ -1,12 +1,11 @@
 #include <ctrlproto_m.h>
 #include <ecrt.h>
+#include "ethercat_setup.h"
 #include <stdio.h>
 #include "profile.h"
 #include "drive_function.h"
-#include "math.h"
-#include "ethercat_setup.h"
 #include <sys/time.h>
-
+#include <time.h>
 
 #define print_slave
 void run_drive();
@@ -41,7 +40,7 @@ int main()
 	printf("master \n");
 
 
-	/**********************check ready************************/
+	/**********************check ready***********************/
 	while(!ready)
 	{
 		handleEcat(&master_setup,slv_handles, NUM_SLAVES);
@@ -59,7 +58,7 @@ int main()
 	printf("ready");
 	#endif
 
-	/**********************check switch_enable************************/
+	/**********************check switch_enable***********************/
 	while(!switch_enable)
 	{
 		handleEcat(&master_setup,slv_handles, NUM_SLAVES);
@@ -78,7 +77,7 @@ int main()
 	#endif
 
 
-	/************************output switch on***************************/
+	/************************output switch on**************************/
 	while(!switch_on_state)
 	{
 		handleEcat(&master_setup, slv_handles, NUM_SLAVES);

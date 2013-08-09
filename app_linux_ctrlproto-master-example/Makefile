@@ -20,7 +20,7 @@ LIBS += -lsncn_ctrlproto
 LIBS += -lethercat -lm
 
 FLAGS = -static
-
+FLAGS += -std=c99
 
 all:
 		@cd ../lib_linux_ctrlproto; make

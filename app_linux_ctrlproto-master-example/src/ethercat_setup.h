@@ -31,6 +31,6 @@ MASTER_SETUP_INIT();
  * Increase priority of the master process
  * !! YOU WILL NEED TO RUN THIS AS ROOT OTHERWISE THE PRIORITY WILL NOT CHANGE!!
  */
-//#define PRIORITY
+#define PRIORITY
 
 #endif /* ETHERCAT_SETUP_H_ */

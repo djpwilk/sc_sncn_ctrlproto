@@ -11,7 +11,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-
+#define PRIORITY
+#define ETHERCAT_FREQUENCY 1000   //1 KHz
 #define SOMANET_ID 0x000022d2, 0x00000201
 static unsigned int user_alarms = 0;
 static unsigned int sig_alarms = 0;
@@ -91,7 +92,7 @@ void init_master(master_setup_variables_t *master_setup,
 
 
 
-	if (ecrt_master_set_send_interval(master_setup->master, 100) != 0) {
+	if (ecrt_master_set_send_interval(master_setup->master, ETHERCAT_FREQUENCY) != 0) {
 		fprintf(stderr, "failed to set send interval\n");
 		exit(-1);
 	}
@@ -138,7 +139,7 @@ void init_master(master_setup_variables_t *master_setup,
 
     printf("Starting timer...");
     tv.it_interval.tv_sec = 0;
-    tv.it_interval.tv_usec = 1000000 / 1000; //FREQUENCY
+    tv.it_interval.tv_usec = 1000000 / ETHERCAT_FREQUENCY; //FREQUENCY
     tv.it_value.tv_sec = 0;
     tv.it_value.tv_usec = 1000;
 
