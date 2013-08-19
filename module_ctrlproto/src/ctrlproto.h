@@ -6,20 +6,20 @@
  */
 typedef struct
 {
-	uint8_t operation_mode;			// 	Modes of Operation
-	uint16_t control_word;			// 	Control Word
+	int operation_mode;			// 	Modes of Operation
+	int control_word;			// 	Control Word
 
-	int16_t target_torque;
-	int32_t target_velocity;
-	int32_t target_position;
+	int target_torque;
+	int target_velocity;
+	int target_position;
 
 
-	uint8_t operation_mode_display;	//	Modes of Operation Display
-	uint16_t status_word;			//  Status Word
+	int operation_mode_display;	//	Modes of Operation Display
+	int status_word;			//  Status Word
 
-	int16_t torque_actual;
-	int32_t velocity_actual;
-	int32_t position_actual;
+	int torque_actual;
+	int velocity_actual;
+	int position_actual;
 
 } ctrl_proto_values_t;
 
