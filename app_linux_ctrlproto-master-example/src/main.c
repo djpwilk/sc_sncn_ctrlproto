@@ -42,16 +42,20 @@ int main()
 	while(1)
 	{
 		handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
-		slv_handles[0].motorctrl_out = 0xAA88;
-		slv_handles[0].operation_mode = 0x34;
-		slv_handles[0].torque_setpoint = 0x200;
-		slv_handles[0].position_setpoint = 0x10000;
-		slv_handles[0].speed_setpoint = 0x4000;
-//		printf("Status: %i ",slv_handles[0].motorctrl_status_in);
-//		printf("Position: %i ",slv_handles[0].position_in);
-//		printf("Speed: %i ",slv_handles[0].speed_in);
-//		printf("Torque: %i ",slv_handles[0].torque_in);
-//		printf("Operation Mode disp: %i\n",slv_handles[0].operation_mode_disp);
+		if(master_setup.opFlag)
+		{
+			slv_handles[0].motorctrl_out = 0xAA88;
+			slv_handles[0].operation_mode = 0x35;
+			slv_handles[0].torque_setpoint = 0x200;
+			slv_handles[0].position_setpoint = 0x10000;
+			slv_handles[0].speed_setpoint = 0x4000;
+//			printf("Status: %i ",slv_handles[0].motorctrl_status_in);
+//			printf("Position: %i ",slv_handles[0].position_in);
+//			printf("Speed: %i ",slv_handles[0].speed_in);
+//			printf("Torque: %i ",slv_handles[0].torque_in);
+//			printf("Operation Mode disp: %i\n",slv_handles[0].operation_mode_disp);
+		}
+
 	}
 
 //	/**********************check ready***********************/

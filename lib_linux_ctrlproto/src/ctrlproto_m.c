@@ -254,7 +254,7 @@ void handle_ecat(master_setup_variables_t *master_setup,
 		ecrt_domain_process(master_setup->domain);
 
 		// check process data state (optional)
-		check_domain1_state(master_setup);
+		//check_domain1_state(master_setup);
 
 		// check for master state (optional)
 		//check_master_state(master_setup);
@@ -301,6 +301,24 @@ void handle_ecat(master_setup_variables_t *master_setup,
 		// send process data
 		ecrt_domain_queue(master_setup->domain);
 		ecrt_master_send(master_setup->master);
+
+		//Check for master und domain state
+		ecrt_master_state(master_setup->master, &master_setup->master_state);
+		ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
+
+		if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
+		{
+			//printf("System up!\n");
+			master_setup->opFlag = 1;
+		}
+		else
+		{
+			if(master_setup->domain_state.wc_state != EC_WC_COMPLETE && master_setup->opFlag)
+			{
+				//printf("System down!\n");
+				master_setup->opFlag = 0;
+			}
+		}
 
 		user_alarms++;
 	}
