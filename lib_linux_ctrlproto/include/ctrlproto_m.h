@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <ecrt.h>
 #include <inttypes.h>
+
 //#include <cmds.h>
 
 
@@ -63,23 +64,6 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 };\
 
 
-/**
- * This creates a entry for the domain register for a SOMANET device running CTRLPROTO
- * @param ALIAS The slaves alias
- * @param POSITION The position of the slave in the ethercat chain
- * @param ARRAY_POSITION The position of the entry of the slave inside the handles array
- */
-#define SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(ALIAS, POSITION, ARRAY_POSITION)\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_CONTROL_WORD, 		0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[0])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_MODES, 			0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[1])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_TORQUE_TARGET, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[2])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_POSITION_TARGET, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[3])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_VELOCITY_TARGET, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[4])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_STATUS_WORD, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[0])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_MODES_DISPLAY,  	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[1])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_POSITION_VALUE, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[2])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_VELOCITY_VALUE, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[3])},\
-{ALIAS, POSITION, SOMANET_ID, CAN_OD_TORQUE_VALUE, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[4])}
 
 
 /**
@@ -111,13 +95,6 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 	0,\
 }
 
-/**
- * Creates and initializes the master setup struct
- */
-#define MASTER_SETUP_INIT()\
-master_setup_variables_t master_setup={\
-		false,false,NULL,{},0,{},domain_regs,NULL,\
-};
 
 /**
  * This struct is for creating a slave handle for each Somanet Module
@@ -192,56 +169,73 @@ typedef struct
 	/**
 	 * outgoing commands
 	 */
-	int16_t motorctrl_out;
+	int motorctrl_out;				/*only 16 bits valid*/
 
 	/**
 	 * outgoing torque (use fromFloatFunction to set it)
 	 */
-	int16_t torque_setpoint;
+	int torque_setpoint;			/*only 16 bits valid*/
 
 	/**
 	 * outgoing torque
 	 */
-	int32_t speed_setpoint;
+	int speed_setpoint;				/*only 32 bits valid*/
 
 	/**
 	 * outgoing position
 	 */
-	int32_t position_setpoint;
+	int position_setpoint;			/*only 32 bits valid*/
 
 	/**
 	 * outgoing modes of operation
 	 */
-	int16_t operation_mode;		/*only 8 bits valid*/
+	int operation_mode;				/*only 8 bits valid*/
 
 	/**
 	 * incoming motorctrl command (readback)
 	 */
-	int16_t motorctrl_status_in;
+	int motorctrl_status_in;		/*only 16 bits valid*/
 
 	/**
 	 * incoming torque
 	 */
-	int16_t torque_in;
+	int torque_in;					/*only 16 bits valid*/
 
 	/**
 	 * incoming speed
 	 */
-	int32_t speed_in;
+	int speed_in;					/*only 32 bits valid*/
 
 	/**
 	 * incoming position
 	 */
-	int32_t position_in;
+	int position_in;				/*only 32 bits valid*/
 
 	/**
 	 * incoming display mode of operation
 	 */
-	int16_t operation_mode_disp;	/*only 8 bits valid*/
+	int operation_mode_disp;		/*only 8 bits valid*/
 
 }ctrlproto_slv_handle;
 
 
+/**
+ * This creates a entry for the domain register for a SOMANET device running CTRLPROTO
+ * @param ALIAS The slaves alias
+ * @param POSITION The position of the slave in the ethercat chain
+ * @param ARRAY_POSITION The position of the entry of the slave inside the handles array
+ */
+#define SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(ALIAS, POSITION, ARRAY_POSITION)\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_CONTROL_WORD, 		0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[0])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_MODES, 			0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[1])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_TORQUE_TARGET, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[2])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_POSITION_TARGET, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[3])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_VELOCITY_TARGET, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_out[4])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_STATUS_WORD, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[0])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_MODES_DISPLAY,  	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[1])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_POSITION_VALUE, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[2])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_VELOCITY_VALUE, 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[3])},\
+{ALIAS, POSITION, SOMANET_ID, CAN_OD_TORQUE_VALUE, 	 	0, &(slv_handles[ARRAY_POSITION].__ecat_slave_in[4])}
 
 typedef struct
 {
@@ -287,12 +281,21 @@ typedef struct
 
 }master_setup_variables_t;
 
-int init_master(void);
-void cyclic_task(void);
-//void init_master(master_setup_variables_t *master_setup,
-//				 ctrlproto_slv_handle *slv_handles,
-//				 unsigned int slave_num);
-//
+
+
+/**
+ * Creates and initializes the master setup struct
+ */
+#define MASTER_SETUP_INIT()\
+master_setup_variables_t master_setup={\
+		false,false,NULL,{},0,{},domain_regs,NULL,\
+};
+
+
+void init_master(master_setup_variables_t *master_setup,
+				 ctrlproto_slv_handle *slv_handles,
+				 unsigned int slave_num);
+
 /**
  * This function handles the ethercat master communication,
  * it wraps around the master loop around the functions standing
@@ -301,9 +304,10 @@ void cyclic_task(void);
  * @param slv_handles The handle array for the slaves
  * @param slave_num The size of the handle array
  */
-void handleEcat(master_setup_variables_t *master_setup,
-		        ctrlproto_slv_handle *slv_handles,
-		        unsigned int slave_num);
+void handle_ecat(master_setup_variables_t *master_setup,
+        		ctrlproto_slv_handle *slv_handles,
+        		unsigned int slave_num);
+
 
 /**
  * Multiplies a float value with 1000 and outputs it as 16 Bit integer.

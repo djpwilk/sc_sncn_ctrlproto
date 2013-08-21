@@ -31,15 +31,18 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 	while(1)
 	{
 		i++;
-		if(i >= 1000)
-			i = 0;
+		if(i >= 999)
+			i = 100;
 		InOut.position_actual=i;
 		InOut.torque_actual=i;
 		InOut.velocity_actual=i;
 
+
+
 		InOut.status_word = 32000;	//undefined
 
 		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
+		InOut.operation_mode_display = InOut.operation_mode;
 //		printhexln(InOut.control_word);
 //		printhexln(InOut.operation_mode);
 //		printhexln(InOut.target_position);
@@ -115,5 +118,4 @@ int main(void) {
 
 	return 0;
 }
-
 

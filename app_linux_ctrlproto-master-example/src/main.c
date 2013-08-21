@@ -35,42 +35,25 @@ int main()
 	int v_d = -4000, u =0, acc= 1000, dec = 1000;
 	int steps = 0, i = 1, target_velocity = 0;
 
-	//init_master(&master_setup, slv_handles, NUM_SLAVES);
-	init_master();
+
+	init_master(&master_setup, slv_handles, NUM_SLAVES);
 
 	printf("master \n");
 	while(1)
 	{
-		cyclic_task();
+		handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
+		slv_handles[0].motorctrl_out = 0xAA88;
+		slv_handles[0].operation_mode = 0x34;
+		slv_handles[0].torque_setpoint = 0x200;
+		slv_handles[0].position_setpoint = 0x10000;
+		slv_handles[0].speed_setpoint = 0x4000;
+//		printf("Status: %i ",slv_handles[0].motorctrl_status_in);
+//		printf("Position: %i ",slv_handles[0].position_in);
+//		printf("Speed: %i ",slv_handles[0].speed_in);
+//		printf("Torque: %i ",slv_handles[0].torque_in);
+//		printf("Operation Mode disp: %i\n",slv_handles[0].operation_mode_disp);
 	}
-		//handleEcat(&master_setup,slv_handles, NUM_SLAVES);
-//	//	printf("master \n");
-//		if(master_setup.opFlag)//Check if we are up
-//		{
-//			slv_handles[0].motorctrl_out = 12;
-//			slv_handles[0].torque_setpoint = 200;
-//			slv_handles[0].speed_setpoint = 4000;
-//			slv_handles[0].position_setpoint = 10000;
-//			slv_handles[0].operation_mode = 234;
-//
-////			printf("Status: %i\n",slv_handles[0].motorctrl_status_in);
-////			printf("Position: %i\n",slv_handles[0].position_in);
-////			printf("Speed: %i\n",slv_handles[0].speed_in);
-////			printf("Torque: %i\n",slv_handles[0].torque_in);
-////			printf("Operation Mode disp: %i\n",slv_handles[0].operation_mode_disp);
-//
-//		}
-//		else
-//		{
-//			//This is just a example what CAN be done when the master recognizes
-//			//that, for example, a slave is now missing...
-////			slv_handles[0].motorctrl_out = 0;
-////			slv_handles[0].torque_setpoint = 0;
-////			slv_handles[0].speed_setpoint = 0;
-////			slv_handles[0].position_setpoint = 0;
-////			slv_handles[0].operation_mode = 0;
-//		}
-//	}
+
 //	/**********************check ready***********************/
 //	while(!ready)
 //	{

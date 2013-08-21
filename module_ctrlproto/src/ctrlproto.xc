@@ -51,22 +51,12 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 		InOut.target_torque   =  ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
 		InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
 		InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
-		printhexln(InOut.control_word);
-		printhexln(InOut.operation_mode);
-		printhexln(InOut.target_torque);
-		printhexln(InOut.target_position);
-		printhexln(InOut.target_velocity);
-
-
-
-
+//		printhexln(InOut.control_word);
+//		printhexln(InOut.operation_mode);
+//		printhexln(InOut.target_torque);
+//		printhexln(InOut.target_position);
+//		printhexln(InOut.target_velocity);
 	}
-	InOut.status_word = 0xacac;
-	InOut.operation_mode_display = 0xf3;
-	InOut.position_actual = 0x95664577;
-	InOut.velocity_actual = 0x14521584;
-	InOut.torque_actual = 0x5544;
-
 
 	if(count > 0)
 	{
@@ -84,5 +74,4 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 		}
 	}
 }
-
 
