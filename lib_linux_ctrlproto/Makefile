@@ -2,6 +2,8 @@ UNAME := $(shell uname)
 MASTER_INSTALLDIR := /opt/etherlab
 INCLUDE_DIRS = -I include
 INCLUDE_DIRS += -I ../inc_ctrlproto-common/
+INCLUDE_DIRS += -I ../../sc_sncn_ethercat/module_ethercat/src/canod/
+INCLUDE_DIRS += -I ../app_linux_ctrlproto-master-example/config/motor
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
 
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
@@ -20,10 +22,12 @@ else
 		@if test -d $(MASTER_INSTALLDIR); \
 		then \
 		mkdir lib -p;\
-		gcc src/ctrlproto_m.c $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.so -shared -fPIC;\
-		gcc -c src/ctrlproto_m.c $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.o;\
-		ar  rcs lib/libsncn_ctrlproto.a lib/libsncn_ctrlproto.o;\
-		rm -f lib/libsncn_ctrlproto.o;\
+		gcc src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.so -lstdc++ -shared -fPIC;\
+		gcc -c src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.o;\
+		gcc src/motor_define.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_motordefine.so -lstdc++ -shared -fPIC;\
+		gcc -c src/motor_define.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_motordefine.o;\
+		ar rcs lib/libsncn_ctrlproto.a lib/*.o;\
+		rm -f lib/*.o;\
 		else echo \
 		"\n\
 		-----------------------------------------------------------------------------------------------------------------\n\
@@ -33,5 +37,5 @@ else
 endif
 
 clean:
-	rm -f lib/libsncn_ctrlproto.so
-	rm -f lib/libsncn_ctrlproto.a
+	rm -f lib/*.so
+	rm -f lib/*.a

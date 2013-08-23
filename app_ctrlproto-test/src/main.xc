@@ -15,7 +15,7 @@
 #include <ctrlproto.h>
 
 
-static void pdo_handler(chanend pdo_out, chanend pdo_in)
+static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 {
 	timer t;
 
@@ -42,6 +42,7 @@ static void pdo_handler(chanend pdo_out, chanend pdo_in)
 		InOut.status_word = 32000;	//undefined
 
 		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
+		config_sdo_handler(coe_out);
 		InOut.operation_mode_display = InOut.operation_mode;
 //		printhexln(InOut.control_word);
 //		printhexln(InOut.operation_mode);
@@ -112,7 +113,7 @@ int main(void) {
 
 
 		on stdcore[0] : {
-			pdo_handler(pdo_out, pdo_in);
+			pdo_handler(coe_out, pdo_out, pdo_in);
 		}
 	}
 

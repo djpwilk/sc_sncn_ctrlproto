@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <ecrt.h>
 #include <inttypes.h>
+#include <motor_define.h>
 
 //#include <cmds.h>
 
@@ -219,6 +220,7 @@ typedef struct
 }ctrlproto_slv_handle;
 
 
+
 /**
  * This creates a entry for the domain register for a SOMANET device running CTRLPROTO
  * @param ALIAS The slaves alias
@@ -304,11 +306,13 @@ void init_master(master_setup_variables_t *master_setup,
  * @param slv_handles The handle array for the slaves
  * @param slave_num The size of the handle array
  */
-void handle_ecat(master_setup_variables_t *master_setup,
+void pdo_handle_ecat(master_setup_variables_t *master_setup,
         		ctrlproto_slv_handle *slv_handles,
         		unsigned int slave_num);
 
-
+motor_config sdo_handle_ecat(master_setup_variables_t *master_setup,
+        ctrlproto_slv_handle *slv_handles,
+        unsigned int slave_num, motor_config motor_config_param);
 /**
  * Multiplies a float value with 1000 and outputs it as 16 Bit integer.
  * It is used to transfer a float value to a slave, mainly used for torque.

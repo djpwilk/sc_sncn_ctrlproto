@@ -4,6 +4,7 @@
 #include <ethercat.h>
 #include <foefs.h>
 
+
 ctrl_proto_values_t init_ctrl_proto(void)
 {
 	ctrl_proto_values_t InOut;
@@ -25,7 +26,31 @@ ctrl_proto_values_t init_ctrl_proto(void)
 	return InOut;
 }
 
+void config_sdo_handler(chanend coe_out)
+{
+	int sdo_value;
 
+	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_POLARITY, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, sdo_value);
+	printintln(sdo_value);
+
+//	coe_out <: CAN_GET_OBJECT;
+//	coe_out <: CAN_OBJ_ADR(CIA402_MAX_ACCELERATION, 0);
+//	printintln(sdo_value);
+//	coe_out :> sdo_value;
+
+}
 
 void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
 {
@@ -33,6 +58,7 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 	int buffer[64];
 	unsigned int count = 0;
 	int i;
+
 
 	pdo_in <: DATA_REQUEST;
 	pdo_in :> count;

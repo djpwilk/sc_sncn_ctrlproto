@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "profile.h"
 #include "drive_function.h"
+#include <motor_define.h>
 #include <sys/time.h>
 #include <time.h>
 
@@ -22,6 +23,27 @@ int read_statusword()
 	return slv_handles[0].motorctrl_status_in;
 }
 
+//motor_config init_motor_config()
+//{
+//	motor_config motor_config_param;
+//	motor_config_param.pole_pair = POLE_PAIRS;
+//	motor_config_param.gear_ratio =  GEAR_RATIO;
+//	motor_config_param.nominal_motor_speed = MAX_NOMINAL_SPEED;
+//	motor_config_param.nominal_current = MAX_NOMINAL_CURRENT;
+//	motor_config_param.max_acceleration = MAX_ACCELERATION;
+//
+//	motor_config_param.position_encoder_resolution = QEI_COUNT_MAX_REAL;
+//	motor_config_param.polarity = POLARITY;
+//
+//	return motor_config_param;
+//}
+
+void test_param(motor_config m)
+{
+	printf(" gear ratio %d \n", m.s_gear_ratio.gear_ratio);
+	printf(" max acceleration %d \n",m.s_max_acceleration.max_acceleration);
+	printf(" max acceleration update %d \n",m.s_max_acceleration.update_state);
+}
 int main()
 {
 	int ready = 0;
@@ -30,38 +52,98 @@ int main()
 	int switch_on_state = 0;
 	int op_enable_state = 0;
 	int control_word;
-
+	motor_config motor_config_param;
 	int flag = 0;
 	int v_d = -4000, u =0, acc= 1000, dec = 1000;
 	int steps = 0, i = 1, target_velocity = 0;
 
-
+	int config_flag = 0;
+	int *sdv;
+	int var = 20;
+	sdv = &var;
 	init_master(&master_setup, slv_handles, NUM_SLAVES);
 
-	printf("master \n");
+
+	motor_config_param = init_motor_config();
+	test_param(motor_config_param);
+	printf("updating ");
 	while(1)
 	{
-		handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
-		if(master_setup.opFlag)
+		if(motor_config_param.update_flag == 1)
 		{
-			slv_handles[0].motorctrl_out = 0xAA88;
-			slv_handles[0].operation_mode = 0x35;
-			slv_handles[0].torque_setpoint = 0x200;
-			slv_handles[0].position_setpoint = 0x10000;
-			slv_handles[0].speed_setpoint = 0x4000;
-//			printf("Status: %i ",slv_handles[0].motorctrl_status_in);
-//			printf("Position: %i ",slv_handles[0].position_in);
-//			printf("Speed: %i ",slv_handles[0].speed_in);
-//			printf("Torque: %i ",slv_handles[0].torque_in);
-//			printf("Operation Mode disp: %i\n",slv_handles[0].operation_mode_disp);
+			pdo_handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
+			if(master_setup.opFlag)
+			{
+				slv_handles[0].motorctrl_out = 0xAA88;
+				slv_handles[0].operation_mode = 0x35;
+				slv_handles[0].torque_setpoint = 0x200;
+				slv_handles[0].position_setpoint = 0x10000;
+				slv_handles[0].speed_setpoint = 0x4000;
+				printf("Status: %i ",slv_handles[0].motorctrl_status_in);
+				printf("Position: %i ",slv_handles[0].position_in);
+				printf("Speed: %i ",slv_handles[0].speed_in);
+				printf("Torque: %i ",slv_handles[0].torque_in);
+				printf("Operation Mode disp: %i\n",slv_handles[0].operation_mode_disp);
+			}
+			//break;
 		}
+//		if(*sdv == 0x9985)
+//		{
+//			pdo_handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
+//			if(master_setup.opFlag)
+//			{
+//				slv_handles[0].motorctrl_out = 0xAA88;
+//				slv_handles[0].operation_mode = 0x35;
+//				slv_handles[0].torque_setpoint = 0x200;
+//				slv_handles[0].position_setpoint = 0x10000;
+//				slv_handles[0].speed_setpoint = 0x4000;
+//				printf("Status: %i ",slv_handles[0].motorctrl_status_in);
+//				printf("Position: %i ",slv_handles[0].position_in);
+//				printf("Speed: %i ",slv_handles[0].speed_in);
+//				printf("Torque: %i ",slv_handles[0].torque_in);
+//				printf("Operation Mode disp: %i\n",slv_handles[0].operation_mode_disp);
+//			}
+//			//break;
+//		}
+		else
+			{
+				//sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES, sdv);
+				motor_config_param = sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES, motor_config_param);
+
+				printf (".");
+			}
+
+
+
+
+//		if (config_flag == 0x9985)
+//		{
+//			if(master_setup.opFlag)
+//			{
+//				pdo_handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
+//				slv_handles[0].motorctrl_out = 0xAA88;
+//				slv_handles[0].operation_mode = 0x35;
+//				slv_handles[0].torque_setpoint = 0x200;
+//				slv_handles[0].position_setpoint = 0x10000;
+//				slv_handles[0].speed_setpoint = 0x4000;
+//				printf("Status: %i ",slv_handles[0].motorctrl_status_in);
+//				printf("Position: %i ",slv_handles[0].position_in);
+//				printf("Speed: %i ",slv_handles[0].speed_in);
+//				printf("Torque: %i ",slv_handles[0].torque_in);
+//				printf("Operation Mode disp: %i\n",slv_handles[0].operation_mode_disp);
+//			}
+//		}
+//		else
+//		{
+			//sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES, sdv);
+		//}
 
 	}
 
 //	/**********************check ready***********************/
 //	while(!ready)
 //	{
-//		handleEcat(&master_setup,slv_handles, NUM_SLAVES);
+//		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
 //		if(master_setup.opFlag)
 //		{
 //			//check ready
@@ -79,7 +161,7 @@ int main()
 //	/**********************check switch_enable***********************/
 //	while(!switch_enable)
 //	{
-//		handleEcat(&master_setup,slv_handles, NUM_SLAVES);
+//		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
 //		if(master_setup.opFlag)
 //		{
 //			//check switch
@@ -98,7 +180,7 @@ int main()
 //	/************************output switch on**************************/
 //	while(!switch_on_state)
 //	{
-//		handleEcat(&master_setup, slv_handles, NUM_SLAVES);
+//		handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
 //		if(master_setup.opFlag)
 //		{
 //			set_controlword(SWITCH_ON_CONTROL);
@@ -118,7 +200,7 @@ int main()
 //
 //	while(!op_enable_state && master_setup.opFlag)
 //	{
-//		handleEcat(&master_setup,slv_handles, NUM_SLAVES);
+//		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
 //		if(master_setup.opFlag)
 //		{
 //			set_controlword(ENABLE_OPERATION_CONTROL|QUICK_STOP_CONTROL);
@@ -137,7 +219,7 @@ int main()
 //	/**********************output Mode of Operation******************/
 //	while(1)
 //	{
-//			handleEcat(&master_setup,slv_handles, NUM_SLAVES);
+//			handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
 //			if(master_setup.opFlag)
 //			{
 //				slv_handles[0].operation_mode = CSV;
@@ -154,7 +236,7 @@ int main()
 //	steps = init_velocity_profile(v_d, u, acc, dec);
 //	while(1)
 //	{
-//		handleEcat(&master_setup,slv_handles, NUM_SLAVES);
+//		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
 //
 //		if(master_setup.opFlag)//Check if we are up
 //		{

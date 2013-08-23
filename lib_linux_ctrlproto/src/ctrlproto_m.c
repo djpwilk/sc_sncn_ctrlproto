@@ -73,6 +73,8 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <ctrlproto_m.h>
+#include <canod.h>
+#include "bldc_motor_config.h"
 /****************************************************************************/
 
 #include "ecrt.h"
@@ -98,17 +100,6 @@
 /* application global definitions */
 static int g_dbglvl = 1;
 
-/*EtherCAT
-static ec_master_t *master = NULL;
-static ec_master_state_t master_state;
-
-static ec_domain_t *domain1 = NULL;
-static ec_domain_state_t domain1_state;
-
-static ec_slave_config_t *sc_data_in = NULL;
-static ec_slave_config_state_t sc_data_in_state;
-*/
-
 // Timer
 static unsigned int sig_alarms = 0;
 static unsigned int user_alarms = 0;
@@ -124,13 +115,13 @@ static unsigned int blink = 0;
 
 static void logmsg(int lvl, const char *format, ...);
 
-/*****************************************************************************
+/*****************************************************************************/
 
 #if SDO_ACCESS
 static ec_sdo_request_t *sdo;
 
-/* additional sdo requests
-static ec_sdo_request_t *request[3];
+/* additional sdo requests*/
+static ec_sdo_request_t *request[8];
 
 static ec_sdo_request_t *sdo_download_requests[1]; // one for each object
 static unsigned sdoexample;
@@ -189,31 +180,34 @@ void check_slave_config_states(void)
     sc_data_in_state = s;
 }
 
-/****************************************************************************
+/****************************************************************************/
 
 #if SDO_ACCESS
-void read_sdo(ec_sdo_request_t *req)
+int read_sdo(ec_sdo_request_t *req)
 {
+	int sdo_read_value;
     switch (ecrt_sdo_request_state(req)) {
         case EC_REQUEST_UNUSED: // request was not used yet
             ecrt_sdo_request_read(req); // trigger first read
             break;
         case EC_REQUEST_BUSY:
-            fprintf(stderr, "SDO still busy...\n");
+            //fprintf(stderr, "SDO still busy...\n");
             break;
         case EC_REQUEST_SUCCESS:
-            logmsg(1, "SDO value read: 0x%X\n",
-                    EC_READ_U32(ecrt_sdo_request_data(req)));
+        	sdo_read_value = EC_READ_U32(ecrt_sdo_request_data(req));
+            //logmsg(1, "SDO value read: 0x%X\n",
+            //		sdo_read_value);
             ecrt_sdo_request_read(req); // trigger next read
             break;
         case EC_REQUEST_ERROR:
-            fprintf(stderr, "Failed to read SDO!\n");
+            //fprintf(stderr, "Failed to read SDO!\n");
             ecrt_sdo_request_read(req); // retry reading
             break;
     }
+    return sdo_read_value;
 }
 
-void write_sdo(ec_sdo_request_t *req, unsigned data)
+int write_sdo(ec_sdo_request_t *req, unsigned data)
 {
 	EC_WRITE_U32(ecrt_sdo_request_data(req), data&0xffffffff);
 
@@ -222,27 +216,102 @@ void write_sdo(ec_sdo_request_t *req, unsigned data)
 			ecrt_sdo_request_write(req); // trigger first read
 			break;
 		case EC_REQUEST_BUSY:
-			fprintf(stderr, "SDO write still busy...\n");
+			//fprintf(stderr, "SDO write still busy...\n");
+			//logmsg(1, "SDO value written: \n",data );
+			pause();
 			break;
 		case EC_REQUEST_SUCCESS:
-			logmsg(1, "SDO value written: 0x%X\n", data);
+			//logmsg(1, "SDO value written: 0x%X\n", data);
+			pause();
 			ecrt_sdo_request_write(req); // trigger next read ???
+			return 1;
 			break;
 		case EC_REQUEST_ERROR:
 			fprintf(stderr, "Failed to write SDO!\n");
 			ecrt_sdo_request_write(req); // retry writing
+			return 0;
 			break;
 	}
 }
 #endif
 
+int sdo_update(int sdo_value)
+{
+	if(sdo_value != 0x9985)
+	{
+		write_sdo(request[1], 0x9985); /* SDO download value to the node write & read*/
+		pause(); pause();
+		sdo_value = read_sdo(request[1]);
+		//printf("writing %x!\n", sdo_value);
+		pause();
+	}
+	return sdo_value;
+}
 /****************************************************************************/
+static int sdo_value = 0;
+motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_request_t *request[]);
 
-void handle_ecat(master_setup_variables_t *master_setup,
+motor_config sdo_handle_ecat(master_setup_variables_t *master_setup,
+        ctrlproto_slv_handle *slv_handles,
+        unsigned int slave_num, motor_config motor_config_param)
+{
+	int slv;
+
+	if(sig_alarms == user_alarms) pause();
+	while (sig_alarms != user_alarms)
+	{
+		/* sync the dc clock of the slaves */
+		//	ecrt_master_sync_slave_clocks(master);
+
+		// receive process data
+		ecrt_master_receive(master_setup->master);
+		ecrt_domain_process(master_setup->domain);
+
+
+	#if SDO_ACCESS
+		//sdo_value = sdo_update(sdo_value);
+		//if(sdo_value == 0x9985)
+		//	return 1;
+		//else
+			//return sdo_value;
+		motor_config_param = sdo_motor_config_update(motor_config_param, request);
+	#endif
+
+
+		// send process data
+		ecrt_domain_queue(master_setup->domain);
+		ecrt_master_send(master_setup->master);
+
+		//Check for master und domain state
+		ecrt_master_state(master_setup->master, &master_setup->master_state);
+		ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
+
+		if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
+		{
+			//printf("System up!\n");
+			master_setup->opFlag = 1;
+		}
+		else
+		{
+			if(master_setup->domain_state.wc_state != EC_WC_COMPLETE && master_setup->opFlag)
+			{
+				//printf("System down!\n");
+				master_setup->opFlag = 0;
+			}
+		}
+
+		user_alarms++;
+	}
+	return motor_config_param;
+}
+
+
+void pdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
         unsigned int slave_num)
 {
 	int slv;
+
 	if(sig_alarms == user_alarms) pause();
 	while (sig_alarms != user_alarms)
 	{
@@ -262,15 +331,6 @@ void handle_ecat(master_setup_variables_t *master_setup,
 		// check for islave configuration state(s) (optional)
 		// check_slave_config_states();
 
-	#if SDO_ACCESS
-	//		// read process data SDO
-	//		read_sdo(sdo);
-	//		read_sdo(request[0]);
-	//		read_sdo(request[1]);
-	//		read_sdo(request[2]);
-	//
-	//		write_sdo(sdo_download_requests[0], sdoexample); /* SDO download value to the node */
-	#endif
 
 		for(slv=0;slv<slave_num;++slv)
 		{
@@ -323,7 +383,6 @@ void handle_ecat(master_setup_variables_t *master_setup,
 		user_alarms++;
 	}
 }
-
 /****************************************************************************/
 
 void signal_handler(int signum) {
@@ -347,19 +406,9 @@ static void logmsg(int lvl, const char *format, ...)
 	va_end(ap);
 }
 
-static inline const char *_basename(const char *prog)
-{
-	const char *p = prog;
-	const char *i = p;
-	for (i = p; *i != '\0'; i++) {
-		if (*i == '/')
-			p = i+1;
-	}
-
-	return p;
-}
 
 
+void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[]);
 void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, unsigned int slave_num)
 {
 	int slv;
@@ -389,56 +438,14 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 		  exit(-1);
 		}
 	}
-//      if (!(sc = ecrt_master_slave_config(
-//                      master, SomanetPos, SOMANET_ID))) {
-//          fprintf(stderr, "Failed to get slave configuration.\n");
-//          exit(-1);
-//      }
+
 //#if SDO_ACCESS
-/*    fprintf(stderr, "Creating SDO requests...\n");
-    if (!(sdo = ecrt_slave_config_create_sdo_request(sc_data_in, 0x6041, 0, 1))) {
-        fprintf(stderr, "Failed to create SDO request.\n");
-        exit(-1);
-    }
-    ecrt_sdo_request_timeout(sdo, 500); // ms
-
-    if (!(request[0] = ecrt_slave_config_create_sdo_request(sc_data_in, CAN_OD_POS_VALUE, 0, 4))) {
-	    fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", CAN_OD_POS_VALUE);
-	    exit(-1);
-    }
-    ecrt_sdo_request_timeout(request[0], 500); // ms
-
-    if (!(request[1] = ecrt_slave_config_create_sdo_request(sc_data_in, CAN_OD_VEL_VALUE, 0, 4))) {
-	    fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", CAN_OD_VEL_VALUE);
-	    exit(-1);
-    }
-    ecrt_sdo_request_timeout(request[1], 500); // ms
-
-    if (!(request[2] = ecrt_slave_config_create_sdo_request(sc_data_in, CAN_OD_TOR_VALUE, 0, 2))) {
-	    fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", CAN_OD_TOR_VALUE);
-	    exit(-1);
-    }
-    ecrt_sdo_request_timeout(request[2], 500); // ms
-
-    /* register sdo download request
-    if (!(sdo_download_requests[0] = ecrt_slave_config_create_sdo_request(sc_data_in, CAN_OD_MODES, 0, 4))) {
-	    fprintf(stderr, "Failed to create SDO download request for object 0x%4x\n", CAN_OD_MODES);
-	    exit(-1);
-    }
-    ecrt_sdo_request_timeout(sdo_download_requests[0], 500); // ms
-
-    /* set the sdoexample to a specific bit muster
-    sdoexample = 0x22442244;
-#endif*/
-
-//#if CONFIGURE_PDOS
+		slv = 0;
+  		fprintf(stderr, "Creating SDO requests...\n");
+ 		motor_config_request(slv_handles[slv].slave_config, request);
 
 //#endif
 
-    // Create configuration for bus coupler
-//    sc = ecrt_master_slave_config(master, SomanetPos /*BusCouplerPos*/, SOMANET_ID/*Beckhoff_EK1100*/);
-//    if (!sc)
-//        exit(-1);
 
     if (ecrt_domain_reg_pdo_entry_list(master_setup->domain, master_setup->domain_regs)) {
         fprintf(stderr, "PDO entry registration failed!\n");
@@ -486,3 +493,107 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 }
 
 /****************************************************************************/
+ec_sdo_request_t* config_sdo_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request, int index, int sub_index, int bytes)
+{
+	if (!(request = ecrt_slave_config_create_sdo_request(slave_config, index, sub_index, bytes))) {
+		fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", index);
+		exit(-1);
+	}
+	ecrt_sdo_request_timeout(request, 500);
+	return request;
+}
+
+void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[8])
+{
+	request[0] = config_sdo_request(slave_config, request[0], CIA402_GEAR_RATIO, 0, 2);
+	request[1] =config_sdo_request(slave_config, request[1],CIA402_MAX_ACCELERATION, 0, 4);
+	request[2]=config_sdo_request(slave_config, request[2],CIA402_MOTOR_SPECIFIC, 1, 4);  //nominal current
+	request[3]=config_sdo_request(slave_config, request[3],CIA402_MOTOR_SPECIFIC, 4, 4);	//nominal speed
+	request[4]=config_sdo_request(slave_config, request[4],CIA402_POLARITY, 0, 1);
+	request[5]=config_sdo_request(slave_config, request[5],CIA402_MOTOR_SPECIFIC, 3, 1);  //pole pairs
+	request[6]=config_sdo_request(slave_config, request[6],CIA402_POSITION_ENC_RESOLUTION, 0, 2);
+}
+
+motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_request_t *request[])
+{
+	int sdo_update_value;
+	printf(".");
+	if(!motor_config_param.s_gear_ratio.update_state)
+	{
+		write_sdo(request[0], motor_config_param.s_gear_ratio.gear_ratio&0xffff);
+		pause();
+		sdo_update_value = read_sdo(request[0]);
+		if(sdo_update_value == motor_config_param.s_gear_ratio.gear_ratio&0xffff)
+		{
+			motor_config_param.s_gear_ratio.update_state = 1;
+			printf("1 ");
+		}
+	}
+	if(motor_config_param.s_gear_ratio.update_state && !motor_config_param.s_max_acceleration.update_state)
+	{
+		write_sdo(request[1], motor_config_param.s_max_acceleration.max_acceleration);
+		sdo_update_value = read_sdo(request[1]);
+		if(sdo_update_value == motor_config_param.s_max_acceleration.max_acceleration)
+		{
+			motor_config_param.s_max_acceleration.update_state = 1;
+			printf("2 ");
+		}
+	}
+	if(motor_config_param.s_max_acceleration.update_state && !motor_config_param.s_nominal_current.update_state)
+	{
+		write_sdo(request[2], motor_config_param.s_nominal_current.nominal_current);
+		sdo_update_value = read_sdo(request[2]);
+		if(sdo_update_value == motor_config_param.s_nominal_current.nominal_current)
+		{
+			motor_config_param.s_nominal_current.update_state = 1;
+			printf("3 ");
+		}
+	}
+	if(motor_config_param.s_nominal_current.update_state && !motor_config_param.s_nominal_motor_speed.update_state)
+	{
+		write_sdo(request[3], motor_config_param.s_nominal_motor_speed.nominal_motor_speed);
+		sdo_update_value = read_sdo(request[3]);
+
+		if(sdo_update_value == motor_config_param.s_nominal_motor_speed.nominal_motor_speed)
+		{
+			motor_config_param.s_nominal_motor_speed.update_state = 1;
+			printf("4 ");
+		}
+	}
+	if(motor_config_param.s_nominal_motor_speed.update_state && !motor_config_param.s_polarity.update_state)
+	{
+		write_sdo(request[4], motor_config_param.s_polarity.polarity);
+		sdo_update_value = read_sdo(request[4]);
+		if(sdo_update_value == motor_config_param.s_polarity.polarity)
+		{
+			motor_config_param.s_polarity.update_state = 1;
+			printf("5 ");
+		}
+	}
+	if(motor_config_param.s_polarity.update_state && !motor_config_param.s_pole_pair.update_state)
+	{
+		write_sdo(request[5], motor_config_param.s_pole_pair.pole_pair);
+		sdo_update_value = read_sdo(request[5]);
+		if(sdo_update_value == motor_config_param.s_pole_pair.pole_pair)
+		{
+			motor_config_param.s_pole_pair.update_state = 1;
+			printf("6 ");
+		}
+	}
+	if(motor_config_param.s_pole_pair.update_state && !motor_config_param.s_position_encoder_resolution.update_state)
+	{
+		write_sdo(request[6], motor_config_param.s_position_encoder_resolution.position_encoder_resolution);
+		sdo_update_value = read_sdo(request[6]);
+		if(sdo_update_value == motor_config_param.s_position_encoder_resolution.position_encoder_resolution)
+		{
+			motor_config_param.s_position_encoder_resolution.update_state = 1;
+			printf("7 ");
+		}
+	}
+	motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state & motor_config_param.s_max_acceleration.update_state\
+			& motor_config_param.s_nominal_current.update_state & motor_config_param.s_nominal_motor_speed.update_state\
+			& motor_config_param.s_polarity.update_state & motor_config_param.s_pole_pair.update_state\
+			& motor_config_param.s_position_encoder_resolution.update_state;
+
+	return motor_config_param;
+}

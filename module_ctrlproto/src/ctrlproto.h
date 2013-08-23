@@ -1,5 +1,8 @@
 #include <stdint.h>
+#include <coecmd.h>
+#include <canod.h>
 
+#define GET_SDO_DATA(index, sub_index, value) coe_out <: CAN_GET_OBJECT; coe_out <: CAN_OBJ_ADR(index, sub_index);	coe_out :> value;
 /**
  * \brief
  *		Struct for Tx, Rx PDOs
@@ -43,3 +46,5 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
  * 	 This function initializes a struct from the type of ctrl_proto_values_t
  */
 ctrl_proto_values_t init_ctrl_proto(void);
+
+void config_sdo_handler(chanend coe_out);
