@@ -1,6 +1,8 @@
 
 #ifndef MOTOR_DEFINE_H_
 #define MOTOR_DEFINE_H_
+#include "bldc_motor_config_1.h"
+#include "bldc_motor_config_2.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -94,7 +96,14 @@ typedef struct
 } motor_config;
 
 
-motor_config init_motor_config();
+#define GEAR_RATIO(n) 			GEAR_RATIO_##n
+#define MAX_ACCELERATION(n) 	MAX_ACCELERATION_##n
+#define MAX_NOMINAL_CURRENT(n) 	MAX_NOMINAL_CURRENT_##n
+#define MAX_NOMINAL_SPEED(n) 	MAX_NOMINAL_SPEED_##n
+#define POLARITY(n) 			POLARITY_##n
+#define POLE_PAIRS(n) 			POLE_PAIRS_##n
+#define ENCODER_RESOLUTION(n) 	ENCODER_RESOLUTION_##n
+
 
 #ifdef __cplusplus
 }

@@ -2,7 +2,7 @@
  * ctrlproto_m.h
  *
  *  Created on: 05.02.2013
- *      Author: cyborg-x1
+ *      Authors: Christian Holl & Pavan Kanajar
  */
 
 #ifndef CTRLPROTO_M_H_
@@ -12,8 +12,6 @@
 #include <ecrt.h>
 #include <inttypes.h>
 #include <motor_define.h>
-
-//#include <cmds.h>
 
 
 #ifdef __cplusplus
@@ -72,10 +70,11 @@ ec_sync_info_t ctrlproto_syncs[] = {\
  * @param ALIAS The slaves alias
  * @param POSITION The position of the slave in the ethercat chain
  */
-#define SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(ALIAS, POSITION)\
+#define SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(ALIAS, POSITION, SLAVE_NUMBER)\
 {\
 	{0,0,0,0,0},\
 	{0,0,0,0,0},\
+	{0,0,0,0,0,0,0,0},\
 	ctrlproto_pdo_entries,\
 	ctrlproto_pdos,\
 	ctrlproto_syncs,\
@@ -94,6 +93,20 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 	0,\
 	0,\
 	0,\
+	{ 	{POLE_PAIRS(SLAVE_NUMBER), 0},\
+		{GEAR_RATIO(SLAVE_NUMBER), 0},\
+		{MAX_NOMINAL_SPEED(SLAVE_NUMBER), 0},\
+		{MAX_NOMINAL_CURRENT(SLAVE_NUMBER), 0},\
+		{MAX_ACCELERATION(SLAVE_NUMBER), 0},\
+		{ENCODER_RESOLUTION(SLAVE_NUMBER), 0},\
+		\
+		{POLARITY(SLAVE_NUMBER), 0},\
+		{0, 0},\
+		\
+		{0, 0},\
+		{0, 0},\
+		{0, 0},\
+		0},\
 }
 
 
@@ -115,6 +128,11 @@ typedef struct
 	 */
 	unsigned int __ecat_slave_in[5];
 
+	/**
+	 * The SDO entries
+	 */
+
+	ec_sdo_request_t *__request[8];
 
 	/**
 	 * The PDO entries
@@ -217,6 +235,11 @@ typedef struct
 	 */
 	int operation_mode_disp;		/*only 8 bits valid*/
 
+	/**
+	 * motor config struct
+	 */
+	motor_config motor_config_param; /*set via bldc_motor_config header file*/
+
 }ctrlproto_slv_handle;
 
 
@@ -293,7 +316,9 @@ master_setup_variables_t master_setup={\
 		false,false,NULL,{},0,{},domain_regs,NULL,\
 };
 
-
+/**
+ * Initialises the Master and Slave communication
+ */
 void init_master(master_setup_variables_t *master_setup,
 				 ctrlproto_slv_handle *slv_handles,
 				 unsigned int slave_num);
@@ -310,9 +335,17 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
         		ctrlproto_slv_handle *slv_handles,
         		unsigned int slave_num);
 
-motor_config sdo_handle_ecat(master_setup_variables_t *master_setup,
+/**
+ * This function updates the motor parameters via ethercat
+ *
+ * @param master_setup A struct containing the variables for the master
+ * @param slv_handles The handle array for the slaves
+ * @param slave_num The size of the handle array
+ */
+void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
-        unsigned int slave_num, motor_config motor_config_param);
+        unsigned int slave_num);
+
 /**
  * Multiplies a float value with 1000 and outputs it as 16 Bit integer.
  * It is used to transfer a float value to a slave, mainly used for torque.

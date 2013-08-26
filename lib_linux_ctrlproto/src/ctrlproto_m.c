@@ -74,7 +74,6 @@
 #include <stdarg.h>
 #include <ctrlproto_m.h>
 #include <canod.h>
-#include "bldc_motor_config.h"
 /****************************************************************************/
 
 #include "ecrt.h"
@@ -91,9 +90,7 @@
 #define PRIORITY 1
 
 // Optional features
-#define CONFIGURE_PDOS  1
-#define SDO_ACCESS      1
-#define CIA402          1
+#define PARAMETER_UPDATE 1
 
 /****************************************************************************/
 
@@ -114,18 +111,6 @@ static unsigned int blink = 0;
 /*****************************************************************************/
 
 static void logmsg(int lvl, const char *format, ...);
-
-/*****************************************************************************/
-
-#if SDO_ACCESS
-static ec_sdo_request_t *sdo;
-
-/* additional sdo requests*/
-static ec_sdo_request_t *request[8];
-
-static ec_sdo_request_t *sdo_download_requests[1]; // one for each object
-static unsigned sdoexample;
-#endif
 
 /*****************************************************************************/
 
@@ -182,7 +167,6 @@ void check_slave_config_states(void)
 
 /****************************************************************************/
 
-#if SDO_ACCESS
 int read_sdo(ec_sdo_request_t *req)
 {
 	int sdo_read_value;
@@ -233,27 +217,14 @@ int write_sdo(ec_sdo_request_t *req, unsigned data)
 			break;
 	}
 }
-#endif
 
-int sdo_update(int sdo_value)
-{
-	if(sdo_value != 0x9985)
-	{
-		write_sdo(request[1], 0x9985); /* SDO download value to the node write & read*/
-		pause(); pause();
-		sdo_value = read_sdo(request[1]);
-		//printf("writing %x!\n", sdo_value);
-		pause();
-	}
-	return sdo_value;
-}
 /****************************************************************************/
-static int sdo_value = 0;
+
 motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_request_t *request[]);
 
-motor_config sdo_handle_ecat(master_setup_variables_t *master_setup,
+void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
-        unsigned int slave_num, motor_config motor_config_param)
+        unsigned int slave_num)
 {
 	int slv;
 
@@ -268,15 +239,10 @@ motor_config sdo_handle_ecat(master_setup_variables_t *master_setup,
 		ecrt_domain_process(master_setup->domain);
 
 
-	#if SDO_ACCESS
-		//sdo_value = sdo_update(sdo_value);
-		//if(sdo_value == 0x9985)
-		//	return 1;
-		//else
-			//return sdo_value;
-		motor_config_param = sdo_motor_config_update(motor_config_param, request);
-	#endif
-
+		for (slv = 0; slv < slave_num; ++slv)
+		{
+			slv_handles[slv].motor_config_param = sdo_motor_config_update(slv_handles[slv].motor_config_param, slv_handles[slv].__request);
+		}
 
 		// send process data
 		ecrt_domain_queue(master_setup->domain);
@@ -302,7 +268,6 @@ motor_config sdo_handle_ecat(master_setup_variables_t *master_setup,
 
 		user_alarms++;
 	}
-	return motor_config_param;
 }
 
 
@@ -409,6 +374,7 @@ static void logmsg(int lvl, const char *format, ...)
 
 
 void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[]);
+
 void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, unsigned int slave_num)
 {
 	int slv;
@@ -437,15 +403,11 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 		  fprintf(stderr, "Failed to configure PDOs.\n");
 		  exit(-1);
 		}
+
+	#if PARAMETER_UPDATE
+		motor_config_request(slv_handles[slv].slave_config, slv_handles[slv].__request);
+	#endif
 	}
-
-//#if SDO_ACCESS
-		slv = 0;
-  		fprintf(stderr, "Creating SDO requests...\n");
- 		motor_config_request(slv_handles[slv].slave_config, request);
-
-//#endif
-
 
     if (ecrt_domain_reg_pdo_entry_list(master_setup->domain, master_setup->domain_regs)) {
         fprintf(stderr, "PDO entry registration failed!\n");
@@ -506,18 +468,18 @@ ec_sdo_request_t* config_sdo_request(ec_slave_config_t *slave_config, ec_sdo_req
 void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[8])
 {
 	request[0] = config_sdo_request(slave_config, request[0], CIA402_GEAR_RATIO, 0, 2);
-	request[1] =config_sdo_request(slave_config, request[1],CIA402_MAX_ACCELERATION, 0, 4);
-	request[2]=config_sdo_request(slave_config, request[2],CIA402_MOTOR_SPECIFIC, 1, 4);  //nominal current
-	request[3]=config_sdo_request(slave_config, request[3],CIA402_MOTOR_SPECIFIC, 4, 4);	//nominal speed
-	request[4]=config_sdo_request(slave_config, request[4],CIA402_POLARITY, 0, 1);
-	request[5]=config_sdo_request(slave_config, request[5],CIA402_MOTOR_SPECIFIC, 3, 1);  //pole pairs
-	request[6]=config_sdo_request(slave_config, request[6],CIA402_POSITION_ENC_RESOLUTION, 0, 2);
+	request[1] = config_sdo_request(slave_config, request[1], CIA402_MAX_ACCELERATION, 0, 4);
+	request[2] = config_sdo_request(slave_config, request[2], CIA402_MOTOR_SPECIFIC, 1, 4);  //nominal current
+	request[3] = config_sdo_request(slave_config, request[3], CIA402_MOTOR_SPECIFIC, 4, 4);	//nominal speed
+	request[4] = config_sdo_request(slave_config, request[4], CIA402_POLARITY, 0, 1);
+	request[5] = config_sdo_request(slave_config, request[5], CIA402_MOTOR_SPECIFIC, 3, 1);  //pole pairs
+	request[6] = config_sdo_request(slave_config, request[6], CIA402_POSITION_ENC_RESOLUTION, 0, 2);
 }
 
 motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_request_t *request[])
 {
 	int sdo_update_value;
-	printf(".");
+	//printf(".");
 	if(!motor_config_param.s_gear_ratio.update_state)
 	{
 		write_sdo(request[0], motor_config_param.s_gear_ratio.gear_ratio&0xffff);

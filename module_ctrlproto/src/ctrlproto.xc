@@ -39,7 +39,7 @@ void config_sdo_handler(chanend coe_out)
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, sdo_value);
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_POLARITY, 0, sdo_value);
-	printintln(sdo_value);
+	printintln(sdo_value);  // -1 in 2'complement 255
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, sdo_value);
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, sdo_value);

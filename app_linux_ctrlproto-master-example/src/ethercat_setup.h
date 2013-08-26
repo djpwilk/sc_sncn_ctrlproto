@@ -10,8 +10,8 @@ SOMANET_C22_CTRLPROTO_CSTRUCT();
 
 //Slave Handles Array
 static ctrlproto_slv_handle slv_handles[]=
-{												//ALIAS / POSITION
-		SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             0)
+{												//ALIAS / POSITION / SLAVE_NUMBER
+		SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             0, 	2)
 };
 
 //Domain entries for the pdos

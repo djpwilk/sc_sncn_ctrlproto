@@ -1,13 +1,16 @@
+#ifndef MOTOR_2
+#define MOTOR_2
+
 /*
  * define Motor Specific Constants
  */
-#define POLE_PAIRS  				8
-#define GEAR_RATIO  				26
-#define MAX_NOMINAL_SPEED  			4000		// in rpm
-#define MAX_NOMINAL_CURRENT  		2		// in A
-#define MAX_ACCELERATION   			5000     // rpm/s
-#define ENCODER_RESOLUTION 			4000		// Max count of Quadrature Encoder
-#define POLARITY 					1					// 1 / -1
+#define POLE_PAIRS_2  				12
+#define GEAR_RATIO_2  				27
+#define MAX_NOMINAL_SPEED_2  		4001		// in rpm
+#define MAX_NOMINAL_CURRENT_2  		3		// in A
+#define MAX_ACCELERATION_2   		5001     // rpm/s
+#define ENCODER_RESOLUTION_2 		4001		// Max count of Quadrature Encoder
+#define POLARITY_2 					-1					// 1 / -1
 
 /*single variable Sensor selection code*/
 #define QEI_WITH_INDEX				1
@@ -38,3 +41,4 @@
 #define POSITION_Ki_DENOMINATOR  	102000
 #define POSITION_Kd_NUMERATOR    	100
 #define POSITION_Kd_DENOMINATOR  	10000
+#endif

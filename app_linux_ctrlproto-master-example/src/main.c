@@ -23,6 +23,7 @@ int read_statusword()
 	return slv_handles[0].motorctrl_status_in;
 }
 
+
 int main()
 {
 	int ready = 0;
@@ -31,25 +32,23 @@ int main()
 	int switch_on_state = 0;
 	int op_enable_state = 0;
 	int control_word;
-	motor_config motor_config_param;
 	int flag = 0;
 	int v_d = -4000, u =0, acc= 1000, dec = 1000;
 	int steps = 0, i = 1, target_velocity = 0;
 
-	int config_flag = 0;
-	int *sdv;
-	int var = 20;
-	sdv = &var;
+
+//	printf("%d %d %d %d %d %d %d ", slv_handles[0].motor_config_param.s_gear_ratio.gear_ratio , slv_handles[0].motor_config_param.s_max_acceleration.max_acceleration\
+//			, slv_handles[0].motor_config_param.s_nominal_current.nominal_current, slv_handles[0].motor_config_param.s_nominal_motor_speed.nominal_motor_speed,\
+//			slv_handles[0].motor_config_param.s_polarity.polarity, slv_handles[0].motor_config_param.s_pole_pair.pole_pair, slv_handles[0].motor_config_param.s_position_encoder_resolution.position_encoder_resolution);
+
 	init_master(&master_setup, slv_handles, NUM_SLAVES);
 
-
-	motor_config_param = init_motor_config();
 	printf("updating ");
 	while(1)
 	{
-		if(motor_config_param.update_flag == 1)
+		if(slv_handles[0].motor_config_param.update_flag == 1)
 		{
-			pdo_handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
+			pdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
 			if(master_setup.opFlag)
 			{
 				slv_handles[0].motorctrl_out = 0xAA88;
@@ -63,19 +62,13 @@ int main()
 				printf("Torque: %i ",slv_handles[0].torque_in);
 				printf("Operation Mode disp: %i\n",slv_handles[0].operation_mode_disp);
 			}
-
 		}
 		else
 		{
 
-			motor_config_param = sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES, motor_config_param);
+			sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
 			printf (".");
 		}
-
-
-
-
-
 	}
 
 //	/**********************check ready***********************/
