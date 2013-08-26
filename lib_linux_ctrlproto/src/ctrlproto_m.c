@@ -455,7 +455,7 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 }
 
 /****************************************************************************/
-ec_sdo_request_t* config_sdo_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request, int index, int sub_index, int bytes)
+ec_sdo_request_t* _config_sdo_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request, int index, int sub_index, int bytes)
 {
 	if (!(request = ecrt_slave_config_create_sdo_request(slave_config, index, sub_index, bytes))) {
 		fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", index);
@@ -467,13 +467,30 @@ ec_sdo_request_t* config_sdo_request(ec_slave_config_t *slave_config, ec_sdo_req
 
 void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[8])
 {
-	request[0] = config_sdo_request(slave_config, request[0], CIA402_GEAR_RATIO, 0, 2);
-	request[1] = config_sdo_request(slave_config, request[1], CIA402_MAX_ACCELERATION, 0, 4);
-	request[2] = config_sdo_request(slave_config, request[2], CIA402_MOTOR_SPECIFIC, 1, 4);  //nominal current
-	request[3] = config_sdo_request(slave_config, request[3], CIA402_MOTOR_SPECIFIC, 4, 4);	//nominal speed
-	request[4] = config_sdo_request(slave_config, request[4], CIA402_POLARITY, 0, 1);
-	request[5] = config_sdo_request(slave_config, request[5], CIA402_MOTOR_SPECIFIC, 3, 1);  //pole pairs
-	request[6] = config_sdo_request(slave_config, request[6], CIA402_POSITION_ENC_RESOLUTION, 0, 2);
+	request[0] = _config_sdo_request(slave_config, request[0], CIA402_GEAR_RATIO, 0, 2);
+	request[1] = _config_sdo_request(slave_config, request[1], CIA402_MAX_ACCELERATION, 0, 4);
+	request[2] = _config_sdo_request(slave_config, request[2], CIA402_MOTOR_SPECIFIC, 1, 4);  //nominal current
+	request[3] = _config_sdo_request(slave_config, request[3], CIA402_MOTOR_SPECIFIC, 4, 4);	//nominal speed
+	request[4] = _config_sdo_request(slave_config, request[4], CIA402_POLARITY, 0, 1);
+	request[5] = _config_sdo_request(slave_config, request[5], CIA402_MOTOR_SPECIFIC, 3, 1);  //pole pairs
+	request[6] = _config_sdo_request(slave_config, request[6], CIA402_POSITION_ENC_RESOLUTION, 0, 2);
+}
+
+int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
+{
+	int sdo_update_value;
+	if(!update)
+	{
+		write_sdo(request, value);
+		pause();
+		sdo_update_value = read_sdo(request);
+		if(sdo_update_value == value)
+		{
+			update = 1;
+			printf("%d ", sequence);
+		}
+	}
+	return update;
 }
 
 motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_request_t *request[])
@@ -481,80 +498,40 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 	int sdo_update_value;
 	//printf(".");
 	if(!motor_config_param.s_gear_ratio.update_state)
-	{
-		write_sdo(request[0], motor_config_param.s_gear_ratio.gear_ratio&0xffff);
-		pause();
-		sdo_update_value = read_sdo(request[0]);
-		if(sdo_update_value == motor_config_param.s_gear_ratio.gear_ratio&0xffff)
-		{
-			motor_config_param.s_gear_ratio.update_state = 1;
-			printf("1 ");
-		}
-	}
-	if(motor_config_param.s_gear_ratio.update_state && !motor_config_param.s_max_acceleration.update_state)
-	{
-		write_sdo(request[1], motor_config_param.s_max_acceleration.max_acceleration);
-		sdo_update_value = read_sdo(request[1]);
-		if(sdo_update_value == motor_config_param.s_max_acceleration.max_acceleration)
-		{
-			motor_config_param.s_max_acceleration.update_state = 1;
-			printf("2 ");
-		}
-	}
-	if(motor_config_param.s_max_acceleration.update_state && !motor_config_param.s_nominal_current.update_state)
-	{
-		write_sdo(request[2], motor_config_param.s_nominal_current.nominal_current);
-		sdo_update_value = read_sdo(request[2]);
-		if(sdo_update_value == motor_config_param.s_nominal_current.nominal_current)
-		{
-			motor_config_param.s_nominal_current.update_state = 1;
-			printf("3 ");
-		}
-	}
-	if(motor_config_param.s_nominal_current.update_state && !motor_config_param.s_nominal_motor_speed.update_state)
-	{
-		write_sdo(request[3], motor_config_param.s_nominal_motor_speed.nominal_motor_speed);
-		sdo_update_value = read_sdo(request[3]);
+		motor_config_param.s_gear_ratio.update_state = _motor_config_update(request[0], \
+				motor_config_param.s_gear_ratio.update_state, motor_config_param.s_gear_ratio.gear_ratio, 1);
 
-		if(sdo_update_value == motor_config_param.s_nominal_motor_speed.nominal_motor_speed)
-		{
-			motor_config_param.s_nominal_motor_speed.update_state = 1;
-			printf("4 ");
-		}
-	}
+	if(motor_config_param.s_gear_ratio.update_state && !motor_config_param.s_max_acceleration.update_state)
+		motor_config_param.s_max_acceleration.update_state = _motor_config_update(request[1], \
+				motor_config_param.s_max_acceleration.update_state, motor_config_param.s_max_acceleration.max_acceleration, 2);
+
+	if(motor_config_param.s_max_acceleration.update_state && !motor_config_param.s_nominal_current.update_state)
+		motor_config_param.s_nominal_current.update_state = _motor_config_update(request[2], \
+				motor_config_param.s_nominal_current.update_state, motor_config_param.s_nominal_current.nominal_current, 3);
+
+	if(motor_config_param.s_nominal_current.update_state && !motor_config_param.s_nominal_motor_speed.update_state)
+		motor_config_param.s_nominal_motor_speed.update_state = _motor_config_update(request[3],\
+				motor_config_param.s_nominal_motor_speed.update_state,  motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 4);
+
 	if(motor_config_param.s_nominal_motor_speed.update_state && !motor_config_param.s_polarity.update_state)
-	{
-		write_sdo(request[4], motor_config_param.s_polarity.polarity);
-		sdo_update_value = read_sdo(request[4]);
-		if(sdo_update_value == motor_config_param.s_polarity.polarity)
-		{
-			motor_config_param.s_polarity.update_state = 1;
-			printf("5 ");
-		}
-	}
+		motor_config_param.s_polarity.update_state = _motor_config_update(request[4], \
+				motor_config_param.s_polarity.update_state,  motor_config_param.s_polarity.polarity, 5);
+
 	if(motor_config_param.s_polarity.update_state && !motor_config_param.s_pole_pair.update_state)
-	{
-		write_sdo(request[5], motor_config_param.s_pole_pair.pole_pair);
-		sdo_update_value = read_sdo(request[5]);
-		if(sdo_update_value == motor_config_param.s_pole_pair.pole_pair)
-		{
-			motor_config_param.s_pole_pair.update_state = 1;
-			printf("6 ");
-		}
-	}
+		motor_config_param.s_pole_pair.update_state = _motor_config_update(request[5], \
+				motor_config_param.s_pole_pair.update_state,   motor_config_param.s_pole_pair.pole_pair, 6);
+
 	if(motor_config_param.s_pole_pair.update_state && !motor_config_param.s_position_encoder_resolution.update_state)
-	{
-		write_sdo(request[6], motor_config_param.s_position_encoder_resolution.position_encoder_resolution);
-		sdo_update_value = read_sdo(request[6]);
-		if(sdo_update_value == motor_config_param.s_position_encoder_resolution.position_encoder_resolution)
-		{
-			motor_config_param.s_position_encoder_resolution.update_state = 1;
-			printf("7 ");
-		}
-	}
-	motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state & motor_config_param.s_max_acceleration.update_state\
-			& motor_config_param.s_nominal_current.update_state & motor_config_param.s_nominal_motor_speed.update_state\
-			& motor_config_param.s_polarity.update_state & motor_config_param.s_pole_pair.update_state\
+		motor_config_param.s_position_encoder_resolution.update_state = _motor_config_update(request[6], \
+				motor_config_param.s_position_encoder_resolution.update_state,  \
+				motor_config_param.s_position_encoder_resolution.position_encoder_resolution, 7);
+
+	motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state \
+			& motor_config_param.s_max_acceleration.update_state \
+			& motor_config_param.s_nominal_current.update_state \
+			& motor_config_param.s_nominal_motor_speed.update_state\
+			& motor_config_param.s_polarity.update_state \
+			& motor_config_param.s_pole_pair.update_state \
 			& motor_config_param.s_position_encoder_resolution.update_state;
 
 	return motor_config_param;
