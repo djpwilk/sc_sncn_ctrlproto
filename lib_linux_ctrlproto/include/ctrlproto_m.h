@@ -101,11 +101,11 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{ENCODER_RESOLUTION(SLAVE_NUMBER), 0},\
 		\
 		{POLARITY(SLAVE_NUMBER), 0},\
-		{0, 0},\
+		{SENSOR_SELECTION_CODE(SLAVE_NUMBER), 0},\
 		\
-		{0, 0},\
-		{0, 0},\
-		{0, 0},\
+		{(0x7FFFFFFF/VELOCITY_Kp_DENOMINATOR(SLAVE_NUMBER))*VELOCITY_Kp_NUMERATOR(SLAVE_NUMBER), 0},\
+		{(0x7FFFFFFF/VELOCITY_Ki_DENOMINATOR(SLAVE_NUMBER))*VELOCITY_Ki_NUMERATOR(SLAVE_NUMBER), 0},\
+		{(0x7FFFFFFF/VELOCITY_Kd_DENOMINATOR(SLAVE_NUMBER))*VELOCITY_Kd_NUMERATOR(SLAVE_NUMBER), 0},\
 		0},\
 }
 
@@ -132,7 +132,7 @@ typedef struct
 	 * The SDO entries
 	 */
 
-	ec_sdo_request_t *__request[8];
+	ec_sdo_request_t *__request[11];
 
 	/**
 	 * The PDO entries

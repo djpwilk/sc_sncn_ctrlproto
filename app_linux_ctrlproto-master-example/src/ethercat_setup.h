@@ -10,7 +10,7 @@ SOMANET_C22_CTRLPROTO_CSTRUCT();
 
 //Slave Handles Array
 static ctrlproto_slv_handle slv_handles[]=
-{												//ALIAS / POSITION / SLAVE_NUMBER
+{												//ALIAS / POSITION / CONFIG_NUMBER
 		SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             0, 	2)
 };
 

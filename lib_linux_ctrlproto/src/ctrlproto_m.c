@@ -465,7 +465,7 @@ ec_sdo_request_t* _config_sdo_request(ec_slave_config_t *slave_config, ec_sdo_re
 	return request;
 }
 
-void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[8])
+void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[])
 {
 	request[0] = _config_sdo_request(slave_config, request[0], CIA402_GEAR_RATIO, 0, 2);
 	request[1] = _config_sdo_request(slave_config, request[1], CIA402_MAX_ACCELERATION, 0, 4);
@@ -474,6 +474,11 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 	request[4] = _config_sdo_request(slave_config, request[4], CIA402_POLARITY, 0, 1);
 	request[5] = _config_sdo_request(slave_config, request[5], CIA402_MOTOR_SPECIFIC, 3, 1);  //pole pairs
 	request[6] = _config_sdo_request(slave_config, request[6], CIA402_POSITION_ENC_RESOLUTION, 0, 2);
+	request[7] = _config_sdo_request(slave_config, request[7], CIA402_SENSOR_SELECTION_CODE, 0, 2);
+
+	request[8] = _config_sdo_request(slave_config, request[8], CIA402_VELOCITY_GAIN, 1, 4);  //pole pairs
+	request[9] = _config_sdo_request(slave_config, request[9], CIA402_VELOCITY_GAIN, 2, 4);
+	request[10] = _config_sdo_request(slave_config, request[10], CIA402_VELOCITY_GAIN, 3, 4);  //pole pairs
 }
 
 int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
@@ -526,13 +531,37 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				motor_config_param.s_position_encoder_resolution.update_state,  \
 				motor_config_param.s_position_encoder_resolution.position_encoder_resolution, 7);
 
+	if(motor_config_param.s_position_encoder_resolution.update_state && !motor_config_param.s_sensor_selection_code.update_state)
+		motor_config_param.s_sensor_selection_code.update_state = _motor_config_update(request[7], \
+				motor_config_param.s_sensor_selection_code.update_state,  \
+				motor_config_param.s_sensor_selection_code.sensor_selection_code, 8);
+
+	if(motor_config_param.s_sensor_selection_code.update_state && !motor_config_param.s_velocity_p_gain.update_state)
+		motor_config_param.s_velocity_p_gain.update_state = _motor_config_update(request[8], \
+				motor_config_param.s_velocity_p_gain.update_state,  \
+				motor_config_param.s_velocity_p_gain.velocity_p_gain, 9);
+
+	if(motor_config_param.s_velocity_p_gain.update_state && !motor_config_param.s_velocity_i_gain.update_state)
+		motor_config_param.s_velocity_i_gain.update_state = _motor_config_update(request[9], \
+				motor_config_param.s_velocity_i_gain.update_state,  \
+				motor_config_param.s_velocity_i_gain.velocity_i_gain, 10);
+
+	if(motor_config_param.s_velocity_i_gain.update_state  && !motor_config_param.s_velocity_d_gain.update_state)
+		motor_config_param.s_velocity_d_gain.update_state = _motor_config_update(request[10], \
+				motor_config_param.s_velocity_d_gain.update_state,  \
+				motor_config_param.s_velocity_d_gain.velocity_d_gain, 11);
+
 	motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state \
 			& motor_config_param.s_max_acceleration.update_state \
 			& motor_config_param.s_nominal_current.update_state \
 			& motor_config_param.s_nominal_motor_speed.update_state\
 			& motor_config_param.s_polarity.update_state \
 			& motor_config_param.s_pole_pair.update_state \
-			& motor_config_param.s_position_encoder_resolution.update_state;
+			& motor_config_param.s_position_encoder_resolution.update_state\
+			& motor_config_param.s_velocity_p_gain.update_state\
+			& motor_config_param.s_velocity_i_gain.update_state\
+			& motor_config_param.s_velocity_d_gain.update_state\
+			& motor_config_param.s_sensor_selection_code.update_state;
 
 	return motor_config_param;
 }

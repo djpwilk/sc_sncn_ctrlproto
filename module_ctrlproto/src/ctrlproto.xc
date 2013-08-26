@@ -44,6 +44,14 @@ void config_sdo_handler(chanend coe_out)
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, sdo_value);
 	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 1, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 2, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 3, sdo_value);
+	printintln(sdo_value);
 
 //	coe_out <: CAN_GET_OBJECT;
 //	coe_out <: CAN_OBJ_ADR(CIA402_MAX_ACCELERATION, 0);

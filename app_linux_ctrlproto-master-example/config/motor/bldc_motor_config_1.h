@@ -15,18 +15,20 @@
 #define QEI_WITH_INDEX				1
 #define QEI_WITH_NO_INDEX 			0
 #define QEI_SENSOR_TYPE  			QEI_WITH_INDEX//QEI_WITH_NO_INDEX
-
+#define HALL 1
+#define QEI  2
+#define SENSOR_SELECTION_CODE_1       QEI
 
 /*
  * control specific constants/variables
  */
 //velocity control
-#define VELOCITY_Kp_NUMERATOR 	 	5
-#define VELOCITY_Kp_DENOMINATOR  	10
-#define VELOCITY_Ki_NUMERATOR    	5
-#define VELOCITY_Ki_DENOMINATOR  	100
-#define VELOCITY_Kd_NUMERATOR   	0
-#define VELOCITY_Kd_DENOMINATOR 	1
+#define VELOCITY_Kp_NUMERATOR_1 	 	5
+#define VELOCITY_Kp_DENOMINATOR_1  	10
+#define VELOCITY_Ki_NUMERATOR_1    	5
+#define VELOCITY_Ki_DENOMINATOR_1  	100
+#define VELOCITY_Kd_NUMERATOR_1   	0
+#define VELOCITY_Kd_DENOMINATOR_1 	1
 
 //position control
 

@@ -37,7 +37,7 @@ int main()
 	int steps = 0, i = 1, target_velocity = 0;
 
 
-//	printf("%d %d %d %d %d %d %d ", slv_handles[0].motor_config_param.s_gear_ratio.gear_ratio , slv_handles[0].motor_config_param.s_max_acceleration.max_acceleration\
+//	printf("%d %d %d %d %d %d %d  %d", slv_handles[0].motor_config_param.s_velocity_p_gain.velocity_p_gain,  slv_handles[0].motor_config_param.s_velocity_i_gain.velocity_i_gain , slv_handles[0].motor_config_param.s_velocity_d_gain.velocity_d_gain\
 //			, slv_handles[0].motor_config_param.s_nominal_current.nominal_current, slv_handles[0].motor_config_param.s_nominal_motor_speed.nominal_motor_speed,\
 //			slv_handles[0].motor_config_param.s_polarity.polarity, slv_handles[0].motor_config_param.s_pole_pair.pole_pair, slv_handles[0].motor_config_param.s_position_encoder_resolution.position_encoder_resolution);
 
