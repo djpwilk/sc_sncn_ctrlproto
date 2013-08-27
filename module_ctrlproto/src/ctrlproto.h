@@ -2,6 +2,17 @@
 #include <coecmd.h>
 #include <canod.h>
 
+
+/*internal qei single variable selection code*/
+#define QEI_WITH_INDEX				1
+#define QEI_WITH_NO_INDEX 			0
+#define QEI_SENSOR_TYPE  			QEI_WITH_INDEX//QEI_WITH_NO_INDEX
+
+/*Position Sensor Types*/
+#define HALL 						1
+#define QEI_INDEX  					2
+#define QEI_NO_INDEX				3
+
 #define GET_SDO_DATA(index, sub_index, value) coe_out <: CAN_GET_OBJECT; coe_out <: CAN_OBJ_ADR(index, sub_index);	coe_out :> value;
 /**
  * \brief
@@ -26,6 +37,8 @@ typedef struct
 
 } ctrl_proto_values_t;
 
+
+
 /**
  * \brief
  *  This function receives channel communication from the ctrlproto_pdo_handler_thread
@@ -48,3 +61,13 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 ctrl_proto_values_t init_ctrl_proto(void);
 
 void config_sdo_handler(chanend coe_out);
+
+{int, int, int} velocity_sdo_update(chanend coe_out);
+
+{int, int} hall_sdo_update(chanend coe_out);
+
+{int, int, int} csv_sdo_update(chanend coe_out);
+
+{int, int, int} qei_sdo_update(chanend coe_out);
+
+int sensor_select_sdo(chanend coe_out);

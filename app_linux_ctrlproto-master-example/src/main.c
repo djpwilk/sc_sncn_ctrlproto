@@ -8,7 +8,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-#define print_slave
+//#define print_slave
 void run_drive();
 
 
@@ -43,8 +43,8 @@ int main()
 
 	init_master(&master_setup, slv_handles, NUM_SLAVES);
 
-	printf("updating ");
-	while(1)
+	printf("updating \n");
+/*	while(1)
 	{
 		if(slv_handles[0].motor_config_param.update_flag == 1)
 		{
@@ -66,134 +66,179 @@ int main()
 		else
 		{
 
-			sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
+			sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES, 3);
+			printf (".");
+		}
+	}*/
+
+	/**********************check ready***********************/
+	while(!ready)
+	{
+		pdo_handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
+		if(master_setup.op_flag)
+		{
+			//check ready
+			status_word = read_statusword();
+			ready = check_ready(status_word);
+		}
+		else
+			continue;
+	}
+
+	#ifndef print_slave
+	printf("ready\n");
+	#endif
+
+	/**********************check switch_enable***********************/
+	while(!switch_enable)
+	{
+		pdo_handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
+		if(master_setup.op_flag)
+		{
+			//check switch
+			status_word = read_statusword();
+			switch_enable = check_switch_enable(status_word);
+		}
+		else
+			continue;
+	}
+
+	#ifndef print_slave
+	printf("switch_enable\n");
+	#endif
+
+
+	/************************output switch on**************************/
+	while(!switch_on_state)
+	{
+		pdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
+		if(master_setup.op_flag)
+		{
+			set_controlword(SWITCH_ON_CONTROL);
+			/*************check switch_on_state***************/
+			status_word = read_statusword();
+			switch_on_state = check_switch_on(status_word);
+		}
+		else
+			continue;
+	}
+
+	#ifndef print_slave
+	printf("switch_on_state\n");
+	#endif
+/***** Set up Parameters *****/
+	while(1)
+	{
+		if(slv_handles[0].motor_config_param.update_flag == 1)
+		{
+			slv_handles[0].motor_config_param.update_flag = 0;
+			break;
+		}
+
+		else
+		{
+			sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES, MOTOR_PARAM_UPDATE);
 			printf (".");
 		}
 	}
 
-//	/**********************check ready***********************/
-//	while(!ready)
-//	{
-//		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
-//		if(master_setup.op_flag)
-//		{
-//			//check ready
-//			status_word = read_statusword();
-//			ready = check_ready(status_word);
-//		}
-//		else
-//			continue;
-//	}
-//
-//	#ifndef print_slave
-//	printf("ready");
-//	#endif
-//
-//	/**********************check switch_enable***********************/
-//	while(!switch_enable)
-//	{
-//		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
-//		if(master_setup.op_flag)
-//		{
-//			//check switch
-//			status_word = read_statusword();
-//			switch_enable = check_switch_enable(status_word);
-//		}
-//		else
-//			continue;
-//	}
-//
-//	#ifndef print_slave
-//	printf("switch_enable");
-//	#endif
-//
-//
-//	/************************output switch on**************************/
-//	while(!switch_on_state)
-//	{
-//		handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
-//		if(master_setup.op_flag)
-//		{
-//			set_controlword(SWITCH_ON_CONTROL);
-//			/*************check switch_on_state***************/
-//			status_word = read_statusword();
-//			switch_on_state = check_switch_on(status_word);
-//		}
-//		else
-//			continue;
-//	}
-//
-//	#ifndef print_slave
-//	printf("switch_on_state");
-//	#endif
-//
-//	/*************************output enable op***********************/
-//
-//	while(!op_enable_state && master_setup.op_flag)
-//	{
-//		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
-//		if(master_setup.op_flag)
-//		{
-//			set_controlword(ENABLE_OPERATION_CONTROL|QUICK_STOP_CONTROL);
-//			/*************check op_enable_state**************/
-//			status_word = read_statusword();
-//			op_enable_state = check_op_enable(status_word);
-//		}
-//		else
-//			continue;
-//	}
-//
-//	#ifndef print_slave
-//	printf("op_enable_state");
-//	#endif
-//
-//	/**********************output Mode of Operation******************/
-//	while(1)
-//	{
-//			handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
-//			if(master_setup.op_flag)
-//			{
-//				slv_handles[0].operation_mode = CSV;
-//				/*************check operation_mode display**************/
-//				//status_word = read_statusword();
-//				//op_enable_state = check_op_enable(status_word);
-//				if (slv_handles[0].operation_mode_disp == CSV)
-//					break;
-//			}
-//			else
-//				continue;
-//	}
-//
-//	steps = init_velocity_profile(v_d, u, acc, dec);
-//	while(1)
-//	{
-//		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
-//
-//		if(master_setup.op_flag)//Check if we are up
-//		{
-//			if(i<steps)
-//				{
-//					target_velocity = velocity_profile_generate(i);
-//					slv_handles[0].speed_setpoint = target_velocity;
-//					i = i+1;
-//				}
-//			if(i>=steps && flag == 0)
-//			{
-//				//printf("done");
-//				u = slv_handles[0].speed_in; v_d =2000;
-//				steps = init_velocity_profile(v_d, u, acc, dec);
-//				i = 1;
-//				flag = 1;
-//			}
-//			if(i>=steps && flag == 1)
-//			{
-//				u = slv_handles[0].speed_in; v_d =-1000;
-//				steps = init_velocity_profile(v_d, u, acc, dec);
-//				i = 1;
-//				flag = 2;
-//			}
-//		}
-//	}
+	while(1)
+	{
+		if(slv_handles[0].motor_config_param.update_flag == 1)
+		{
+			slv_handles[0].motor_config_param.update_flag = 0;
+			break;
+		}
+		else
+		{
+			sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES, VELOCITY_CTRL_UPDATE);
+			printf (".");
+		}
+	}
+
+	while(1)
+	{
+		if(slv_handles[0].motor_config_param.update_flag == 1)
+		{
+			slv_handles[0].motor_config_param.update_flag = 0;
+			break;
+		}
+		else
+		{
+			sdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES, CSV_MOTOR_UPDATE);
+			printf (".");
+		}
+	}
+	/**********************output Mode of Operation******************/
+	while(1)
+	{
+			pdo_handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
+			if(master_setup.op_flag)
+			{
+				slv_handles[0].operation_mode = CSV;
+				/*************check operation_mode display**************/
+				//status_word = read_statusword();
+				//op_enable_state = check_op_enable(status_word);
+				if (slv_handles[0].operation_mode_disp == CSV)
+					break;
+			}
+			else
+				continue;
+	}
+	#ifndef print_slave
+	printf("operation_mode enabled\n");
+	#endif
+
+	/*************************output enable op***********************/
+
+	while(!op_enable_state && master_setup.op_flag)
+	{
+		pdo_handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
+		if(master_setup.op_flag)
+		{
+			set_controlword(ENABLE_OPERATION_CONTROL|QUICK_STOP_CONTROL|ENABLE_VOLTAGE_CONTROL|SWITCH_ON_CONTROL);
+			/*************check op_enable_state**************/
+			status_word = read_statusword();
+			op_enable_state = check_op_enable(status_word);
+		}
+		else
+			continue;
+	}
+
+	#ifndef print_slave
+	printf("op_enable_state\n");
+	#endif
+
+	steps = init_velocity_profile(v_d, u, acc, dec);
+	while(1)
+	{
+		pdo_handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
+
+		if(master_setup.op_flag)//Check if we are up
+		{
+			if(i<steps)
+				{
+					target_velocity = velocity_profile_generate(i);
+					slv_handles[0].speed_setpoint = target_velocity;
+					i = i+1;
+				}
+			if(i>=steps && flag == 0)
+			{
+				//printf("done");
+				u = slv_handles[0].speed_in; v_d =2000;
+				steps = init_velocity_profile(v_d, u, acc, dec);
+				i = 1;
+				flag = 1;
+			}
+			if(i>=steps && flag == 1)
+			{
+				u = slv_handles[0].speed_in; v_d =-1000;
+				steps = init_velocity_profile(v_d, u, acc, dec);
+				i = 1;
+				flag = 2;
+			}
+		}
+	}
 	return 0;
 }
 

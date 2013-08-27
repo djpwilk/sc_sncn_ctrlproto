@@ -18,6 +18,10 @@
 extern "C"
 {
 #endif
+#define MOTOR_PARAM_UPDATE 		1
+#define VELOCITY_CTRL_UPDATE 	2
+#define CSV_MOTOR_UPDATE   		3
+
 
 #define SOMANET_ID     0x000022d2, 0x00000201
 #define CAN_OD_CONTROL_WORD    	0x6040 		/* RX; 16 bit */
@@ -103,9 +107,9 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{POLARITY(CONFIG_NUMBER), 0},\
 		{SENSOR_SELECTION_CODE(CONFIG_NUMBER), 0},\
 		\
-		{(0x7FFFFFFF/VELOCITY_Kp_DENOMINATOR(CONFIG_NUMBER))*VELOCITY_Kp_NUMERATOR(CONFIG_NUMBER), 0},\
-		{(0x7FFFFFFF/VELOCITY_Ki_DENOMINATOR(CONFIG_NUMBER))*VELOCITY_Ki_NUMERATOR(CONFIG_NUMBER), 0},\
-		{(0x7FFFFFFF/VELOCITY_Kd_DENOMINATOR(CONFIG_NUMBER))*VELOCITY_Kd_NUMERATOR(CONFIG_NUMBER), 0},\
+		{(0x4000/VELOCITY_Kp_DENOMINATOR(CONFIG_NUMBER))*VELOCITY_Kp_NUMERATOR(CONFIG_NUMBER), 0},\
+		{(0x4000/VELOCITY_Ki_DENOMINATOR(CONFIG_NUMBER))*VELOCITY_Ki_NUMERATOR(CONFIG_NUMBER), 0},\
+		{(0x4000/VELOCITY_Kd_DENOMINATOR(CONFIG_NUMBER))*VELOCITY_Kd_NUMERATOR(CONFIG_NUMBER), 0},\
 		0},\
 }
 
@@ -344,7 +348,8 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
  */
 void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
-        unsigned int slave_num);
+        unsigned int slave_num,
+        int update_sequence);
 
 /**
  * Multiplies a float value with 1000 and outputs it as 16 Bit integer.

@@ -11,19 +11,22 @@
 #define ENCODER_RESOLUTION_1 		4000		// Max count of Quadrature Encoder
 #define POLARITY_1 					1					// 1 / -1
 
-/*single variable Sensor selection code*/
+/*internal qei single variable selection code*/
 #define QEI_WITH_INDEX				1
 #define QEI_WITH_NO_INDEX 			0
 #define QEI_SENSOR_TYPE  			QEI_WITH_INDEX//QEI_WITH_NO_INDEX
-#define HALL 1
-#define QEI  2
-#define SENSOR_SELECTION_CODE_1       QEI
+
+/*Position Sensor Types*/
+#define HALL 						1
+#define QEI_INDEX  					2
+#define QEI_NO_INDEX				3
+#define SENSOR_SELECTION_CODE_1     HALL
 
 /*
  * control specific constants/variables
  */
 //velocity control
-#define VELOCITY_Kp_NUMERATOR_1 	 	5
+#define VELOCITY_Kp_NUMERATOR_1 	5
 #define VELOCITY_Kp_DENOMINATOR_1  	10
 #define VELOCITY_Ki_NUMERATOR_1    	5
 #define VELOCITY_Ki_DENOMINATOR_1  	100

@@ -13,4 +13,4 @@
 MODULE_XCC_FLAGS = $(XCC_FLAGS) -g -O0
 
 SOURCE_DIRS += ./src
-INCLUDE_DIRS += ../common_include ./src
+INCLUDE_DIRS += ../common_include ./src 

@@ -42,7 +42,9 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 		InOut.status_word = 32000;	//undefined
 
 		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
-		config_sdo_handler(coe_out);
+		velocity_sdo_update(coe_out);
+		//config_sdo_handler(coe_out);
+
 		InOut.operation_mode_display = InOut.operation_mode;
 //		printhexln(InOut.control_word);
 //		printhexln(InOut.operation_mode);

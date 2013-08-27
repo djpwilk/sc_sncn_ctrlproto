@@ -4,7 +4,6 @@
 #include <ethercat.h>
 #include <foefs.h>
 
-
 ctrl_proto_values_t init_ctrl_proto(void)
 {
 	ctrl_proto_values_t InOut;
@@ -25,6 +24,8 @@ ctrl_proto_values_t init_ctrl_proto(void)
 
 	return InOut;
 }
+
+
 
 void config_sdo_handler(chanend coe_out)
 {
@@ -58,6 +59,67 @@ void config_sdo_handler(chanend coe_out)
 //	printintln(sdo_value);
 //	coe_out :> sdo_value;
 
+}
+
+int sensor_select_sdo(chanend coe_out)
+{
+	int sensor_select;
+	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, sensor_select);
+	if(sensor_select == 2 || sensor_select == 3)
+		sensor_select = 2; //qei
+	return sensor_select;
+}
+{int, int, int} velocity_sdo_update(chanend coe_out)
+{
+	int Kp, Ki, Kd;
+
+	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 1, Kp);
+
+	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 2, Ki);
+
+	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 3, Kd);
+
+	return {Kp, Ki, Kd};
+}
+
+{int, int} hall_sdo_update(chanend coe_out)
+{
+	int gear_ratio, pole_pairs;
+
+	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, gear_ratio);
+
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, pole_pairs);
+
+	return {pole_pairs, gear_ratio};
+}
+
+{int, int, int} csv_sdo_update(chanend coe_out)
+{
+	int max_motor_speed, nominal_current, polarity, motor_torque_constant;
+
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
+
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
+
+	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+
+	return {max_motor_speed, nominal_current, polarity};
+}
+
+{int, int, int} qei_sdo_update(chanend coe_out)
+{
+	int real_counts, gear_ratio, qei_type;
+
+	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, gear_ratio);
+
+	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, real_counts);
+
+	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, qei_type);
+
+	if(qei_type == QEI_INDEX)
+		return {real_counts, gear_ratio, QEI_WITH_INDEX};
+	else if(qei_type == QEI_NO_INDEX)
+		return {real_counts, gear_ratio, QEI_WITH_NO_INDEX};
 }
 
 void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
