@@ -79,12 +79,6 @@
 #include "ecrt.h"
 
 /****************************************************************************/
-
-#define MAJOR 1
-#define MINOR 0
-
-#define MAXDBGLVL  3
-
 // Application parameters
 #define FREQUENCY 1000
 #define PRIORITY 1
@@ -103,10 +97,6 @@ static unsigned int user_alarms = 0;
 
 /****************************************************************************/
 
-
-
-static unsigned int counter = 0;
-static unsigned int blink = 0;
 
 /*****************************************************************************/
 
@@ -252,17 +242,17 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
 		ecrt_master_state(master_setup->master, &master_setup->master_state);
 		ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
 
-		if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
+		if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->op_flag)
 		{
 			//printf("System up!\n");
-			master_setup->opFlag = 1;
+			master_setup->op_flag = 1;
 		}
 		else
 		{
-			if(master_setup->domain_state.wc_state != EC_WC_COMPLETE && master_setup->opFlag)
+			if(master_setup->domain_state.wc_state != EC_WC_COMPLETE && master_setup->op_flag)
 			{
 				//printf("System down!\n");
-				master_setup->opFlag = 0;
+				master_setup->op_flag = 0;
 			}
 		}
 
@@ -331,17 +321,17 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
 		ecrt_master_state(master_setup->master, &master_setup->master_state);
 		ecrt_domain_state(master_setup->domain, &master_setup->domain_state);
 
-		if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->opFlag)
+		if (master_setup->domain_state.wc_state == EC_WC_COMPLETE && !master_setup->op_flag)
 		{
 			//printf("System up!\n");
-			master_setup->opFlag = 1;
+			master_setup->op_flag = 1;
 		}
 		else
 		{
-			if(master_setup->domain_state.wc_state != EC_WC_COMPLETE && master_setup->opFlag)
+			if(master_setup->domain_state.wc_state != EC_WC_COMPLETE && master_setup->op_flag)
 			{
 				//printf("System down!\n");
-				master_setup->opFlag = 0;
+				master_setup->op_flag = 0;
 			}
 		}
 

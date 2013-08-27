@@ -49,7 +49,7 @@ int main()
 		if(slv_handles[0].motor_config_param.update_flag == 1)
 		{
 			pdo_handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
-			if(master_setup.opFlag)
+			if(master_setup.op_flag)
 			{
 				slv_handles[0].motorctrl_out = 0xAA88;
 				slv_handles[0].operation_mode = 0x35;
@@ -75,7 +75,7 @@ int main()
 //	while(!ready)
 //	{
 //		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
-//		if(master_setup.opFlag)
+//		if(master_setup.op_flag)
 //		{
 //			//check ready
 //			status_word = read_statusword();
@@ -93,7 +93,7 @@ int main()
 //	while(!switch_enable)
 //	{
 //		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
-//		if(master_setup.opFlag)
+//		if(master_setup.op_flag)
 //		{
 //			//check switch
 //			status_word = read_statusword();
@@ -112,7 +112,7 @@ int main()
 //	while(!switch_on_state)
 //	{
 //		handle_ecat(&master_setup, slv_handles, NUM_SLAVES);
-//		if(master_setup.opFlag)
+//		if(master_setup.op_flag)
 //		{
 //			set_controlword(SWITCH_ON_CONTROL);
 //			/*************check switch_on_state***************/
@@ -129,10 +129,10 @@ int main()
 //
 //	/*************************output enable op***********************/
 //
-//	while(!op_enable_state && master_setup.opFlag)
+//	while(!op_enable_state && master_setup.op_flag)
 //	{
 //		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
-//		if(master_setup.opFlag)
+//		if(master_setup.op_flag)
 //		{
 //			set_controlword(ENABLE_OPERATION_CONTROL|QUICK_STOP_CONTROL);
 //			/*************check op_enable_state**************/
@@ -151,7 +151,7 @@ int main()
 //	while(1)
 //	{
 //			handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
-//			if(master_setup.opFlag)
+//			if(master_setup.op_flag)
 //			{
 //				slv_handles[0].operation_mode = CSV;
 //				/*************check operation_mode display**************/
@@ -169,7 +169,7 @@ int main()
 //	{
 //		handle_ecat(&master_setup,slv_handles, NUM_SLAVES);
 //
-//		if(master_setup.opFlag)//Check if we are up
+//		if(master_setup.op_flag)//Check if we are up
 //		{
 //			if(i<steps)
 //				{
@@ -199,7 +199,7 @@ int main()
 
 
 /*
- 	if(master_setup.opFlag)//Check if we are up
+ 	if(master_setup.op_flag)//Check if we are up
 	{
 		slv_handles[0].motorctrl_out = 12;
 		slv_handles[0].torque_setpoint = 200;
