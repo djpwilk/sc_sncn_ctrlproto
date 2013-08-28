@@ -26,6 +26,8 @@ else
 		gcc -c src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.o;\
 		gcc src/motor_define.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_motordefine.so -lstdc++ -shared -fPIC;\
 		gcc -c src/motor_define.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_motordefine.o;\
+		gcc src/drive_function.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_drive_function.so -lstdc++ -shared -fPIC;\
+		gcc -c src/drive_function.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_drive_function.o;\
 		ar rcs lib/libsncn_ctrlproto.a lib/*.o;\
 		rm -f lib/*.o;\
 		else echo \

@@ -483,6 +483,7 @@ int _motor_config_update(ec_sdo_request_t *request, int update, int value, int s
 		{
 			update = 1;
 			printf("%d ", sequence);
+			fflush(stdout);
 		}
 	}
 	return update;

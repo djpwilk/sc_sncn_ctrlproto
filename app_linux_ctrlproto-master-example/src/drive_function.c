@@ -22,6 +22,15 @@ int check_op_enable(int status_word) {
 	return (status_word & OPERATION_ENABLED_STATE) >> 2;
 }
 
+int check_quick_stop_active(int status_word){
+	return (status_word & QUICK_STOP_STATE)>>5;
+}
+
+int check_target_reached(int status_word)
+{
+	return (status_word & TARGET_REACHED)>>10;
+}
+
 void run_drive()
 {
 /*	int ready = 0;
