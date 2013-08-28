@@ -3,7 +3,7 @@ SOURCE_DIRS = src
 
 MASTER_INSTALLDIR := /opt/etherlab
 
-SOURCES += src/main.c src/drive_function.c 
+SOURCES += src/main.c
 SOURCES += ../../sc_sncn_motorctrl_sin/module_profile/profile_velocity_mode/profile_velocity.c
 
 INCLUDE_DIRS += -I ../inc_ctrlproto-common   
