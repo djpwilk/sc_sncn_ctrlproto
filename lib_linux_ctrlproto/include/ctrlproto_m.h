@@ -18,9 +18,11 @@
 extern "C"
 {
 #endif
+
 #define MOTOR_PARAM_UPDATE 		1
 #define VELOCITY_CTRL_UPDATE 	2
 #define CSV_MOTOR_UPDATE   		3
+#define POSITION_CTRL_UPDATE    4
 
 
 #define SOMANET_ID     0x000022d2, 0x00000201
@@ -78,7 +80,7 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 {\
 	{0,0,0,0,0},\
 	{0,0,0,0,0},\
-	{0,0,0,0,0,0,0,0},\
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},\
 	ctrlproto_pdo_entries,\
 	ctrlproto_pdos,\
 	ctrlproto_syncs,\
@@ -110,6 +112,12 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{(0x4000/VELOCITY_Kp_DENOMINATOR(CONFIG_NUMBER))*VELOCITY_Kp_NUMERATOR(CONFIG_NUMBER), 0},\
 		{(0x4000/VELOCITY_Ki_DENOMINATOR(CONFIG_NUMBER))*VELOCITY_Ki_NUMERATOR(CONFIG_NUMBER), 0},\
 		{(0x4000/VELOCITY_Kd_DENOMINATOR(CONFIG_NUMBER))*VELOCITY_Kd_NUMERATOR(CONFIG_NUMBER), 0},\
+		{0,0},\
+		{0,0},\
+		{0,0},\
+		\
+		{0,0},\
+		{0,0},\
 		0},\
 }
 
@@ -136,7 +144,7 @@ typedef struct
 	 * The SDO entries
 	 */
 
-	ec_sdo_request_t *__request[11];
+	ec_sdo_request_t *__request[16];
 
 	/**
 	 * The PDO entries

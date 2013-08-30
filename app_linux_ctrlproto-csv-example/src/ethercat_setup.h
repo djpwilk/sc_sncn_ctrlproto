@@ -4,7 +4,7 @@
 /**
  * Number of SOMANET Slaves
  */
-#define NUM_SLAVES 1
+#define TOTAL_NUM_OF_SLAVES 1
 
 SOMANET_C22_CTRLPROTO_CSTRUCT();
 

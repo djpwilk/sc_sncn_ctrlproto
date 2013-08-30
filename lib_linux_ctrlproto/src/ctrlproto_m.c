@@ -214,7 +214,7 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
-        unsigned int slave_num, int update_sequence)
+        unsigned int total_no_of_slaves, int update_sequence)
 {
 	int slv;
 
@@ -229,7 +229,7 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
 		ecrt_domain_process(master_setup->domain);
 
 
-		for (slv = 0; slv < slave_num; ++slv)
+		for (slv = 0; slv < total_no_of_slaves; ++slv)
 		{
 			slv_handles[slv].motor_config_param = sdo_motor_config_update(slv_handles[slv].motor_config_param, slv_handles[slv].__request, update_sequence);
 		}
@@ -263,7 +263,7 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
 
 void pdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
-        unsigned int slave_num)
+        unsigned int total_no_of_slaves)
 {
 	int slv;
 
@@ -287,7 +287,7 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
 		// check_slave_config_states();
 
 
-		for(slv=0;slv<slave_num;++slv)
+		for(slv=0;slv<total_no_of_slaves;++slv)
 		{
 			/* Read process data */
 			slv_handles[slv].motorctrl_status_in = EC_READ_U16(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[0]);
@@ -304,7 +304,7 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
 //		printf("\n%x",  slv_handles[slv].torque_in);
 
 
-		for(slv=0;slv<slave_num;++slv)
+		for(slv=0;slv<total_no_of_slaves;++slv)
 		{
 			EC_WRITE_U16(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[0], (slv_handles[slv].motorctrl_out)&0xffff);
 			EC_WRITE_U8(master_setup->domain_pd + slv_handles[slv].__ecat_slave_out[1], (slv_handles[slv].operation_mode)&0xff);
@@ -365,7 +365,7 @@ static void logmsg(int lvl, const char *format, ...)
 
 void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *request[]);
 
-void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, unsigned int slave_num)
+void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, unsigned int total_no_of_slaves)
 {
 	int slv;
 
@@ -380,7 +380,7 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
     if (!master_setup->domain)
         exit(-1);
 
-	for (slv = 0; slv < slave_num; ++slv)
+	for (slv = 0; slv < total_no_of_slaves; ++slv)
 	{
 		if (!( slv_handles[slv].slave_config= ecrt_master_slave_config(   //sc_data_in
 						master_setup->master, slv_handles[slv].slave_alias, slv_handles[slv].slave_pos , slv_handles[slv].slave_vendorid, slv_handles[slv].slave_productid))) {
@@ -469,6 +469,13 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 	request[8] = _config_sdo_request(slave_config, request[8], CIA402_VELOCITY_GAIN, 1, 4);
 	request[9] = _config_sdo_request(slave_config, request[9], CIA402_VELOCITY_GAIN, 2, 4);
 	request[10] = _config_sdo_request(slave_config, request[10], CIA402_VELOCITY_GAIN, 3, 4);
+
+	request[11] = _config_sdo_request(slave_config, request[11], CIA402_POSITION_GAIN, 1, 4);
+	request[12] = _config_sdo_request(slave_config, request[12], CIA402_POSITION_GAIN, 2, 4);
+	request[13] = _config_sdo_request(slave_config, request[13], CIA402_POSITION_GAIN, 3, 4);
+
+	request[14] = _config_sdo_request(slave_config, request[14], CIA402_SOFTWARE_POSITION_LIMIT, 1, 4); //min
+	request[15] = _config_sdo_request(slave_config, request[15], CIA402_SOFTWARE_POSITION_LIMIT, 2, 4); // max
 }
 
 int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
@@ -570,5 +577,43 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				& motor_config_param.s_velocity_d_gain.update_state;
 	}
 
+	else if(update_sequence == POSITION_CTRL_UPDATE)
+	{
+		if(!motor_config_param.s_position_p_gain.update_state)
+			motor_config_param.s_position_p_gain.update_state = _motor_config_update(request[11], \
+					motor_config_param.s_position_p_gain.update_state,  \
+					motor_config_param.s_position_p_gain.position_p_gain, 1);
+
+		if(motor_config_param.s_position_p_gain.update_state && !motor_config_param.s_position_i_gain.update_state)
+			motor_config_param.s_position_i_gain.update_state = _motor_config_update(request[12], \
+					motor_config_param.s_position_i_gain.update_state,  \
+					motor_config_param.s_position_i_gain.position_i_gain, 2);
+
+		if(motor_config_param.s_position_i_gain.update_state  && !motor_config_param.s_position_d_gain.update_state)
+			motor_config_param.s_position_d_gain.update_state = _motor_config_update(request[13], \
+					motor_config_param.s_position_d_gain.update_state,  \
+					motor_config_param.s_position_d_gain.position_d_gain, 3);
+
+		if(motor_config_param.s_position_d_gain.update_state && !motor_config_param.s_software_position_min.update_state)
+				motor_config_param.s_software_position_min.update_state = _motor_config_update(request[14], \
+						motor_config_param.s_software_position_min.update_state,  \
+						motor_config_param.s_software_position_min.software_position_min, 4);
+
+		if(motor_config_param.s_software_position_min.update_state && !motor_config_param.s_software_position_max.update_state)
+				motor_config_param.s_software_position_max.update_state = _motor_config_update(request[15], \
+						motor_config_param.s_software_position_max.update_state,  \
+						motor_config_param.s_software_position_max.software_position_max, 5);
+
+		motor_config_param.update_flag = motor_config_param.s_position_p_gain.update_state\
+				& motor_config_param.s_position_i_gain.update_state\
+				& motor_config_param.s_position_d_gain.update_state\
+				& motor_config_param.s_software_position_min.update_state\
+				& motor_config_param.s_software_position_max.update_state;
+	}
+
+
+
 	return motor_config_param;
 }
+
+

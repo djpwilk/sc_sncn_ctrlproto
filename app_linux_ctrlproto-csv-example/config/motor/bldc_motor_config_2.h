@@ -1,6 +1,6 @@
 #ifndef MOTOR_2
 #define MOTOR_2
-
+#include<common_config.h>
 /*
  * define Motor Specific Constants
  */
@@ -12,12 +12,8 @@
 #define ENCODER_RESOLUTION_2 		4001		// Max count of Quadrature Encoder
 #define POLARITY_2 					-1					// 1 / -1
 
-/*single variable Sensor selection code*/
-#define QEI_WITH_INDEX				1
-#define QEI_WITH_NO_INDEX 			0
-#define QEI_SENSOR_TYPE  			QEI_WITH_INDEX//QEI_WITH_NO_INDEX
-#define HALL 1
-#define QEI  2
+
+/*Position Sensor Types*/
 #define SENSOR_SELECTION_CODE_2       HALL
 
 /*
@@ -34,13 +30,13 @@
 //position control
 
 #define MAX_FOLLOWING_ERROR 		0
-#define MAX_POSITION_LIMIT 			359
-#define MIN_POSITION_LIMIT 			-359
+#define MAX_POSITION_LIMIT_2 			359
+#define MIN_POSITION_LIMIT_2 			-359
 
-#define POSITION_Kp_NUMERATOR 	 	180
-#define POSITION_Kp_DENOMINATOR  	2000
-#define POSITION_Ki_NUMERATOR    	50
-#define POSITION_Ki_DENOMINATOR  	102000
-#define POSITION_Kd_NUMERATOR    	100
-#define POSITION_Kd_DENOMINATOR  	10000
+#define POSITION_Kp_NUMERATOR_2 	 	180
+#define POSITION_Kp_DENOMINATOR_2  	2000
+#define POSITION_Ki_NUMERATOR_2    	50
+#define POSITION_Ki_DENOMINATOR_2  	102000
+#define POSITION_Kd_NUMERATOR_2    	100
+#define POSITION_Kd_DENOMINATOR_2  	10000
 #endif

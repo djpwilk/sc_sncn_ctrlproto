@@ -76,6 +76,36 @@ typedef struct
 
 typedef struct
 {
+	int position_p_gain;
+	int update_state;
+} position_p_gain_s;
+
+typedef struct
+{
+	int position_i_gain;
+	int update_state;
+} position_i_gain_s;
+
+typedef struct
+{
+	int position_d_gain;
+	int update_state;
+} position_d_gain_s;
+
+typedef struct
+{
+	int software_position_min;
+	int update_state;
+} software_position_min_s;
+
+typedef struct
+{
+	int software_position_max;
+	int update_state;
+} software_position_max_s;
+
+typedef struct
+{
 	pole_pair_s s_pole_pair;
 	gear_ratio_s s_gear_ratio;
 	nominal_motor_speed_s s_nominal_motor_speed;
@@ -89,6 +119,13 @@ typedef struct
 	velocity_p_gain_s s_velocity_p_gain;
 	velocity_i_gain_s s_velocity_i_gain;
 	velocity_d_gain_s s_velocity_d_gain;
+
+	position_p_gain_s s_position_p_gain;
+	position_i_gain_s s_position_i_gain;
+	position_d_gain_s s_position_d_gain;
+
+	software_position_min_s s_software_position_min;
+	software_position_max_s s_software_position_max;
 
 	int update_flag;
 } motor_config;
@@ -107,6 +144,16 @@ typedef struct
 #define VELOCITY_Kd_NUMERATOR(n)  	VELOCITY_Kd_NUMERATOR_##n
 #define VELOCITY_Kd_DENOMINATOR(n)  VELOCITY_Kd_DENOMINATOR_##n
 #define SENSOR_SELECTION_CODE(n) 	SENSOR_SELECTION_CODE_##n
+
+#define POSITION_Kp_NUMERATOR(n)   	POSITION_Kp_NUMERATOR_##n
+#define POSITION_Kp_DENOMINATOR(n)  POSITION_Kp_DENOMINATOR_##n
+#define POSITION_Ki_NUMERATOR(n)   	POSITION_Ki_NUMERATOR_##n
+#define POSITION_Ki_DENOMINATOR(n)  POSITION_Ki_DENOMINATOR_##n
+#define POSITION_Kd_NUMERATOR(n)  	POSITION_Kd_NUMERATOR_##n
+#define POSITION_Kd_DENOMINATOR(n)  POSITION_Kd_DENOMINATOR_##n
+
+#define MIN_POSITION_LIMIT(n)		MIN_POSITION_LIMIT_##n
+#define MAX_POSITION_LIMIT(n)		MAX_POSITION_LIMIT_##n
 
 #ifdef __cplusplus
 }
