@@ -53,12 +53,45 @@ void config_sdo_handler(chanend coe_out)
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 3, sdo_value);
 	printintln(sdo_value);
-
+	GET_SDO_DATA(CIA402_POSITION_GAIN, 1, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_POSITION_GAIN, 2, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_POSITION_GAIN, 3, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, sdo_value);
+	printintln(sdo_value);
 //	coe_out <: CAN_GET_OBJECT;
 //	coe_out <: CAN_OBJ_ADR(CIA402_MAX_ACCELERATION, 0);
 //	printintln(sdo_value);
 //	coe_out :> sdo_value;
 
+}
+
+{int, int, int} position_sdo_update(chanend coe_out)
+{
+	int Kp, Ki, Kd;
+
+	GET_SDO_DATA(CIA402_POSITION_GAIN, 1, Kp);
+	GET_SDO_DATA(CIA402_POSITION_GAIN, 2, Ki);
+	GET_SDO_DATA(CIA402_POSITION_GAIN, 3, Kd);
+
+	return {Kp, Ki, Kd};
+}
+
+{int, int, int, int, int} csp_sdo_update(chanend coe_out)
+{
+	int  max_motor_speed, polarity, nominal_current, min, max;
+
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
+	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
+
+	return {max_motor_speed, polarity, nominal_current, min, max};
 }
 
 int sensor_select_sdo(chanend coe_out)
@@ -75,7 +108,6 @@ int sensor_select_sdo(chanend coe_out)
 
 	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 1, Kp);
 	//printintln(Kp);
-
 	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 2, Ki);
 	//printintln(Ki);
 	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 3, Kd);

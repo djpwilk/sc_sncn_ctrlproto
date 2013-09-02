@@ -158,6 +158,36 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 		}
 	}
+	else if (operation_mode == CSP)
+	{
+		while(1)
+		{
+			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
+			{
+				slv_handles[slave_number].motor_config_param.update_flag = 0;
+				break;
+			}
+			else
+			{
+				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, POSITION_CTRL_UPDATE);		//mode specific updates
+				printf (".");
+			}
+		}
+
+		while(1)
+		{
+			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
+			{
+				//slv_handles[slave_number].motor_config_param.update_flag = 0;
+				break;
+			}
+			else
+			{
+				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, CSV_MOTOR_UPDATE);		//mode specific updates
+				printf (".");
+			}
+		}
+	}
 
 
 	/**********************output Mode of Operation******************/

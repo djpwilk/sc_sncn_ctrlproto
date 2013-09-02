@@ -32,7 +32,14 @@ int get_velocity_actual(int slave_number)
 {
 	return slv_handles[slave_number].speed_in;
 }
-
+int get_position_actual_deg(int slave_number)
+{
+	return slv_handles[slave_number].position_in/10000;
+}
+void set_position_deg(int target_position, int slave_number)
+{
+	slv_handles[slave_number].position_setpoint = target_position;
+}
 int main()
 {
 //	int ready = 0;
@@ -45,65 +52,72 @@ int main()
 	int control_word;
 	int flag = 0;
 
-	int final_target_velocity = -1000;
-	int initial_velocity = 0;
-	int acceleration= 1000;
-	int deceleration = 1000;
-	int steps = 0;
-	int i = 1;
-	int target_velocity = 0;
+	int acc = 350;				//rpm/s
+	int dec = 350;   			//rpm/s
+	int velocity = 350;			//rpm
+	int actual_position = 0;	//degree
+	int target_position = 350;	//degree
+	int steps = 0, i = 1;
+	int position_ramp = 0;
+
 
 	int slave_number = 0;
-//	int v_d = -1000;
-//	int u = 0;
-//	int acc= 1000;
-//	int dec = 1000;
-//	int op_enable_state = 0;
-//	int status_word = 0;
+
+
+	int op_enable_state = 0;
+	int status_word = 0;
+
+	printf(" %d %d %d \n %d %d %d", slv_handles[0].motor_config_param.s_position_p_gain.position_p_gain, slv_handles[0].motor_config_param.s_position_i_gain.position_i_gain, slv_handles[0].motor_config_param.s_position_d_gain.position_d_gain, \
+			slv_handles[0].motor_config_param.s_velocity_p_gain.velocity_p_gain, slv_handles[0].motor_config_param.s_velocity_i_gain.velocity_i_gain, slv_handles[0].motor_config_param.s_velocity_d_gain.velocity_d_gain);
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	set_operation_mode(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	i = 0;
-	steps = init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration);
+
+	init_position_profile_limits(GEAR_RATIO_1, MAX_ACCELERATION_1, MAX_NOMINAL_SPEED_1);
+	steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
+
+
 	while(1)
 	{
+
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
 
 		if(master_setup.op_flag)//Check if we are up
 		{
+
 			if(i<steps)
 			{
-				target_velocity = velocity_profile_generate(i);
-				set_velocity(target_velocity, slave_number);
+				position_ramp = position_profile_generate(i);
+			//	slv_handles[0].position_setpoint = position_ramp;
+				set_position_deg(position_ramp, slave_number);
 				i = i+1;
 			}
+
 			if(i>=steps && flag == 0)
 			{
 				//printf("done");
-				initial_velocity = get_velocity_actual(slave_number);
-				final_target_velocity =2000;
-				steps = init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration);
+				actual_position = get_position_actual_deg(slave_number);
+				target_position = -300; velocity = 3500; acc = 350; dec = 350;
+				steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
 				i = 1;
 				flag = 1;
 			}
 			if(i>=steps && flag == 1)
 			{
-				initial_velocity = get_velocity_actual(slave_number);
-				final_target_velocity = -1000;
-				steps = init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration);
+				actual_position = get_position_actual_deg(slave_number);
+				target_position = 30; velocity = 3500; acc = 350; dec = 350;
+				steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
 				i = 1;
 				flag = 2;
 			}
-			if(i >= steps && flag == 2)
-			{
-				break;
-			}
+
 		}
-	}
+	}// while
 
 //	/**********************check ready***********************/
 //	while(!ready)

@@ -14,7 +14,7 @@
 
 
 /*Position Sensor Types*/
-#define SENSOR_SELECTION_CODE_1     QEI_NO_INDEX
+#define SENSOR_SELECTION_CODE_1     HALL
 
 /*
  * control specific constants/variables
