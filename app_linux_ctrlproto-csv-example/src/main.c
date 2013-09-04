@@ -59,7 +59,7 @@ int main()
 //	int acc= 1000;
 //	int dec = 1000;
 //	int op_enable_state = 0;
-//	int status_word = 0;
+	int status_word = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -105,6 +105,48 @@ int main()
 		}
 	}
 
+	quick_stop_velocity(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+//	quick_stop_active = 0;
+//	while(!quick_stop_active && master_setup.op_flag)
+//	{
+//		pdo_handle_ecat(&master_setup,slv_handles, TOTAL_NUM_OF_SLAVES);
+//		if(master_setup.op_flag)
+//		{
+//			set_controlword(ENABLE_OPERATION_CONTROL|(~QUICK_STOP_CONTROL & 0x000F)|ENABLE_VOLTAGE_CONTROL|SWITCH_ON_CONTROL, slave_number, slv_handles);
+//			/*************check quick_stop_state**************/
+//			status_word = read_statusword(slave_number, slv_handles);
+//			quick_stop_active = check_quick_stop_active(status_word);
+//		}
+//		else
+//			continue;
+//	}
+//
+//	#ifndef print_slave
+//	printf("quick_stop_active\n");
+//	#endif
+//
+//	ack_stop = 0;
+//	while(!ack_stop)
+//	{
+//		pdo_handle_ecat(&master_setup,slv_handles, TOTAL_NUM_OF_SLAVES);
+//		if(master_setup.op_flag)
+//		{
+//			/*************check quick_stop_state**************/
+//			status_word = read_statusword(slave_number, slv_handles);
+//			ack_stop = check_target_reached(status_word);
+//			//printf("%d\n",quick_stop_active);
+//		}
+//		else
+//			continue;
+//	}
+//
+//	#ifndef print_slave
+//	printf("ack stop received \n");
+//	#endif
+
+	renable_ctrl(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	shutdown_operation(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 //	/**********************check ready***********************/
 //	while(!ready)
 //	{

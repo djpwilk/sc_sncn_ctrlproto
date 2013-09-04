@@ -1,3 +1,7 @@
+#ifndef CTRLPROTO_H_
+#define CTRLPROTO_H_
+#pragma once
+
 #include <stdint.h>
 #include <coecmd.h>
 #include <canod.h>
@@ -75,3 +79,5 @@ void config_sdo_handler(chanend coe_out);
 {int, int, int} position_sdo_update(chanend coe_out);
 
 int sensor_select_sdo(chanend coe_out);
+
+#endif
