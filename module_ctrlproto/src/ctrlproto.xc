@@ -8,7 +8,7 @@ ctrl_proto_values_t init_ctrl_proto(void)
 {
 	ctrl_proto_values_t InOut;
 
-	InOut.control_word    = 0x0006;    		// shutdown
+	InOut.control_word    = 0x00;    		// shutdown
 	InOut.operation_mode  = 0xff;  			// undefined
 
 	InOut.target_torque   = 0x0;
@@ -155,7 +155,7 @@ int sensor_select_sdo(chanend coe_out)
 	else if(qei_type == QEI_NO_INDEX)
 		return {real_counts, gear_ratio, QEI_WITH_NO_INDEX};
 	else
-		return {real_counts, gear_ratio, 0xff};
+		return {real_counts, gear_ratio, QEI_WITH_INDEX};//default
 }
 
 void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)

@@ -52,6 +52,31 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	int switch_on_state = 0;
 	int op_enable_state = 0;
 
+
+	set_controlword(0, slave_number, slv_handles);
+	printf("updating motor parameters\n");
+	fflush(stdout);
+	/***** Set up Parameters *****/
+	while(1)
+	{
+		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
+		{
+			slv_handles[slave_number].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
+			break;
+		}
+
+		else
+		{
+			sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, MOTOR_PARAM_UPDATE);
+			printf (".");
+			fflush(stdout);
+
+		}
+	}
+	printf ("\n");
+	fflush(stdout);
+	set_controlword(SHUTDOWN, slave_number, slv_handles);
+
 	/**********************check ready***********************/
 	while(!ready)
 	{
@@ -68,6 +93,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	#ifndef print_slave
 	printf("ready\n");
+	fflush(stdout);
 	#endif
 
 	/**********************check switch_enable***********************/
@@ -86,6 +112,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	#ifndef print_slave
 	printf("switch_enable\n");
+	fflush(stdout);
 	#endif
 
 
@@ -106,89 +133,97 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	#ifndef print_slave
 	printf("switch_on_state\n");
+	fflush(stdout);
 	#endif
 
 
-	printf("updating parameters\n");
+	printf("updating control parameters\n");
+	fflush(stdout);
 	/***** Set up Parameters *****/
-//	while(1)
-//	{
-//		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-//		{
-//			slv_handles[slave_number].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
-//			break;
-//		}
-//
-//		else
-//		{
-//			sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, MOTOR_PARAM_UPDATE);
-//			printf (".");
-//			fflush(stdout);
-//
-//		}
-//	}
-//
-//	if (operation_mode == CSV)
-//	{
-//		while(1)
-//		{
-//			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-//			{
-//				slv_handles[slave_number].motor_config_param.update_flag = 0; // reset to update next set of paramaters
-//				break;
-//			}
-//			else
-//			{
-//				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, VELOCITY_CTRL_UPDATE);  //mode specific updates
-//				printf (".");
-//			}
-//		}
-//
-//		while(1)
-//		{
-//			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-//			{
-//				//slv_handles[slave_number].motor_config_param.update_flag = 0;
-//				break;
-//			}
-//			else
-//			{
-//				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, CSV_MOTOR_UPDATE);		//mode specific updates
-//				printf (".");
-//			}
-//		}
-//	}
-//	else if (operation_mode == CSP)
-//	{
-//		while(1)
-//		{
-//			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-//			{
-//				slv_handles[slave_number].motor_config_param.update_flag = 0;
-//				break;
-//			}
-//			else
-//			{
-//				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, POSITION_CTRL_UPDATE);		//mode specific updates
-//				printf (".");
-//			}
-//		}
-//
-//		while(1)
-//		{
-//			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-//			{
-//				//slv_handles[slave_number].motor_config_param.update_flag = 0;
-//				break;
-//			}
-//			else
-//			{
-//				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, CSV_MOTOR_UPDATE);		//mode specific updates
-//				printf (".");
-//			}
-//		}
-//	}
+/*	while(1)
+	{
+		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
+		{
+			slv_handles[slave_number].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
+			break;
+		}
 
+		else
+		{
+			sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, MOTOR_PARAM_UPDATE);
+			printf (".");
+			fflush(stdout);
+
+		}
+	}*/
+
+	if (operation_mode == CSV)
+	{
+		while(1)
+		{
+			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
+			{
+				slv_handles[slave_number].motor_config_param.update_flag = 0; // reset to update next set of paramaters
+				break;
+			}
+			else
+			{
+				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, VELOCITY_CTRL_UPDATE);  //mode specific updates
+				printf (".");
+				fflush(stdout);
+			}
+		}
+
+		while(1)
+		{
+			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
+			{
+				//slv_handles[slave_number].motor_config_param.update_flag = 0;
+				break;
+			}
+			else
+			{
+				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, CSV_MOTOR_UPDATE);		//mode specific updates
+				printf (".");
+				fflush(stdout);
+			}
+		}
+	}
+	else if (operation_mode == CSP)
+	{
+		while(1)
+		{
+			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
+			{
+				slv_handles[slave_number].motor_config_param.update_flag = 0;
+				break;
+			}
+			else
+			{
+				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, POSITION_CTRL_UPDATE);		//mode specific updates
+				printf (".");
+				fflush(stdout);
+			}
+		}
+
+		while(1)
+		{
+			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
+			{
+				//slv_handles[slave_number].motor_config_param.update_flag = 0;
+				break;
+			}
+			else
+			{
+				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, CSV_MOTOR_UPDATE);		//mode specific updates
+				printf (".");
+				fflush(stdout);
+			}
+		}
+
+	}
+	printf ("\n");
+	fflush(stdout);
 
 	/**********************output Mode of Operation******************/
 	while(1)
@@ -206,6 +241,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	}
 	#ifndef print_slave
 	printf("operation_mode enabled\n");
+	fflush(stdout);
 	#endif
 
 	return 1;
@@ -233,6 +269,7 @@ int enable_operation(int slave_number, master_setup_variables_t *master_setup, c
 
 	#ifndef print_slave
 	printf("operation enabled\n");
+	fflush(stdout);
 	#endif
 
 	return 1;
@@ -257,6 +294,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 	}
 #ifndef print_slave
 	printf("quick_stop_active\n");
+	fflush(stdout);
 #endif
 
 
@@ -277,6 +315,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 
 	#ifndef print_slave
 	printf("ack stop received \n");
+	fflush(stdout);
 	#endif
 }
 
@@ -301,6 +340,7 @@ int renable_ctrl(int operation_mode, int slave_number, master_setup_variables_t 
 	}
 	#ifndef print_slave
 	printf("operation_mode reset enabled\n");
+	fflush(stdout);
 	#endif
 
 	/**********************output Mode of Operation******************/
@@ -319,6 +359,7 @@ int renable_ctrl(int operation_mode, int slave_number, master_setup_variables_t 
 	}
 	#ifndef print_slave
 	printf("operation_mode enabled\n");
+	fflush(stdout);
 	#endif
 }
 
@@ -330,7 +371,7 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
 			pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
 			if(master_setup->op_flag)
 			{
-				if(operation_mode == CSV)
+				//if(operation_mode == CSV)
 					slv_handles[0].operation_mode = 100;
 				/*************check operation_mode display**************/
 				set_controlword(SHUTDOWN, slave_number, slv_handles);
@@ -366,6 +407,7 @@ int quick_stop_velocity(int slave_number, master_setup_variables_t *master_setup
 
 	#ifndef print_slave
 	printf("quick_stop_active\n");
+	fflush(stdout);
 	#endif
 
 	ack_stop = 0;
@@ -385,6 +427,7 @@ int quick_stop_velocity(int slave_number, master_setup_variables_t *master_setup
 
 	#ifndef print_slave
 	printf("ack stop received \n");
+	fflush(stdout);
 	#endif
 }
 
@@ -409,6 +452,7 @@ int renable_velocity_ctrl(int slave_number, master_setup_variables_t *master_set
 	}
 	#ifndef print_slave
 	printf("operation_mode reset enabled\n");
+	fflush(stdout);
 	#endif
 
 	while(1)
@@ -428,6 +472,7 @@ int renable_velocity_ctrl(int slave_number, master_setup_variables_t *master_set
 	}
 	#ifndef print_slave
 	printf("operation_mode CSV enabled\n");
+	fflush(stdout);
 	#endif
 }
 void run_drive()

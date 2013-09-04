@@ -209,7 +209,7 @@ int main()
 
 
 		actual_position = get_position_actual_deg(slave_number);
-		target_position = 200; velocity = 350; acc = 350; dec = 350;
+		target_position = actual_position+200; velocity = 350; acc = 350; dec = 350;
 
 		steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
 		i = 0;
@@ -236,7 +236,7 @@ printf("\nsteps %d\n", steps);
 
 	//shutdown
 	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
+	//.....
 //	ack_stop = 0;
 //	while(!ack_stop)
 //	{
