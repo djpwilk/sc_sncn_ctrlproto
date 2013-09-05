@@ -372,7 +372,7 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
 			if(master_setup->op_flag)
 			{
 				//if(operation_mode == CSV)
-					slv_handles[0].operation_mode = 100;
+				slv_handles[slave_number].operation_mode = 100;
 				/*************check operation_mode display**************/
 				set_controlword(SHUTDOWN, slave_number, slv_handles);
 				status_word = read_statusword(slave_number, slv_handles);

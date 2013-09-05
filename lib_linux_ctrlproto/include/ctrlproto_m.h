@@ -145,7 +145,7 @@ typedef struct
 	 * The SDO entries
 	 */
 
-	ec_sdo_request_t *__request[16];
+	ec_sdo_request_t *__request[21];
 
 	/**
 	 * The PDO entries

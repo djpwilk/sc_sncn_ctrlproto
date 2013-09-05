@@ -430,7 +430,7 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
         exit(-1);
     }
 
-    logmsg(1, "Starting timer...\n");
+    //logmsg(1, "Starting timer...\n");
     tv.it_interval.tv_sec = 0;
     tv.it_interval.tv_usec = 1000000 / FREQUENCY;
     tv.it_value.tv_sec = 0;
@@ -476,6 +476,12 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 
 	request[14] = _config_sdo_request(slave_config, request[14], CIA402_SOFTWARE_POSITION_LIMIT, 1, 4); //min
 	request[15] = _config_sdo_request(slave_config, request[15], CIA402_SOFTWARE_POSITION_LIMIT, 2, 4); // max
+
+	request[16] = _config_sdo_request(slave_config, request[16], CIA402_MAX_PROFILE_VELOCITY, 0, 4);
+	request[17] = _config_sdo_request(slave_config, request[17], CIA402_PROFILE_VELOCITY, 0, 4);
+	request[18] = _config_sdo_request(slave_config, request[18], CIA402_PROFILE_ACCELERATION, 0, 4);
+	request[19] = _config_sdo_request(slave_config, request[19], CIA402_PROFILE_DECELERATION, 0, 4);
+	request[20] = _config_sdo_request(slave_config, request[20], CIA402_QUICK_STOP_DECELERATION, 0, 4);
 }
 
 int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
