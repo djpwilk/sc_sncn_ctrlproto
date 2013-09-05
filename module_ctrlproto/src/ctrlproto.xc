@@ -81,17 +81,18 @@ void config_sdo_handler(chanend coe_out)
 	return {Kp, Ki, Kd};
 }
 
-{int, int, int, int, int} csp_sdo_update(chanend coe_out)
+{int, int, int, int, int, int} csp_sdo_update(chanend coe_out)
 {
-	int  max_motor_speed, polarity, nominal_current, min, max;
+	int  max_motor_speed, polarity, nominal_current, min, max, max_acc;
 
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
 	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
 	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
+	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acc);
 
-	return {max_motor_speed, polarity, nominal_current, min, max};
+	return {max_motor_speed, polarity, nominal_current, min, max, max_acc};
 }
 
 int sensor_select_sdo(chanend coe_out)
