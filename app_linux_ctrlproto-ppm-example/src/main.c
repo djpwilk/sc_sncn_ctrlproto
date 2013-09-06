@@ -45,7 +45,20 @@ int main()
 
 	set_operation_mode(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-//	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	while(1)
+	{
+
+		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+		if(master_setup.op_flag)//Check if we are up
+		{
+			set_position_deg(150, slave_number, slv_handles);
+		}
+	}
+
+
 //
 //
 //	init_position_profile_limits(GEAR_RATIO_1, MAX_ACCELERATION_1, MAX_NOMINAL_SPEED_1);

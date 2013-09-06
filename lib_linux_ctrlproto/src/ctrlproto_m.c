@@ -530,32 +530,30 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 					motor_config_param.s_sensor_selection_code.update_state,  \
 					motor_config_param.s_sensor_selection_code.sensor_selection_code, 5);
 
+		if(motor_config_param.s_sensor_selection_code.update_state && !motor_config_param.s_polarity.update_state)
+					motor_config_param.s_polarity.update_state = _motor_config_update(request[4], \
+					motor_config_param.s_polarity.update_state,  motor_config_param.s_polarity.polarity, 6);
+
 		motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state \
 				& motor_config_param.s_max_acceleration.update_state \
 				& motor_config_param.s_pole_pair.update_state \
 				& motor_config_param.s_position_encoder_resolution.update_state\
-				& motor_config_param.s_sensor_selection_code.update_state;
+				& motor_config_param.s_sensor_selection_code.update_state\
+				& motor_config_param.s_polarity.update_state;
 	}
 
 	else if(update_sequence == CSV_MOTOR_UPDATE)
 	{
-		if(!motor_config_param.s_polarity.update_state)
-			motor_config_param.s_polarity.update_state = _motor_config_update(request[4], \
-					motor_config_param.s_polarity.update_state,  motor_config_param.s_polarity.polarity, 1);
-
-
-		if(motor_config_param.s_polarity.update_state  && !motor_config_param.s_nominal_motor_speed.update_state)
+		if(!motor_config_param.s_nominal_motor_speed.update_state)
 			motor_config_param.s_nominal_motor_speed.update_state = _motor_config_update(request[3],\
-					motor_config_param.s_nominal_motor_speed.update_state,  motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 2);
+					motor_config_param.s_nominal_motor_speed.update_state,  motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 1);
 
 		if(motor_config_param.s_nominal_motor_speed.update_state && !motor_config_param.s_nominal_current.update_state)
 			motor_config_param.s_nominal_current.update_state = _motor_config_update(request[2], \
-					motor_config_param.s_nominal_current.update_state, motor_config_param.s_nominal_current.nominal_current, 3);
-
+					motor_config_param.s_nominal_current.update_state, motor_config_param.s_nominal_current.nominal_current, 2);
 
 		motor_config_param.update_flag = motor_config_param.s_nominal_current.update_state \
-				& motor_config_param.s_nominal_motor_speed.update_state\
-				& motor_config_param.s_polarity.update_state;
+				& motor_config_param.s_nominal_motor_speed.update_state;
 	}
 
 	else if(update_sequence == VELOCITY_CTRL_UPDATE)

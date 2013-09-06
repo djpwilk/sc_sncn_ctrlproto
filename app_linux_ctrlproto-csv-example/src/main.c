@@ -17,10 +17,10 @@ int main()
 	int control_word;
 	int flag = 0;
 
-	int final_target_velocity = -1000;
-	int initial_velocity = 0;
-	int acceleration= 1000;
-	int deceleration = 1000;
+	int final_target_velocity = -1000;			//rpm
+	int initial_velocity = 0;					//rpm
+	int acceleration= 1000;						//rpm/s
+	int deceleration = 1000;					//rpm/s
 	int steps = 0;
 	int i = 1;
 	int target_velocity = 0;
@@ -51,9 +51,8 @@ int main()
 			}
 			if(i>=steps && flag == 0)
 			{
-				//printf("done");
 				initial_velocity = get_velocity_actual(slave_number, slv_handles);
-				final_target_velocity =2000;
+				final_target_velocity = 2000; //rpm
 				steps = init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration);
 				i = 1;
 				flag = 1;
@@ -61,7 +60,7 @@ int main()
 			if(i>=steps && flag == 1)
 			{
 				initial_velocity = get_velocity_actual(slave_number, slv_handles);
-				final_target_velocity = -1000;
+				final_target_velocity = -1000;	//rpm
 				steps = init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration);
 				i = 1;
 				flag = 2;
@@ -81,8 +80,8 @@ int main()
 
 	i = 0;
 	flag = 0;
-	final_target_velocity = 1000;
-	initial_velocity = get_velocity_actual(slave_number, slv_handles);
+	final_target_velocity = 1000; //rpm
+	initial_velocity = get_velocity_actual(slave_number, slv_handles); //rpm
 	steps = init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration);
 
 	while(1)
@@ -99,9 +98,8 @@ int main()
 			}
 			if(i>=steps && flag == 0)
 			{
-				//printf("done");
 				initial_velocity = get_velocity_actual(slave_number, slv_handles);
-				final_target_velocity =0;
+				final_target_velocity = 0; //rpm
 				steps = init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration);
 				i = 1;
 				flag = 1;

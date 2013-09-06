@@ -341,51 +341,41 @@ master_setup_variables_t master_setup={\
 
 /**
  * Initialises the Master and Slave communication
+ *
+ * @param master_setup 			A struct containing the variables for the master
+ * @param slv_handles 			The handle struct for the slaves
+ * @param total_no_of_slaves 	Number of connected slaves to the master
  */
 void init_master(master_setup_variables_t *master_setup,
 				 ctrlproto_slv_handle *slv_handles,
-				 unsigned int slave_num);
+				 unsigned int total_no_of_slaves);
 
 /**
  * This function handles the ethercat master communication,
  * it wraps around the master loop around the functions standing
  * below.
- * @param master_setup A struct containing the variables for the master
- * @param slv_handles The handle array for the slaves
- * @param slave_num The size of the handle array
+ *
+ * @param master_setup 			A struct containing the variables for the master
+ * @param slv_handles 			The handle struct for the slaves
+ * @param total_no_of_slaves 	Number of connected slaves to the master
  */
 void pdo_handle_ecat(master_setup_variables_t *master_setup,
         		ctrlproto_slv_handle *slv_handles,
-        		unsigned int slave_num);
+        		unsigned int total_no_of_slaves);
 
 /**
  * This function updates the motor parameters via ethercat
  *
- * @param master_setup A struct containing the variables for the master
- * @param slv_handles The handle array for the slaves
- * @param slave_num The size of the handle array
+ * @param master_setup 			A struct containing the variables for the master
+ * @param slv_handles 			The handle array for the slaves
+ * @param total_no_of_slaves 	Number of connected slaves to the master
  */
 void sdo_handle_ecat(master_setup_variables_t *master_setup,
-        ctrlproto_slv_handle *slv_handles,
-        unsigned int total_no_of_slaves,
-        int update_sequence,
-        int slave_number);
+        		ctrlproto_slv_handle *slv_handles,
+        		unsigned int total_no_of_slaves,
+        		int update_sequence,
+        		int slave_number);
 
-/**
- * Multiplies a float value with 1000 and outputs it as 16 Bit integer.
- * It is used to transfer a float value to a slave, mainly used for torque.
- * @param value The float value
- * @return Float multiplied with 1000
- */
-int32_t fromFloat(float value);
-
-/**
- * Devides a 16 Bit integer by 1000 and returns a float value.
- * It is used receive a float value from a slave.
- * @param value Integer value from slave (torque)
- * @return Integer value
- */
-float toFloat(int32_t value);
 
 #ifdef __cplusplus
 }
