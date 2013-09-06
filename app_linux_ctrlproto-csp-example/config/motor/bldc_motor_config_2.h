@@ -13,6 +13,13 @@
 #define POLARITY_2 					-1					// 1 / -1
 
 
+
+#define MAX_PROFILE_VELOCITY_2  	MAX_NOMINAL_SPEED_2
+#define PROFILE_VELOCITY_2			1000
+#define PROFILE_ACCELERATION_2		2000
+#define PROFILE_DECELERATION_2   	2000
+#define QUICK_STOP_DECELERATION_2 	2000
+
 /*Position Sensor Types*/
 #define SENSOR_SELECTION_CODE_2       HALL
 

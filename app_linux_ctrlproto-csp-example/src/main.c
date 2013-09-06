@@ -108,7 +108,7 @@ int main()
 			{
 				//printf("done");
 				actual_position = get_position_actual_deg(slave_number);
-				target_position = -100; velocity = 350; acc = 350; dec = 350;
+				target_position = 50; velocity = 350; acc = 350; dec = 350;
 				steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
 				i = 1;
 				flag = 1;
@@ -125,6 +125,7 @@ int main()
 //			{
 //				break;
 //			}
+			printf("pos %d\n", slv_handles[slave_number].position_in/10000);
 		}
 	}// while
 
@@ -209,8 +210,8 @@ int main()
 
 
 		actual_position = get_position_actual_deg(slave_number);
-		target_position = actual_position+200; velocity = 350; acc = 350; dec = 350;
-
+		target_position = (actual_position+200)%360; velocity = 350; acc = 350; dec = 350;
+		printf("\nsteps %d\n", target_position);
 		steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
 		i = 0;
 printf("\nsteps %d\n", steps);
@@ -231,6 +232,7 @@ printf("\nsteps %d\n", steps);
 				else if(i>=steps)
 					break;
 			}
+			printf("pos %d\n", slv_handles[slave_number].position_in);
 		}// while
 
 

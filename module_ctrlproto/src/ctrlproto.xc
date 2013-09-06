@@ -63,11 +63,43 @@ void config_sdo_handler(chanend coe_out)
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, sdo_value);
 	printintln(sdo_value);
+
+	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_PROFILE_VELOCITY, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, sdo_value);
+	printintln(sdo_value);
 //	coe_out <: CAN_GET_OBJECT;
 //	coe_out <: CAN_OBJ_ADR(CIA402_MAX_ACCELERATION, 0);
 //	printintln(sdo_value);
 //	coe_out :> sdo_value;
 
+}
+
+{int, int, int, int, int} pp_sdo_update(chanend coe_out)
+{
+	int max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, profile_velocity;
+	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, max_profile_velocity);
+	GET_SDO_DATA(CIA402_PROFILE_VELOCITY, 0, profile_velocity);
+	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, profile_acceleration);
+	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, profile_deceleration);
+	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, quick_stop_deceleration);
+	return {max_profile_velocity, profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration};
+}
+
+{int, int, int, int} pv_sdo_update(chanend coe_out)
+{
+	int max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration;
+	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, max_profile_velocity);
+	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, profile_acceleration);
+	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, profile_deceleration);
+	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, quick_stop_deceleration);
+	return {max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration};
 }
 
 {int, int, int} position_sdo_update(chanend coe_out)
