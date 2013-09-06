@@ -74,31 +74,31 @@ void config_sdo_handler(chanend coe_out)
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, sdo_value);
 	printintln(sdo_value);
-//	coe_out <: CAN_GET_OBJECT;
-//	coe_out <: CAN_OBJ_ADR(CIA402_MAX_ACCELERATION, 0);
-//	printintln(sdo_value);
-//	coe_out :> sdo_value;
 
 }
 
 {int, int, int, int, int} pp_sdo_update(chanend coe_out)
 {
 	int max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, profile_velocity;
+
 	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, max_profile_velocity);
 	GET_SDO_DATA(CIA402_PROFILE_VELOCITY, 0, profile_velocity);
 	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, profile_acceleration);
 	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, profile_deceleration);
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, quick_stop_deceleration);
+
 	return {max_profile_velocity, profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration};
 }
 
 {int, int, int, int} pv_sdo_update(chanend coe_out)
 {
 	int max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration;
+
 	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, max_profile_velocity);
 	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, profile_acceleration);
 	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, profile_deceleration);
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, quick_stop_deceleration);
+
 	return {max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration};
 }
 
@@ -140,11 +140,9 @@ int sensor_select_sdo(chanend coe_out)
 	int Kp, Ki, Kd;
 
 	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 1, Kp);
-	//printintln(Kp);
 	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 2, Ki);
-	//printintln(Ki);
 	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 3, Kd);
-	//printintln(Kd);
+
 	return {Kp, Ki, Kd};
 }
 
@@ -153,10 +151,8 @@ int sensor_select_sdo(chanend coe_out)
 	int gear_ratio, pole_pairs;
 
 	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, gear_ratio);
-	//printintln(gear_ratio);
-
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, pole_pairs);
-	//printintln(pole_pairs);
+
 	return {pole_pairs, gear_ratio};
 }
 
@@ -165,9 +161,7 @@ int sensor_select_sdo(chanend coe_out)
 	int max_motor_speed, nominal_current, polarity, motor_torque_constant;
 
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
-
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
-
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
 
 	return {max_motor_speed, nominal_current, polarity};
@@ -178,11 +172,9 @@ int sensor_select_sdo(chanend coe_out)
 	int real_counts, gear_ratio, qei_type;
 
 	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, gear_ratio);
-	//printintln(gear_ratio);
 	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, real_counts);
-	//printintln(real_counts);
 	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, qei_type);
-	//printintln(qei_type);
+
 	if(qei_type == QEI_INDEX)
 		return {real_counts, gear_ratio, QEI_WITH_INDEX};
 	else if(qei_type == QEI_NO_INDEX)

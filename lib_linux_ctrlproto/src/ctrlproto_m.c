@@ -390,7 +390,7 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 			exit(-1);
 		}
 
-		logmsg(1, "Configuring PDOs...\n");
+		//logmsg(1, "Configuring PDOs...\n");
 		if (ecrt_slave_config_pdos(slv_handles[slv].slave_config, EC_END, slv_handles[slv].__sync_info)) { //slave_0_syncs
 		  fprintf(stderr, "Failed to configure PDOs.\n");
 		  exit(-1);
@@ -506,9 +506,6 @@ int _motor_config_update(ec_sdo_request_t *request, int update, int value, int s
 
 motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_request_t *request[], int update_sequence)
 {
-	int sdo_update_value;
-	//printf(".");
-
 	if(update_sequence == MOTOR_PARAM_UPDATE)
 	{
 		if(!motor_config_param.s_gear_ratio.update_state)
@@ -540,7 +537,6 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				& motor_config_param.s_sensor_selection_code.update_state;
 	}
 
-	//csv
 	else if(update_sequence == CSV_MOTOR_UPDATE)
 	{
 		if(!motor_config_param.s_polarity.update_state)
@@ -561,7 +557,6 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				& motor_config_param.s_nominal_motor_speed.update_state\
 				& motor_config_param.s_polarity.update_state;
 	}
-	//vel ctrl
 
 	else if(update_sequence == VELOCITY_CTRL_UPDATE)
 	{
@@ -680,8 +675,6 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 						& motor_config_param.s_profile_deceleration.update_state\
 						& motor_config_param.s_quick_stop_deceleration.update_state ;
 	}
-
-
 
 	return motor_config_param;
 }
