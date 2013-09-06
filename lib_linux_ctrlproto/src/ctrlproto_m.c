@@ -214,7 +214,7 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
-        unsigned int total_no_of_slaves, int update_sequence)
+        unsigned int total_no_of_slaves, int update_sequence, int slave_number)
 {
 	int slv;
 
@@ -229,9 +229,11 @@ void sdo_handle_ecat(master_setup_variables_t *master_setup,
 		ecrt_domain_process(master_setup->domain);
 
 
-		for (slv = 0; slv < total_no_of_slaves; ++slv)
+		//for (slv = 0; slv < total_no_of_slaves; ++slv)
 		{
-			slv_handles[slv].motor_config_param = sdo_motor_config_update(slv_handles[slv].motor_config_param, slv_handles[slv].__request, update_sequence);
+			slv_handles[slave_number].motor_config_param = \
+					sdo_motor_config_update(slv_handles[slave_number].motor_config_param, \
+							slv_handles[slave_number].__request, update_sequence);
 		}
 
 		// send process data
@@ -615,6 +617,68 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				& motor_config_param.s_position_d_gain.update_state\
 				& motor_config_param.s_software_position_min.update_state\
 				& motor_config_param.s_software_position_max.update_state;
+	}
+
+	else if(update_sequence == PV_MOTOR_UPDATE)
+	{
+		if(!motor_config_param.s_max_profile_velocity.update_state)
+				motor_config_param.s_max_profile_velocity.update_state = _motor_config_update(request[16], \
+						motor_config_param.s_max_profile_velocity.update_state,  \
+						motor_config_param.s_max_profile_velocity.max_profile_velocity, 1);
+
+		if(motor_config_param.s_max_profile_velocity.update_state && !motor_config_param.s_quick_stop_deceleration.update_state)
+				motor_config_param.s_quick_stop_deceleration.update_state = _motor_config_update(request[20], \
+						motor_config_param.s_quick_stop_deceleration.update_state,  \
+						motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration, 2);
+
+		if(motor_config_param.s_quick_stop_deceleration.update_state && !motor_config_param.s_profile_acceleration.update_state)
+				motor_config_param.s_profile_acceleration.update_state = _motor_config_update(request[18], \
+						motor_config_param.s_profile_acceleration.update_state,  \
+						motor_config_param.s_profile_acceleration.profile_acceleration, 3);
+
+		if(motor_config_param.s_profile_acceleration.update_state && !motor_config_param.s_profile_deceleration.update_state)
+				motor_config_param.s_profile_deceleration.update_state = _motor_config_update(request[19], \
+						motor_config_param.s_profile_deceleration.update_state,  \
+						motor_config_param.s_profile_deceleration.profile_deceleration, 4);
+
+		motor_config_param.update_flag = motor_config_param.s_max_profile_velocity.update_state\
+						& motor_config_param.s_quick_stop_deceleration.update_state\
+						& motor_config_param.s_profile_acceleration.update_state\
+						& motor_config_param.s_profile_deceleration.update_state;
+	}
+
+	else if(update_sequence == PP_MOTOR_UPDATE)
+	{
+		if(!motor_config_param.s_max_profile_velocity.update_state)
+				motor_config_param.s_max_profile_velocity.update_state = _motor_config_update(request[16], \
+						motor_config_param.s_max_profile_velocity.update_state,  \
+						motor_config_param.s_max_profile_velocity.max_profile_velocity, 1);
+
+		if(motor_config_param.s_max_profile_velocity.update_state && !motor_config_param.s_profile_velocity.update_state)
+				motor_config_param.s_profile_velocity.update_state = _motor_config_update(request[17], \
+						motor_config_param.s_profile_velocity.update_state,  \
+						motor_config_param.s_profile_velocity.profile_velocity, 2);
+
+		if(motor_config_param.s_profile_velocity.update_state && !motor_config_param.s_profile_acceleration.update_state)
+				motor_config_param.s_profile_acceleration.update_state = _motor_config_update(request[18], \
+						motor_config_param.s_profile_acceleration.update_state,  \
+						motor_config_param.s_profile_acceleration.profile_acceleration, 3);
+
+		if(motor_config_param.s_profile_acceleration.update_state && !motor_config_param.s_profile_deceleration.update_state)
+				motor_config_param.s_profile_deceleration.update_state = _motor_config_update(request[19], \
+						motor_config_param.s_profile_deceleration.update_state,  \
+						motor_config_param.s_profile_deceleration.profile_deceleration, 4);
+
+		if(motor_config_param.s_profile_deceleration.update_state && !motor_config_param.s_quick_stop_deceleration.update_state)
+				motor_config_param.s_quick_stop_deceleration.update_state = _motor_config_update(request[20], \
+						motor_config_param.s_quick_stop_deceleration.update_state,  \
+						motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration, 5);
+
+		motor_config_param.update_flag = motor_config_param.s_max_profile_velocity.update_state\
+						& motor_config_param.s_profile_velocity.update_state\
+						& motor_config_param.s_profile_acceleration.update_state\
+						& motor_config_param.s_profile_deceleration.update_state\
+						& motor_config_param.s_quick_stop_deceleration.update_state ;
 	}
 
 

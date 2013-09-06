@@ -23,6 +23,9 @@ extern "C"
 #define VELOCITY_CTRL_UPDATE 	2
 #define CSV_MOTOR_UPDATE   		3
 #define POSITION_CTRL_UPDATE    4
+#define PV_MOTOR_UPDATE		5
+#define PP_MOTOR_UPDATE  		6
+
 
 
 #define SOMANET_ID     0x000022d2, 0x00000201
@@ -119,6 +122,13 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		\
 		{MIN_POSITION_LIMIT(CONFIG_NUMBER),0},\
 		{MAX_POSITION_LIMIT(CONFIG_NUMBER),0},\
+		\
+		{MAX_PROFILE_VELOCITY(CONFIG_NUMBER), 0},\
+		{PROFILE_ACCELERATION(CONFIG_NUMBER), 0},\
+		{PROFILE_DECELERATION(CONFIG_NUMBER), 0},\
+		{QUICK_STOP_DECELERATION(CONFIG_NUMBER), 0},\
+		{PROFILE_VELOCITY(CONFIG_NUMBER), 0},\
+		\
 		0},\
 }
 
@@ -357,8 +367,9 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
  */
 void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
-        unsigned int slave_num,
-        int update_sequence);
+        unsigned int total_no_of_slaves,
+        int update_sequence,
+        int slave_number);
 
 /**
  * Multiplies a float value with 1000 and outputs it as 16 Bit integer.

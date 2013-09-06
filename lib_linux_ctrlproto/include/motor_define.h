@@ -104,6 +104,37 @@ typedef struct
 	int update_state;
 } software_position_max_s;
 
+
+typedef struct
+{
+	int max_profile_velocity;
+	int update_state;
+} max_profile_velocity_s;
+
+typedef struct
+{
+	int profile_acceleration;
+	int update_state;
+} profile_acceleration_s;
+
+typedef struct
+{
+	int profile_deceleration;
+	int update_state;
+} profile_deceleration_s;
+
+typedef struct
+{
+	int quick_stop_deceleration;
+	int update_state;
+} quick_stop_deceleration_s;
+
+typedef struct
+{
+	int profile_velocity;
+	int update_state;
+} profile_velocity_s;
+
 typedef struct
 {
 	pole_pair_s s_pole_pair;
@@ -126,6 +157,12 @@ typedef struct
 
 	software_position_min_s s_software_position_min;
 	software_position_max_s s_software_position_max;
+
+	max_profile_velocity_s s_max_profile_velocity;
+	profile_acceleration_s s_profile_acceleration;
+	profile_deceleration_s s_profile_deceleration;
+	quick_stop_deceleration_s s_quick_stop_deceleration;
+	profile_velocity_s s_profile_velocity;
 
 	int update_flag;
 } motor_config;
@@ -154,6 +191,12 @@ typedef struct
 
 #define MIN_POSITION_LIMIT(n)		MIN_POSITION_LIMIT_##n
 #define MAX_POSITION_LIMIT(n)		MAX_POSITION_LIMIT_##n
+
+#define MAX_PROFILE_VELOCITY(n)  	MAX_PROFILE_VELOCITY_##n
+#define PROFILE_VELOCITY(n)			PROFILE_VELOCITY_##n
+#define PROFILE_ACCELERATION(n)		PROFILE_ACCELERATION_##n
+#define PROFILE_DECELERATION(n)  	PROFILE_DECELERATION_##n
+#define QUICK_STOP_DECELERATION(n) 	QUICK_STOP_DECELERATION_##n
 
 #ifdef __cplusplus
 }
