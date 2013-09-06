@@ -14,6 +14,15 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
 
 int quick_stop_velocity(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
+void set_velocity(int target_velocity, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+int get_velocity_actual(int slave_number, ctrlproto_slv_handle *slv_handles);
+
+int get_position_actual_deg(int slave_number, ctrlproto_slv_handle *slv_handles);
+
+void set_position_deg(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+
 /*Internal functions*/
 int check_ready(int status_word);
 

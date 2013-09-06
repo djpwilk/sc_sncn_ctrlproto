@@ -11,22 +11,6 @@
 
 //#define print_slave
 
-void set_velocity(int target_velocity, int slave_number)
-{
-	slv_handles[slave_number].speed_setpoint = target_velocity;
-}
-int get_velocity_actual(int slave_number)
-{
-	return slv_handles[slave_number].speed_in;
-}
-int get_position_actual_deg(int slave_number)
-{
-	return slv_handles[slave_number].position_in/10000;
-}
-void set_position_deg(int target_position, int slave_number)
-{
-	slv_handles[slave_number].position_setpoint = target_position;
-}
 int main()
 {
 //	int ready = 0;

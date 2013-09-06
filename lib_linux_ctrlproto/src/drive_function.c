@@ -32,7 +32,25 @@ int check_target_reached(int status_word)
 	return (status_word & TARGET_REACHED)>>10;
 }
 
+void set_velocity(int target_velocity, int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	slv_handles[slave_number].speed_setpoint = target_velocity;
+}
 
+int get_velocity_actual(int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	return slv_handles[slave_number].speed_in;
+}
+
+int get_position_actual_deg(int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	return slv_handles[slave_number].position_in/10000;
+}
+
+void set_position_deg(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	slv_handles[slave_number].position_setpoint = target_position;
+}
 
 void set_controlword(int controlword, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
@@ -494,7 +512,7 @@ int quick_stop_velocity(int slave_number, master_setup_variables_t *master_setup
 	}
 
 	#ifndef print_slave
-	printf("ack stop received \n");
+	printf("quick stop executed \n");
 	fflush(stdout);
 	#endif
 }

@@ -9,44 +9,8 @@
 #include <sys/time.h>
 #include <time.h>
 
-//#define print_slave
-void run_drive();
-
-
-
-//void set_controlword(int controlword)
-//{
-//	slv_handles[0].motorctrl_out = controlword;
-//}
-//
-//int read_statusword()
-//{
-//	return slv_handles[0].motorctrl_status_in;
-//}
-
-void set_velocity(int target_velocity, int slave_number)
-{
-	slv_handles[slave_number].speed_setpoint = target_velocity;
-}
-int get_velocity_actual(int slave_number)
-{
-	return slv_handles[slave_number].speed_in;
-}
-int get_position_actual_deg(int slave_number)
-{
-	return slv_handles[slave_number].position_in/10000;
-}
-void set_position_deg(int target_position, int slave_number)
-{
-	slv_handles[slave_number].position_setpoint = target_position;
-}
 int main()
 {
-//	int ready = 0;
-//	int switch_enable = 0;
-//	int status_word = 0;
-//	int switch_on_state = 0;
-//	int op_enable_state = 0;
 	int quick_stop_active = 0;
 	int ack_stop = 0;
 	int control_word;
@@ -89,7 +53,7 @@ int main()
 			if(i<steps && flag == 0)
 			{
 				position_ramp = position_profile_generate(i);
-				set_position_deg(position_ramp, slave_number);
+				set_position_deg(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
 
@@ -97,7 +61,7 @@ int main()
 			{
 				position_ramp = position_profile_generate(i);
 
-				set_position_deg(position_ramp, slave_number);
+				set_position_deg(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
 			else if(flag == 1 && i >=steps-steps/2)//i >= steps )//&& flag == 2)
@@ -107,7 +71,7 @@ int main()
 			if(i>=steps && flag == 0)
 			{
 				//printf("done");
-				actual_position = get_position_actual_deg(slave_number);
+				actual_position = get_position_actual_deg(slave_number, slv_handles);
 				target_position = 50; velocity = 350; acc = 350; dec = 350;
 				steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
 				i = 1;
@@ -209,7 +173,7 @@ int main()
 		enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
-		actual_position = get_position_actual_deg(slave_number);
+		actual_position = get_position_actual_deg(slave_number, slv_handles);
 		target_position = (actual_position+200)%360; velocity = 350; acc = 350; dec = 350;
 		printf("\nsteps %d\n", target_position);
 		steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
@@ -226,7 +190,7 @@ printf("\nsteps %d\n", steps);
 				if(i<steps)
 				{
 					position_ramp = position_profile_generate(i);
-					set_position_deg(position_ramp, slave_number);
+					set_position_deg(position_ramp, slave_number, slv_handles);
 					i = i+1;
 				}
 				else if(i>=steps)
