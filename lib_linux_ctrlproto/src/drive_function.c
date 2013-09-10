@@ -70,11 +70,11 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	int switch_on_state = 0;
 	int op_enable_state = 0;
 
-
+/*
 	set_controlword(0, slave_number, slv_handles);
 	printf("updating motor parameters\n");
 	fflush(stdout);
-	/***** Set up Parameters *****/
+	/***** Set up Parameters *****
 	while(1)
 	{
 		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -94,7 +94,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf ("\n");
 	fflush(stdout);
 	set_controlword(SHUTDOWN, slave_number, slv_handles);
-
+*/
 	/**********************check ready***********************/
 	while(!ready)
 	{
@@ -175,7 +175,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 		}
 	}*/
 
-	if (operation_mode == CSV)
+/*	if (operation_mode == CSV)
 	{
 		while(1)
 		{
@@ -308,7 +308,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf ("\n");
 	fflush(stdout);
 
-
+*/
 
 
 	/**********************output Mode of Operation******************/
@@ -398,7 +398,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 		else
 			continue;
 	}
-
+	set_position_deg(get_position_actual_deg(slave_number, slv_handles)*10000, slave_number, slv_handles);
 	#ifndef print_slave
 	printf("ack stop received \n");
 	fflush(stdout);
@@ -458,7 +458,7 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
 			if(master_setup->op_flag)
 			{
 				//if(operation_mode == CSV)
-				slv_handles[slave_number].operation_mode = 100;
+				//slv_handles[slave_number].operation_mode = 100;
 				/*************check operation_mode display**************/
 				set_controlword(SHUTDOWN, slave_number, slv_handles);
 				status_word = read_statusword(slave_number, slv_handles);

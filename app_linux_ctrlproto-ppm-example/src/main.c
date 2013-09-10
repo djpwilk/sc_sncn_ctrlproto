@@ -33,7 +33,7 @@ int main()
 
 
 	int slave_number = 0;
-
+	int ack = 0;
 
 	int op_enable_state = 0;
 	int status_word = 0;
@@ -47,16 +47,98 @@ int main()
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+
+
+
+
+
+
 	while(1)
 	{
-
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
 		if(master_setup.op_flag)//Check if we are up
 		{
 			set_position_deg(150, slave_number, slv_handles);
+			status_word = read_statusword(slave_number, slv_handles);
+			ack = check_target_reached(status_word);
+			printf("ack %d",ack);
+		}
+		if(ack == 0)
+		{
+			//executing;
+			printf("\nexecuting");
+			break;
 		}
 	}
+	while(!ack)
+	{
+		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+		if(master_setup.op_flag)//Check if we are up
+		{
+			status_word = read_statusword(slave_number, slv_handles);
+			ack = check_target_reached(status_word);
+			printf("pos %d\n", slv_handles[slave_number].position_in);
+		}
+	}
+	printf("reached ");
+
+
+	while(1)
+	{
+		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+		if(master_setup.op_flag)//Check if we are up
+		{
+			set_position_deg(30, slave_number, slv_handles);
+			status_word = read_statusword(slave_number, slv_handles);
+			ack = check_target_reached(status_word);
+			printf("ack %d",ack);
+		}
+		if(ack == 0)
+		{
+			//executing;
+			printf("\nexecuting");
+			break;
+		}
+	}
+	while(!ack)
+	{
+		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+		if(master_setup.op_flag)//Check if we are up
+		{
+			status_word = read_statusword(slave_number, slv_handles);
+			ack = check_target_reached(status_word);
+			printf("pos %d\n", slv_handles[slave_number].position_in);
+			//if(slv_handles[slave_number].position_in/10000 < 50)
+			//	quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+		}
+	}
+	printf("reached ");
+	while(1)
+	{
+			pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+			printf("pos %d\n", slv_handles[slave_number].position_in);
+	}
+//	set_position_deg(get_position_actual_deg(slave_number, slv_handles)*10000, slave_number, slv_handles);
+//	renable_ctrl(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+//	shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+//	ack = 0;
+//	while(!ack)
+//	{
+//		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+//		if(master_setup.op_flag)//Check if we are up
+//		{
+//			set_position_deg(30, slave_number, slv_handles);
+//			status_word = read_statusword(slave_number, slv_handles);
+//			ack = check_target_reached(status_word);
+//			printf("ack %d",ack);
+//		}
+//	}
+
+
+
+
+
+
 
 
 //
@@ -250,5 +332,4 @@ int main()
 
 	return 0;
 }
-
 

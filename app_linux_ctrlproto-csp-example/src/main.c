@@ -16,20 +16,17 @@ int main()
 	int control_word;
 	int flag = 0;
 
-	int acc = 350;				//rpm/s
-	int dec = 350;   			//rpm/s
-	int velocity =200;			//rpm
-	int actual_position = 0;	//degree
-	int target_position = 350;	//degree
-	int steps = 0, i = 1;
+	int acceleration = 350;				//rpm/s
+	int deceleration = 350;   			//rpm/s
+	int velocity =1200;					//rpm
+	int actual_position = 0;			//degree
+	int target_position = 350;			//degree
+	int steps = 0;
+	int i = 1;
 	int position_ramp = 0;
-
 
 	int slave_number = 0;
 
-
-	int op_enable_state = 0;
-	int status_word = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -39,7 +36,7 @@ int main()
 
 
 	init_position_profile_limits(GEAR_RATIO_1, MAX_ACCELERATION_1, MAX_NOMINAL_SPEED_1);
-	steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
+	steps = init_position_profile(target_position, actual_position,	velocity, acceleration, deceleration);
 
 
 	while(1)
@@ -49,7 +46,6 @@ int main()
 
 		if(master_setup.op_flag)//Check if we are up
 		{
-
 			if(i<steps && flag == 0)
 			{
 				position_ramp = position_profile_generate(i);
@@ -60,174 +56,66 @@ int main()
 			if(i<steps - steps/2&& flag == 1)
 			{
 				position_ramp = position_profile_generate(i);
-
 				set_position_deg(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
-			else if(flag == 1 && i >=steps-steps/2)//i >= steps )//&& flag == 2)
+			else if(flag == 1 && i >=steps-steps/2)
 			{
-							break;
+				break;
 			}
 			if(i>=steps && flag == 0)
 			{
-				//printf("done");
 				actual_position = get_position_actual_deg(slave_number, slv_handles);
-				target_position = 50; velocity = 350; acc = 350; dec = 350;
-				steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
+				target_position = 50; velocity = 1350; acceleration = 350; deceleration = 350;
+				steps = init_position_profile(target_position, actual_position,	velocity, acceleration, deceleration);
 				i = 1;
 				flag = 1;
 			}
-			/*if(i>=steps && flag == 1)
-			{
-				actual_position = get_position_actual_deg(slave_number);
-				target_position = 30; velocity = 3500; acc = 350; dec = 350;
-				steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
-				i = 1;
-				flag = 2;
-			}*/
-//			else if(flag ==1)//i >= steps )//&& flag == 2)
-//			{
-//				break;
-//			}
-			printf("pos %d\n", slv_handles[slave_number].position_in/10000);
+
+			printf("actual position %d\n", get_position_actual_deg(slave_number, slv_handles));
 		}
-	}// while
+	}
 
 	quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//	quick_stop_active = 0;
-//	while(!quick_stop_active && master_setup.op_flag)
-//	{
-//		pdo_handle_ecat(&master_setup,slv_handles, TOTAL_NUM_OF_SLAVES);
-//		if(master_setup.op_flag)
-//		{
-//			set_controlword(ENABLE_OPERATION_CONTROL|(~QUICK_STOP_CONTROL & 0x000F)|ENABLE_VOLTAGE_CONTROL|SWITCH_ON_CONTROL, slave_number, slv_handles);
-//			/*************check quick_stop_state**************/
-//			status_word = read_statusword(slave_number, slv_handles);
-//			quick_stop_active = check_quick_stop_active(status_word);
-//		}
-//		else
-//			continue;
-//	}
-//#ifndef print_slave
-//	printf("quick_stop_active\n");
-//#endif
-//
-//		ack_stop = 0;
-//		while(!ack_stop)
-//		{
-//			pdo_handle_ecat(&master_setup,slv_handles, TOTAL_NUM_OF_SLAVES);
-//			if(master_setup.op_flag)
-//			{
-//				/*************check quick_stop_state**************/
-//				status_word = read_statusword(slave_number, slv_handles);
-//				ack_stop = check_target_reached(status_word);
-//				//printf("%d\n",quick_stop_active);
-//			}
-//			else
-//				continue;
-//		}
-//
-//		#ifndef print_slave
-//		printf("ack stop received \n");
-//		#endif
-		renable_ctrl(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//		/**********************output Mode of Operation******************/
-//		while(1)
-//		{
-//				pdo_handle_ecat(&master_setup,slv_handles, TOTAL_NUM_OF_SLAVES);
-//				if(master_setup.op_flag)
-//				{
-//					slv_handles[0].operation_mode = 100;
-//					/*************check operation_mode display**************/
-//					set_controlword(QUICK_STOP_CONTROL, slave_number, slv_handles);
-//					//status_word = read_statusword();
-//					//op_enable_state = check_op_enable(status_word);
-//					if (slv_handles[0].operation_mode_disp == 100)
-//						break;
-//				}
-//				else
-//					continue;
-//		}
-//		#ifndef print_slave
-//		printf("operation_mode reset enabled\n");
-//		#endif
-//
-//		/**********************output Mode of Operation******************/
-//		while(1)
-//		{
-//				pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//				if(master_setup.op_flag)
-//				{
-//					slv_handles[slave_number].operation_mode = CSP;
-//					/*************check operation_mode display**************/
-//					if (slv_handles[slave_number].operation_mode_disp == CSP)
-//						break;
-//				}
-//				else
-//					continue;
-//		}
-//		#ifndef print_slave
-//		printf("operation_mode enabled\n");
-//		#endif
 
-		enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	renable_ctrl(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	//shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
-		actual_position = get_position_actual_deg(slave_number, slv_handles);
-		target_position = (actual_position+200)%360; velocity = 350; acc = 350; dec = 350;
-		printf("\nsteps %d\n", target_position);
-		steps = init_position_profile(target_position, actual_position,	velocity, acc, dec);
-		i = 0;
-printf("\nsteps %d\n", steps);
-		while(1)
+	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+
+	actual_position = get_position_actual_deg(slave_number, slv_handles);
+	target_position = (actual_position + 200)%360;  //degree
+	velocity = 1250;								//rpm
+	acceleration = 350;								//rpm/s
+	deceleration = 350;								//rpm/s
+
+	steps = init_position_profile(target_position, actual_position,	velocity, acceleration, deceleration);
+	i = 0;
+
+	while(1)
+	{
+		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+		if(master_setup.op_flag)//Check if we are up
 		{
-			pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
-			if(master_setup.op_flag)//Check if we are up
+			if(i<steps)
 			{
-
-				if(i<steps)
-				{
-					position_ramp = position_profile_generate(i);
-					set_position_deg(position_ramp, slave_number, slv_handles);
-					i = i+1;
-				}
-				else if(i>=steps)
-					break;
+				position_ramp = position_profile_generate(i);
+				set_position_deg(position_ramp, slave_number, slv_handles);
+				i = i+1;
 			}
-			printf("pos %d\n", slv_handles[slave_number].position_in);
-		}// while
+			else if(i>=steps)
+				break;
+		}
+		printf("actual position %d\n", get_position_actual_deg(slave_number, slv_handles));
+	}
 
-
-	//shutdown
+	//shutdown ctrl
 	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-	//.....
-//	ack_stop = 0;
-//	while(!ack_stop)
-//	{
-//			pdo_handle_ecat(&master_setup,slv_handles, TOTAL_NUM_OF_SLAVES);
-//			if(master_setup.op_flag)
-//			{
-//				//slv_handles[0].operation_mode = 100;
-//				/*************check operation_mode display**************/
-//				set_controlword(SHUTDOWN, slave_number, slv_handles);
-//				status_word = read_statusword(slave_number, slv_handles);
-//				ack_stop = check_target_reached(status_word);
-//				//op_enable_state = check_op_enable(status_word);
-//			}
-//			else
-//				continue;
-//	}
-//
-//	#ifndef print_slave
-//	printf("shutdown  \n");
-//	fflush(stdout);
-//	#endif
-//	}
 
 
 	return 0;
 }
-
 
