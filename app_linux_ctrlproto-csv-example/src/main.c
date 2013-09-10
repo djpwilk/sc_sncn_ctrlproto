@@ -65,6 +65,7 @@ int main()
 				i = 1;
 				flag = 2;
 			}
+		//	printf("%d ",i);
 			if(i >= steps && flag == 2)
 			{
 				break;
@@ -74,7 +75,9 @@ int main()
 
 	quick_stop_velocity(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	renable_ctrl(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	renable_ctrl_quick_stop(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	set_operation_mode(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -112,7 +115,7 @@ int main()
 	}
 
 	shutdown_operation(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
+//*/
 	return 0;
 }
 

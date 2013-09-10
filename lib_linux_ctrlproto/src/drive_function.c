@@ -32,6 +32,16 @@ int check_target_reached(int status_word)
 	return (status_word & TARGET_REACHED)>>10;
 }
 
+int check_quick_stop_inactive(int status_word)
+{
+	return (status_word & QUICK_STOP_STATE)>>5;
+}
+
+int check_shutdown_active(int status_word)
+{
+	return (status_word & VOLTAGE_ENABLED_STATE)>>4;
+}
+
 void set_velocity(int target_velocity, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	slv_handles[slave_number].speed_setpoint = target_velocity;
@@ -363,7 +373,7 @@ int enable_operation(int slave_number, master_setup_variables_t *master_setup, c
 
 int quick_stop_position(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
-	int quick_stop_active = 0, ack_stop = 0;
+	int quick_stop_active = 0, quick_stop_inactive = 1;
 	int status_word;
 	while(!quick_stop_active && master_setup->op_flag)
 	{
@@ -377,6 +387,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 		}
 		else
 			continue;
+		//printf("\n stats %x", status_word);
 	}
 #ifndef print_slave
 	printf("quick_stop_active\n");
@@ -385,15 +396,16 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 
 
 
-	while(!ack_stop)
+	while(quick_stop_inactive)
 	{
 		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
 		if(master_setup->op_flag)
 		{
 			/*************check quick_stop_state**************/
 			status_word = read_statusword(slave_number, slv_handles);
-			ack_stop = check_target_reached(status_word);
+			quick_stop_inactive = check_quick_stop_inactive(status_word);
 			//printf("%d\n",quick_stop_active);
+			//printf("\n stats %x", status_word);
 		}
 		else
 			continue;
@@ -405,7 +417,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 	#endif
 }
 
-int renable_ctrl(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
+int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	/**********************output Mode of Operation******************/
 	while(1)
@@ -420,6 +432,7 @@ int renable_ctrl(int operation_mode, int slave_number, master_setup_variables_t 
 				//op_enable_state = check_op_enable(status_word);
 				if (slv_handles[slave_number].operation_mode_disp == 100)
 					break;
+				//printf("operation_m %d\n",slv_handles[slave_number].operation_mode_disp);
 			}
 			else
 				continue;
@@ -430,39 +443,40 @@ int renable_ctrl(int operation_mode, int slave_number, master_setup_variables_t 
 	#endif
 
 	/**********************output Mode of Operation******************/
-	while(1)
-	{
-			pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-			if(master_setup->op_flag)
-			{
-				slv_handles[slave_number].operation_mode = operation_mode;
-				/*************check operation_mode display**************/
-				if (slv_handles[slave_number].operation_mode_disp == operation_mode)
-					break;
-			}
-			else
-				continue;
-	}
-	#ifndef print_slave
-	printf("operation_mode enabled\n");
-	fflush(stdout);
-	#endif
+//	while(1)
+//	{
+//			pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
+//			if(master_setup->op_flag)
+//			{
+//				slv_handles[slave_number].operation_mode = operation_mode;
+//				/*************check operation_mode display**************/
+//				if (slv_handles[slave_number].operation_mode_disp == operation_mode)
+//					break;
+//			}
+//			else
+//				continue;
+//	}
+//	#ifndef print_slave
+//	printf("operation_mode enabled\n");
+//	fflush(stdout);
+	//#endif
 }
 
 int shutdown_operation(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
-	int ack_stop = 0, status_word;
-	while(!ack_stop)
+	int ack_stop = 1, status_word;
+	while(ack_stop)
 	{
 			pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
 			if(master_setup->op_flag)
 			{
 				//if(operation_mode == CSV)
-				//slv_handles[slave_number].operation_mode = 100;
+				slv_handles[slave_number].operation_mode = 100;
 				/*************check operation_mode display**************/
 				set_controlword(SHUTDOWN, slave_number, slv_handles);
 				status_word = read_statusword(slave_number, slv_handles);
-				ack_stop = check_target_reached(status_word);
+				ack_stop = check_shutdown_active(status_word);
+				//printf("status %x\n",status_word);
 				//op_enable_state = check_op_enable(status_word);
 			}
 			else
@@ -489,6 +503,7 @@ int quick_stop_velocity(int slave_number, master_setup_variables_t *master_setup
 		}
 		else
 			continue;
+		printf("\n stats %x", status_word);
 	}
 
 	#ifndef print_slave
@@ -496,16 +511,17 @@ int quick_stop_velocity(int slave_number, master_setup_variables_t *master_setup
 	fflush(stdout);
 	#endif
 
-	ack_stop = 0;
-	while(!ack_stop)
+	ack_stop = 1;
+	while(ack_stop)
 	{
 		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
 		if(master_setup->op_flag)
 		{
 			/*************check quick_stop_state**************/
 			status_word = read_statusword(slave_number, slv_handles);
-			ack_stop = check_target_reached(status_word);
+			ack_stop = check_quick_stop_inactive(status_word);;
 			//printf("%d\n",quick_stop_active);
+			printf("\n stats %x", status_word);
 		}
 		else
 			continue;
