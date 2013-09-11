@@ -6,6 +6,7 @@
  */
 #include "drive_function.h"
 #include <stdio.h>
+#include <math.h>
 
 int check_ready(int status_word) {
 	return (status_word & READY_TO_SWITCH_ON_STATE);
@@ -52,14 +53,29 @@ int get_velocity_actual(int slave_number, ctrlproto_slv_handle *slv_handles)
 	return slv_handles[slave_number].speed_in;
 }
 
-int get_position_actual_deg(int slave_number, ctrlproto_slv_handle *slv_handles)
+float get_position_actual_deg(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-	return slv_handles[slave_number].position_in/10000;
+	return ((float)slv_handles[slave_number].position_in )/10000.0f;
 }
 
 void set_position_deg(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	slv_handles[slave_number].position_setpoint = target_position;
+}
+
+void set_profile_position_deg(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	//int ack = 1;
+	slv_handles[slave_number].position_setpoint = (int) round( (target_position*10000.0f) );
+}
+
+int position_set_flag(int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	int flag = check_target_reached(read_statusword(slave_number, slv_handles));
+	if(flag == 0)
+		return 1;
+	else
+		return 0;
 }
 
 void set_controlword(int controlword, int slave_number, ctrlproto_slv_handle *slv_handles)
@@ -72,6 +88,29 @@ int read_statusword(int slave_number, ctrlproto_slv_handle *slv_handles)
 	return slv_handles[slave_number].motorctrl_status_in;
 }
 
+int init_position_profile_params(float target_position, float actual_position, int velocity, int acceleration, int deceleration)
+{
+	int target = (int) (target_position * 10000.0f);
+	int actual = (int) (actual_position * 10000.0f);
+	init_position_profile(target, actual,	velocity, acceleration, deceleration);
+}
+
+int target_position_reached(int slave_number, float target_position, float tolerance, ctrlproto_slv_handle *slv_handles)
+{
+	float actual_position =  get_position_actual_deg(slave_number, slv_handles);
+//	printf("\n act pos %f", actual_position);
+	if(actual_position > target_position-tolerance/2.0f && actual_position < target_position + tolerance/2.0f)
+	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
+		{
+			return 1;
+		}
+		else
+			return 0;
+	}
+	else
+		return 0;
+}
+
 int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	int ready = 0;
@@ -79,12 +118,12 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	int status_word = 0;
 	int switch_on_state = 0;
 	int op_enable_state = 0;
-
 /*
+
 	set_controlword(0, slave_number, slv_handles);
 	printf("updating motor parameters\n");
 	fflush(stdout);
-	/***** Set up Parameters *****
+	/***** Set up Parameters ****
 	while(1)
 	{
 		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -103,8 +142,8 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	}
 	printf ("\n");
 	fflush(stdout);
-	set_controlword(SHUTDOWN, slave_number, slv_handles);
-*/
+	set_controlword(SHUTDOWN, slave_number, slv_handles);*/
+
 	/**********************check ready***********************/
 	while(!ready)
 	{
@@ -184,8 +223,8 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 		}
 	}*/
-
-/*	if (operation_mode == CSV)
+/*
+	if (operation_mode == CSV)
 	{
 		while(1)
 		{
@@ -403,7 +442,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 		{
 			/*************check quick_stop_state**************/
 			status_word = read_statusword(slave_number, slv_handles);
-			quick_stop_inactive = check_quick_stop_inactive(status_word);
+			quick_stop_inactive = check_quick_stop_active(status_word);
 			//printf("%d\n",quick_stop_active);
 			//printf("\n stats %x", status_word);
 		}
