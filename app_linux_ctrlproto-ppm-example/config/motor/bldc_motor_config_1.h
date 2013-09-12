@@ -10,7 +10,7 @@
 #define MAX_NOMINAL_CURRENT_1  		2		// in A
 #define MAX_ACCELERATION_1   		5000     // rpm/s
 #define ENCODER_RESOLUTION_1 		4000		// Max count of Quadrature Encoder
-#define POLARITY_1 					1					// 1 / -1
+#define POLARITY_1 					-1					// 1 / -1
 
 
 
@@ -23,7 +23,7 @@
 
 
 /*Position Sensor Types*/
-#define SENSOR_SELECTION_CODE_1     HALL
+#define SENSOR_SELECTION_CODE_1     QEI_INDEX//HALL
 
 /*
  * control specific constants/variables

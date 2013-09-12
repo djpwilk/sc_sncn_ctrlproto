@@ -23,7 +23,7 @@ int main()
 	int dec = 350;   			//rpm/s
 	int velocity =200;			//rpm
 	float actual_position = 0;	//degree
-	float target_position = 350.0f;	//degree
+	float target_position = -350.0f;	//degree
 	int steps = 0;
 	int i = 1;
 	int position_ramp = 0;
@@ -94,7 +94,6 @@ int main()
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 		if(master_setup.op_flag)//Check if we are up
 		{
-			status_word = read_statusword(slave_number, slv_handles);
 			actual_position = get_position_actual_deg(slave_number, slv_handles);
 			if(actual_position < 50.0f)
 			{
