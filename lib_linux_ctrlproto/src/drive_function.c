@@ -118,12 +118,12 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	int status_word = 0;
 	int switch_on_state = 0;
 	int op_enable_state = 0;
-/*
+
 
 	set_controlword(0, slave_number, slv_handles);
 	printf("updating motor parameters\n");
 	fflush(stdout);
-	/***** Set up Parameters ****
+	/***** Set up Parameters ****/
 	while(1)
 	{
 		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -142,7 +142,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	}
 	printf ("\n");
 	fflush(stdout);
-	set_controlword(SHUTDOWN, slave_number, slv_handles);*/
+	set_controlword(SHUTDOWN, slave_number, slv_handles);//*/
 
 	/**********************check ready***********************/
 	while(!ready)
@@ -223,7 +223,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 		}
 	}*/
-/*
+
 	if (operation_mode == CSV)
 	{
 		while(1)
@@ -357,7 +357,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf ("\n");
 	fflush(stdout);
 
-*/
+//*/
 
 
 	/**********************output Mode of Operation******************/
@@ -542,7 +542,7 @@ int quick_stop_velocity(int slave_number, master_setup_variables_t *master_setup
 		}
 		else
 			continue;
-		printf("\n stats %x", status_word);
+		//printf("\n stats %x", status_word);
 	}
 
 	#ifndef print_slave
@@ -560,7 +560,7 @@ int quick_stop_velocity(int slave_number, master_setup_variables_t *master_setup
 			status_word = read_statusword(slave_number, slv_handles);
 			ack_stop = check_quick_stop_inactive(status_word);;
 			//printf("%d\n",quick_stop_active);
-			printf("\n stats %x", status_word);
+			//printf("\n stats %x", status_word);
 		}
 		else
 			continue;

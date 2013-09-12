@@ -88,7 +88,8 @@ void config_sdo_handler(chanend coe_out)
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, quick_stop_deceleration);
 	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
 	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
-	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	//GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	coe_out <: CAN_GET_OBJECT; coe_out <: CAN_OBJ_ADR(CIA402_POLARITY, 0);	coe_out :> polarity;
 	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acc);
 
 	return {max_profile_velocity, profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, min, max, polarity, max_acc};

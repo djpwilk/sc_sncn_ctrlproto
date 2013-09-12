@@ -168,7 +168,7 @@ int read_sdo(ec_sdo_request_t *req)
             //fprintf(stderr, "SDO still busy...\n");
             break;
         case EC_REQUEST_SUCCESS:
-        	sdo_read_value = EC_READ_U32(ecrt_sdo_request_data(req));
+        	sdo_read_value = EC_READ_S32(ecrt_sdo_request_data(req));
             //logmsg(1, "SDO value read: 0x%X\n",
             //		sdo_read_value);
             ecrt_sdo_request_read(req); // trigger next read
@@ -183,7 +183,7 @@ int read_sdo(ec_sdo_request_t *req)
 
 int write_sdo(ec_sdo_request_t *req, unsigned data)
 {
-	EC_WRITE_U32(ecrt_sdo_request_data(req), data&0xffffffff);
+	EC_WRITE_S32(ecrt_sdo_request_data(req), data&0xffffffff);
 
 	switch (ecrt_sdo_request_state(req)) {
 		case EC_REQUEST_UNUSED: // request was not used yet
@@ -463,7 +463,7 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 	request[1] = _config_sdo_request(slave_config, request[1], CIA402_MAX_ACCELERATION, 0, 4);
 	request[2] = _config_sdo_request(slave_config, request[2], CIA402_MOTOR_SPECIFIC, 1, 4);  //nominal current
 	request[3] = _config_sdo_request(slave_config, request[3], CIA402_MOTOR_SPECIFIC, 4, 4);	//nominal speed
-	request[4] = _config_sdo_request(slave_config, request[4], CIA402_POLARITY, 0, 1);
+	request[4] = _config_sdo_request(slave_config, request[4], CIA402_POLARITY, 0, 4);
 	request[5] = _config_sdo_request(slave_config, request[5], CIA402_MOTOR_SPECIFIC, 3, 1);  //pole pairs
 	request[6] = _config_sdo_request(slave_config, request[6], CIA402_POSITION_ENC_RESOLUTION, 0, 2);
 	request[7] = _config_sdo_request(slave_config, request[7], CIA402_SENSOR_SELECTION_CODE, 0, 2);

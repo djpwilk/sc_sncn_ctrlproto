@@ -1,5 +1,6 @@
 #include <drive_config.h>
 #include "ctrlproto_m.h"
+#include "profile.h"
 
 /*External functions*/
 int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);

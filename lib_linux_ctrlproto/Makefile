@@ -5,7 +5,8 @@ INCLUDE_DIRS += -I ../inc_ctrlproto-common/
 INCLUDE_DIRS += -I ../../sc_sncn_ethercat/module_ethercat/src/canod/
 INCLUDE_DIRS += -I ../app_linux_ctrlproto-master-example/config/motor
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
-
+INCLUDE_DIRS += -I ../../sc_sncn_motorctrl_sin/module_profile/include
+SOURCES = ../../sc_sncn_motorctrl_sin/module_profile/profile_position_mode/profile_position.c
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
 
 LIBS += -lethercat
@@ -22,6 +23,8 @@ else
 		@if test -d $(MASTER_INSTALLDIR); \
 		then \
 		mkdir lib -p;\
+		gcc ../../sc_sncn_motorctrl_sin/module_profile/profile_position_mode/profile_position.c $(INCLUDE_DIRS) -o lib/libsncn_profile.so -lstdc++ -shared -fPIC;\
+		gcc -c ../../sc_sncn_motorctrl_sin/module_profile/profile_position_mode/profile_position.c $(INCLUDE_DIRS) -o lib/libsncn_profile.o;\
 		gcc src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.so -lstdc++ -shared -fPIC;\
 		gcc -c src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.o;\
 		gcc src/motor_define.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_motordefine.so -lstdc++ -shared -fPIC;\
