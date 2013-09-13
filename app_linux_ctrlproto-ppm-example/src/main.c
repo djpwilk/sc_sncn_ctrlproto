@@ -36,9 +36,6 @@ int main()
 
 	int op_enable_state = 0;
 	int status_word = 0;
-	printf(" %d %d %d %d %d ", slv_handles[0].motor_config_param.s_max_profile_velocity.max_profile_velocity, slv_handles[0].motor_config_param.s_profile_velocity.profile_velocity,  \
-	 				slv_handles[0].motor_config_param.s_profile_acceleration.profile_acceleration, slv_handles[0].motor_config_param.s_profile_deceleration.profile_deceleration,\
-	 				slv_handles[0].motor_config_param.s_quick_stop_deceleration.quick_stop_deceleration);
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 

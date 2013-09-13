@@ -68,7 +68,6 @@ int main()
 				i = 1;
 				flag = 2;
 			}
-		//	printf("%d ",i);
 			if(i >= steps && flag == 2)
 			{
 				break;

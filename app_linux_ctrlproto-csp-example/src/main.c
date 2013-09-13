@@ -130,7 +130,7 @@ int main()
 		printf("actual position %f\n", get_position_actual_deg(slave_number, slv_handles));
 	}
 	//shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//*/
+
 
 	return 0;
 }
