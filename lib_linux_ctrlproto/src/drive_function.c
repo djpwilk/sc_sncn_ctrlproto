@@ -78,6 +78,15 @@ int position_set_flag(int slave_number, ctrlproto_slv_handle *slv_handles)
 		return 0;
 }
 
+int velocity_set_flag(int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	int flag = check_target_reached(read_statusword(slave_number, slv_handles));
+	if(flag == 0)
+		return 1;
+	else
+		return 0;
+}
+
 void set_controlword(int controlword, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	slv_handles[slave_number].motorctrl_out = controlword;
@@ -111,6 +120,22 @@ int target_position_reached(int slave_number, float target_position, float toler
 		return 0;
 }
 
+int target_velocity_reached(int slave_number, int target_velocity, int tolerance, ctrlproto_slv_handle *slv_handles)
+{
+	int actual_velocity =  get_velocity_actual(slave_number, slv_handles);
+//	printf("\n act vel %d min %d max %d \n", actual_velocity , target_velocity-tolerance/2,  target_velocity + tolerance/2);
+	if(actual_velocity > target_velocity-tolerance/2 && actual_velocity < target_velocity + tolerance/2)
+	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
+		{
+			return 1;
+		}
+		else
+			return 0;
+	}
+	else
+		return 0;
+}
+
 int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	int ready = 0;
@@ -123,7 +148,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	set_controlword(0, slave_number, slv_handles);
 	printf("updating motor parameters\n");
 	fflush(stdout);
-	/***** Set up Parameters ****/
+	/***** Set up Parameters *****/
 	while(1)
 	{
 		if(slv_handles[slave_number].motor_config_param.update_flag == 1)

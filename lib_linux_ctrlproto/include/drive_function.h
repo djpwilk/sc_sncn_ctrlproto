@@ -31,6 +31,10 @@ int position_set_flag(int slave_number, ctrlproto_slv_handle *slv_handles);
 
 int init_position_profile_params(float target_position, float actual_position, int velocity, int acceleration, int deceleration);
 
+int target_velocity_reached(int slave_number, int target_velocity, int tolerance, ctrlproto_slv_handle *slv_handles);
+
+int velocity_set_flag(int slave_number, ctrlproto_slv_handle *slv_handles);
+
 /*Internal functions*/
 int check_ready(int status_word);
 

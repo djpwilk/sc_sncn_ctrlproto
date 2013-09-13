@@ -68,7 +68,7 @@ void config_sdo_handler(chanend coe_out);
 
 {int, int, int, int, int, int, int, int, int} pp_sdo_update(chanend coe_out);
 
-{int, int, int, int} pv_sdo_update(chanend coe_out);
+{int, int, int, int, int} pv_sdo_update(chanend coe_out);
 
 {int, int, int} velocity_sdo_update(chanend coe_out);
 

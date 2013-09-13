@@ -88,23 +88,22 @@ void config_sdo_handler(chanend coe_out)
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, quick_stop_deceleration);
 	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
 	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
-	//GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
-	coe_out <: CAN_GET_OBJECT; coe_out <: CAN_OBJ_ADR(CIA402_POLARITY, 0);	coe_out :> polarity;
+	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
 	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acc);
 
 	return {max_profile_velocity, profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, min, max, polarity, max_acc};
 }
 
-{int, int, int, int} pv_sdo_update(chanend coe_out)
+{int, int, int, int, int} pv_sdo_update(chanend coe_out)
 {
-	int max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration;
+	int max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, polarity;
 
 	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, max_profile_velocity);
 	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, profile_acceleration);
 	GET_SDO_DATA(CIA402_PROFILE_DECELERATION, 0, profile_deceleration);
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, quick_stop_deceleration);
-
-	return {max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration};
+	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	return {max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, polarity};
 }
 
 {int, int, int} position_sdo_update(chanend coe_out)
