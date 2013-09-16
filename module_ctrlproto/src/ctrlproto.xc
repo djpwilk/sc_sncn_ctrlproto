@@ -160,15 +160,16 @@ int sensor_select_sdo(chanend coe_out)
 	return {pole_pairs, gear_ratio};
 }
 
-{int, int, int} csv_sdo_update(chanend coe_out)
+{int, int, int, int} csv_sdo_update(chanend coe_out)
 {
-	int max_motor_speed, nominal_current, polarity, motor_torque_constant;
+	int max_motor_speed, nominal_current, polarity, motor_torque_constant, max_acceleration;
 
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration)
 
-	return {max_motor_speed, nominal_current, polarity};
+	return {max_motor_speed, nominal_current, polarity, max_acceleration};
 }
 
 {int, int, int} qei_sdo_update(chanend coe_out)
@@ -187,7 +188,7 @@ int sensor_select_sdo(chanend coe_out)
 		return {real_counts, gear_ratio, QEI_WITH_INDEX};//default
 }
 
-void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
+int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
 {
 
 	int buffer[64];
@@ -234,5 +235,6 @@ void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_p
 			pdo_out <: (unsigned) buffer[i];
 		}
 	}
+	return count;
 }
 

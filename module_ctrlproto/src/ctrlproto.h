@@ -56,7 +56,7 @@ typedef struct
  * \param pdo_in					The channel for incoming process data objects
  * \param InOut						The struct for exchanging data with the motor control functions
  */
-void ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut);
+int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut);
 
 /**
  *  \brief
@@ -74,7 +74,7 @@ void config_sdo_handler(chanend coe_out);
 
 {int, int} hall_sdo_update(chanend coe_out);
 
-{int, int, int} csv_sdo_update(chanend coe_out);
+{int, int, int, int} csv_sdo_update(chanend coe_out);
 
 {int, int, int, int, int, int} csp_sdo_update(chanend coe_out);
 
