@@ -15,6 +15,7 @@
  */
 int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
+
 /**
  * \brief Enables the operation mode specified
  *
@@ -24,6 +25,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
  * \param total_no_of_slaves 	Number of connected slaves to the master
  */
 int enable_operation(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
+
 
 /**
  * \brief Shuts down the operation mode selected
@@ -36,8 +38,9 @@ int enable_operation(int slave_number, master_setup_variables_t *master_setup, c
  */
 int shutdown_operation(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
+
 /**
- *  Sets target position cyclically for Cyclic Synchronous Position(CSP) mode only
+ * \brief Sets target position cyclically for Cyclic Synchronous Position(CSP) mode only
  *
  * \param target_position 		Specify the target position to follow (in degree)
  * \param slave_number			Specify the slave number to which the motor is connected
@@ -45,8 +48,9 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
  */
 void set_position_deg(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
 
+
 /**
- *  Sets target position for Profile Position mode(PPM) only
+ * \brief Sets target position for Profile Position mode(PPM) only
  *
  * \param target_position		Specify the target position to follow (in degree)
  * \param slave_number			Specify the slave number to which the motor is connected
@@ -54,8 +58,9 @@ void set_position_deg(int target_position, int slave_number, ctrlproto_slv_handl
  */
 void set_profile_position_deg(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
 
+
 /**
- *  Gets actual position
+ * \brief Gets actual position
  *
  * \param slave_number			Specify the slave number to which the motor is connected
  * \param slv_handles 			The handle struct for the slaves
@@ -64,8 +69,9 @@ void set_profile_position_deg(float target_position, int slave_number, ctrlproto
  */
 float get_position_actual_deg(int slave_number, ctrlproto_slv_handle *slv_handles);
 
+
 /**
- *  Quick Stop Position
+ * \brief Quick Stop Position
  *
  * \param slave_number			Specify the slave number to which the motor is connected
  * \param master_setup 			A struct containing the variables for the master
@@ -73,6 +79,7 @@ float get_position_actual_deg(int slave_number, ctrlproto_slv_handle *slv_handle
  * \param total_no_of_slaves 	Number of connected slaves to the master
  */
 int quick_stop_position(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
+
 
 /**
  * \param operation_mode        Specify the operation mode selected for the slave
@@ -83,11 +90,13 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
  */
 int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
+
 /**
  * \param slave_number			Specify the slave number to which the motor is connected
  * \param slv_handles 			The handle struct for the slaves
  */
 int position_set_flag(int slave_number, ctrlproto_slv_handle *slv_handles);
+
 
 /**
  * \param slave_number			Specify the slave number to which the motor is connected
@@ -99,6 +108,7 @@ int target_position_reached(int slave_number, float target_position, float toler
 
 
 int init_position_profile_params(float target_position, float actual_position, int velocity, int acceleration, int deceleration);
+
 
 /**
  * \brief Sets target velocity for Profile Velocity mode(PPM) & Cyclic Synchronous Velocity(CSV) mode
