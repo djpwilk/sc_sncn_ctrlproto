@@ -342,9 +342,9 @@ master_setup_variables_t master_setup={\
 /**
  * Initialises the Master and Slave communication
  *
- * @param master_setup 			A struct containing the variables for the master
- * @param slv_handles 			The handle struct for the slaves
- * @param total_no_of_slaves 	Number of connected slaves to the master
+ * \param master_setup 			A struct containing the variables for the master
+ * \param slv_handles 			The handle struct for the slaves
+ * \param total_no_of_slaves 	Number of connected slaves to the master
  */
 void init_master(master_setup_variables_t *master_setup,
 				 ctrlproto_slv_handle *slv_handles,
@@ -355,26 +355,26 @@ void init_master(master_setup_variables_t *master_setup,
  * it wraps around the master loop around the functions standing
  * below.
  *
- * @param master_setup 			A struct containing the variables for the master
- * @param slv_handles 			The handle struct for the slaves
- * @param total_no_of_slaves 	Number of connected slaves to the master
+ * \param master_setup 			A struct containing the variables for the master
+ * \param slv_handles 			The handle struct for the slaves
+ * \param total_no_of_slaves 	Number of connected slaves to the master
  */
 void pdo_handle_ecat(master_setup_variables_t *master_setup,
-        		ctrlproto_slv_handle *slv_handles,
-        		unsigned int total_no_of_slaves);
+        			ctrlproto_slv_handle *slv_handles,
+        			unsigned int total_no_of_slaves);
 
 /**
  * This function updates the motor parameters via ethercat
  *
- * @param master_setup 			A struct containing the variables for the master
- * @param slv_handles 			The handle array for the slaves
- * @param total_no_of_slaves 	Number of connected slaves to the master
+ * \param master_setup 			A struct containing the variables for the master
+ * \param slv_handles 			The handle array for the slaves *
+ * \param update_sequence       Specify set of motor parameter to be configured
+ * \param slave_number			Specify the slave number to which the motor is connected
  */
 void sdo_handle_ecat(master_setup_variables_t *master_setup,
-        		ctrlproto_slv_handle *slv_handles,
-        		unsigned int total_no_of_slaves,
-        		int update_sequence,
-        		int slave_number);
+        			ctrlproto_slv_handle *slv_handles,
+        			int update_sequence,
+        			int slave_number);
 
 
 #ifdef __cplusplus

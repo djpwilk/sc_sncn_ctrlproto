@@ -214,7 +214,7 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 void sdo_handle_ecat(master_setup_variables_t *master_setup,
         ctrlproto_slv_handle *slv_handles,
-        unsigned int total_no_of_slaves, int update_sequence, int slave_number)
+        int update_sequence, int slave_number)
 {
 	int slv;
 
