@@ -43,9 +43,19 @@ int check_shutdown_active(int status_word)
 	return (status_word & VOLTAGE_ENABLED_STATE)>>4;
 }
 
+void set_torque(int target_torque, int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	slv_handles[slave_number].torque_setpoint = target_torque;
+}
+
 void set_velocity(int target_velocity, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	slv_handles[slave_number].speed_setpoint = target_velocity;
+}
+
+int get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	return slv_handles[slave_number].torque_in;
 }
 
 int get_velocity_actual(int slave_number, ctrlproto_slv_handle *slv_handles)
@@ -148,7 +158,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	set_controlword(0, slave_number, slv_handles);
 	printf("updating motor parameters\n");
 	fflush(stdout);
-	/***** Set up Parameters *****/
+	/***** Set up Parameters *****
 	while(1)
 	{
 		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -159,7 +169,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 		else
 		{
-			sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, MOTOR_PARAM_UPDATE, slave_number);
+			sdo_handle_ecat(master_setup, slv_handles, MOTOR_PARAM_UPDATE, slave_number);
 			printf (".");
 			fflush(stdout);
 
@@ -260,7 +270,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, VELOCITY_CTRL_UPDATE, slave_number);  //mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, VELOCITY_CTRL_UPDATE, slave_number);  //mode specific updates
 				printf (".");
 				fflush(stdout);
 			}
@@ -275,7 +285,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, CSV_MOTOR_UPDATE, slave_number);		//mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, CSV_MOTOR_UPDATE, slave_number);		//mode specific updates
 				printf (".");
 				fflush(stdout);
 			}
@@ -292,7 +302,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, POSITION_CTRL_UPDATE, slave_number);		//mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, POSITION_CTRL_UPDATE, slave_number);		//mode specific updates
 				printf (".");
 				fflush(stdout);
 			}
@@ -307,7 +317,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, CSV_MOTOR_UPDATE, slave_number);		//mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, CSV_MOTOR_UPDATE, slave_number);		//mode specific updates
 				printf (".");
 				fflush(stdout);
 			}
@@ -326,7 +336,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, VELOCITY_CTRL_UPDATE, slave_number);  //mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, VELOCITY_CTRL_UPDATE, slave_number);  //mode specific updates
 				printf (".");
 				fflush(stdout);
 			}
@@ -340,7 +350,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, PV_MOTOR_UPDATE, slave_number);  //mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, PV_MOTOR_UPDATE, slave_number);  //mode specific updates
 				printf (".");
 				fflush(stdout);
 			}
@@ -358,7 +368,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, POSITION_CTRL_UPDATE, slave_number);		//mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, POSITION_CTRL_UPDATE, slave_number);		//mode specific updates
 				printf (".");
 				fflush(stdout);
 			}
@@ -373,7 +383,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, PP_MOTOR_UPDATE, slave_number);  //mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, PP_MOTOR_UPDATE, slave_number);  //mode specific updates
 				printf (".");
 				fflush(stdout);
 			}
@@ -395,6 +405,8 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 				/*************check operation_mode display**************/
 				if (slv_handles[slave_number].operation_mode_disp == operation_mode)
 					break;
+
+				//printf("operation_mode in loop\n");
 			}
 			else
 				continue;
@@ -490,13 +502,18 @@ int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_v
 			if(master_setup->op_flag)
 			{
 				slv_handles[slave_number].operation_mode = 100;
+				slv_handles[slave_number].speed_setpoint = slv_handles[slave_number].speed_in;
+				slv_handles[slave_number].position_setpoint = slv_handles[slave_number].position_in;
+				slv_handles[slave_number].torque_setpoint = slv_handles[slave_number].torque_in;
+
+
 				/*************check operation_mode display**************/
 				set_controlword(QUICK_STOP_CONTROL, slave_number, slv_handles);
 				//status_word = read_statusword();
 				//op_enable_state = check_op_enable(status_word);
 				if (slv_handles[slave_number].operation_mode_disp == 100)
 					break;
-				//printf("operation_m %d\n",slv_handles[slave_number].operation_mode_disp);
+				printf("operation_m %d %d %d\n",slv_handles[slave_number].speed_setpoint, slv_handles[slave_number].position_setpoint, slv_handles[slave_number].torque_setpoint);
 			}
 			else
 				continue;
@@ -548,6 +565,51 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
 	}
 	#ifndef print_slave
 	printf("shutdown  \n");
+	fflush(stdout);
+	#endif
+}
+
+int quick_stop_torque(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
+{
+	int quick_stop_active = 0, status_word, ack_stop;
+	while(!quick_stop_active && master_setup->op_flag)
+	{
+		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
+		if(master_setup->op_flag)
+		{
+			set_controlword(ENABLE_OPERATION_CONTROL|(~QUICK_STOP_CONTROL & 0x000F)|ENABLE_VOLTAGE_CONTROL|SWITCH_ON_CONTROL, slave_number, slv_handles);
+			/*************check quick_stop_state**************/
+			status_word = read_statusword(slave_number, slv_handles);
+			quick_stop_active = check_quick_stop_active(status_word);
+		}
+		else
+			continue;
+		//printf("\n stats %x", status_word);
+	}
+
+	#ifndef print_slave
+	printf("quick_stop_active\n");
+	fflush(stdout);
+	#endif
+
+	ack_stop = 1;
+	while(ack_stop)
+	{
+		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
+		if(master_setup->op_flag)
+		{
+			/*************check quick_stop_state**************/
+			status_word = read_statusword(slave_number, slv_handles);
+			ack_stop = check_quick_stop_inactive(status_word);;
+			//printf("%d\n",quick_stop_active);
+			//printf("\n stats %x", status_word);
+		}
+		else
+			continue;
+	}
+
+	#ifndef print_slave
+	printf("quick stop executed \n");
 	fflush(stdout);
 	#endif
 }

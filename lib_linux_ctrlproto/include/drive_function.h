@@ -38,7 +38,9 @@ int enable_operation(int slave_number, master_setup_variables_t *master_setup, c
  */
 int shutdown_operation(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
+int get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles);
 
+int quick_stop_torque(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 /**
  * \brief Sets target position cyclically for Cyclic Synchronous Position(CSP) mode only
  *
@@ -110,6 +112,7 @@ int target_position_reached(int slave_number, float target_position, float toler
 int init_position_profile_params(float target_position, float actual_position, int velocity, int acceleration, int deceleration);
 
 
+void set_torque(int target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
 /**
  * \brief Sets target velocity for Profile Velocity mode(PPM) & Cyclic Synchronous Velocity(CSV) mode
  *
