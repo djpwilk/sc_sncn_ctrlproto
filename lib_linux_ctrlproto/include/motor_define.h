@@ -2,7 +2,6 @@
 #define MOTOR_DEFINE_H_
 #include "bldc_motor_config_1.h"
 #include "bldc_motor_config_2.h"
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -58,39 +57,21 @@ typedef struct
 
 typedef struct
 {
-	int velocity_p_gain;
+	int p_gain;
 	int update_state;
-} velocity_p_gain_s;
+} velocity_p_gain_s, position_p_gain_s, torque_p_gain_s;
 
 typedef struct
 {
-	int velocity_i_gain;
+	int i_gain;
 	int update_state;
-} velocity_i_gain_s;
+} velocity_i_gain_s, position_i_gain_s, torque_i_gain_s;
 
 typedef struct
 {
-	int velocity_d_gain;
+	int d_gain;
 	int update_state;
-} velocity_d_gain_s;
-
-typedef struct
-{
-	int position_p_gain;
-	int update_state;
-} position_p_gain_s;
-
-typedef struct
-{
-	int position_i_gain;
-	int update_state;
-} position_i_gain_s;
-
-typedef struct
-{
-	int position_d_gain;
-	int update_state;
-} position_d_gain_s;
+} velocity_d_gain_s, position_d_gain_s, torque_d_gain_s;
 
 typedef struct
 {
@@ -137,10 +118,53 @@ typedef struct
 
 typedef struct
 {
+	int max_torque;
+	int update_state;
+} max_torque_s;
+
+typedef struct
+{
+	int torque_slope;
+	int update_state;
+} torque_slope_s;
+
+typedef struct
+{
+	int motor_torque_constant;
+	int update_state;
+} motor_torque_constant_s;
+
+typedef struct
+{
+	int qei_offset_clk;
+	int update_state;
+} qei_offset_clk_s;
+
+typedef struct
+{
+	int qei_offset_cclk;
+	int update_state;
+} qei_offset_cclk_s;
+
+typedef struct
+{
+	int qei_commutation_offset_clk;
+	int update_state;
+} qei_commutation_offset_clk_s;
+
+typedef struct
+{
+	int qei_commutation_offset_cclk;
+	int update_state;
+} qei_commutation_offset_cclk_s;
+
+typedef struct
+{
 	pole_pair_s s_pole_pair;
 	gear_ratio_s s_gear_ratio;
 	nominal_motor_speed_s s_nominal_motor_speed;
 	nominal_current_s s_nominal_current;
+	motor_torque_constant_s s_motor_torque_constant;
 	max_acceleration_s s_max_acceleration;
 	position_encoder_resolution_s s_position_encoder_resolution; //qei
 
@@ -155,14 +179,25 @@ typedef struct
 	position_i_gain_s s_position_i_gain;
 	position_d_gain_s s_position_d_gain;
 
+	torque_p_gain_s s_torque_p_gain;
+	torque_i_gain_s s_torque_i_gain;
+	torque_d_gain_s s_torque_d_gain;
+
 	software_position_min_s s_software_position_min;
 	software_position_max_s s_software_position_max;
 
+	max_torque_s s_max_torque;
+	torque_slope_s s_torque_slope;
 	max_profile_velocity_s s_max_profile_velocity;
 	profile_acceleration_s s_profile_acceleration;
 	profile_deceleration_s s_profile_deceleration;
 	quick_stop_deceleration_s s_quick_stop_deceleration;
 	profile_velocity_s s_profile_velocity;
+
+	qei_offset_clk_s s_qei_offset_clk;
+	qei_offset_cclk_s s_qei_offset_cclk;
+	qei_commutation_offset_clk_s s_qei_commutation_offset_clk;
+	qei_commutation_offset_cclk_s s_qei_commutation_offset_cclk;
 
 	int update_flag;
 } motor_config;
@@ -173,6 +208,7 @@ typedef struct
 #define MAX_NOMINAL_SPEED(n) 		MAX_NOMINAL_SPEED_##n
 #define POLARITY(n) 				POLARITY_##n
 #define POLE_PAIRS(n) 				POLE_PAIRS_##n
+#define MOTOR_TORQUE_CONSTANT(n) 	MOTOR_TORQUE_CONSTANT_##n
 #define ENCODER_RESOLUTION(n) 		ENCODER_RESOLUTION_##n
 #define VELOCITY_Kp_NUMERATOR(n)   	VELOCITY_Kp_NUMERATOR_##n
 #define VELOCITY_Kp_DENOMINATOR(n)  VELOCITY_Kp_DENOMINATOR_##n
@@ -189,14 +225,29 @@ typedef struct
 #define POSITION_Kd_NUMERATOR(n)  	POSITION_Kd_NUMERATOR_##n
 #define POSITION_Kd_DENOMINATOR(n)  POSITION_Kd_DENOMINATOR_##n
 
+#define TORQUE_Kp_NUMERATOR(n)   	TORQUE_Kp_NUMERATOR_##n
+#define TORQUE_Kp_DENOMINATOR(n)  	TORQUE_Kp_DENOMINATOR_##n
+#define TORQUE_Ki_NUMERATOR(n)   	TORQUE_Ki_NUMERATOR_##n
+#define TORQUE_Ki_DENOMINATOR(n) 	TORQUE_Ki_DENOMINATOR_##n
+#define TORQUE_Kd_NUMERATOR(n)  	TORQUE_Kd_NUMERATOR_##n
+#define TORQUE_Kd_DENOMINATOR(n)  	TORQUE_Kd_DENOMINATOR_##n
+
 #define MIN_POSITION_LIMIT(n)		MIN_POSITION_LIMIT_##n
 #define MAX_POSITION_LIMIT(n)		MAX_POSITION_LIMIT_##n
 
+
+#define MAX_TORQUE(n) 				MAX_TORQUE_##n
+#define TORQUE_SLOPE(n) 			TORQUE_SLOPE_##n
 #define MAX_PROFILE_VELOCITY(n)  	MAX_PROFILE_VELOCITY_##n
 #define PROFILE_VELOCITY(n)			PROFILE_VELOCITY_##n
 #define PROFILE_ACCELERATION(n)		PROFILE_ACCELERATION_##n
 #define PROFILE_DECELERATION(n)  	PROFILE_DECELERATION_##n
 #define QUICK_STOP_DECELERATION(n) 	QUICK_STOP_DECELERATION_##n
+
+#define QEI_OFFSET_CLK(n) 			QEI_OFFSET_CLK_##n
+#define QEI_OFFSET_CCLK(n) 			QEI_OFFSET_CCLK_##n
+#define QEI_COMMUTATION_OFFSET_CLK(n)	QEI_COMMUTATION_OFFSET_CLK_##n
+#define QEI_COMMUTATION_OFFSET_CCLK(n) 	QEI_COMMUTATION_OFFSET_CCLK_##n
 
 #ifdef __cplusplus
 }

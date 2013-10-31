@@ -2,6 +2,14 @@
 #include "ctrlproto_m.h"
 #include "profile.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern float linear_profile_generate_float(int step);
+extern int init_linear_profile_float(float target_value, float actual_value, float acceleration, float deceleration, float max_value);
+#ifdef __cplusplus
+}
+#endif
 /*External functions*/
 
 /**
@@ -38,7 +46,7 @@ int enable_operation(int slave_number, master_setup_variables_t *master_setup, c
  */
 int shutdown_operation(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
-int get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles);
+
 
 int quick_stop_torque(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 /**
@@ -111,6 +119,16 @@ int target_position_reached(int slave_number, float target_position, float toler
 
 int init_position_profile_params(float target_position, float actual_position, int velocity, int acceleration, int deceleration);
 
+
+void initialize_torque(int slave_number, ctrlproto_slv_handle *slv_handles);
+
+int init_linear_profile_params(float target_torque, float actual_torque, float torque_slope, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles);
+
+int get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles);
+
+void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 void set_torque(int target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
 /**
