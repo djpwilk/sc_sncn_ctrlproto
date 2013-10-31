@@ -110,7 +110,7 @@ int main()
 
 
 	i = 0;
-	final_target_torque = 0.0;
+	final_target_torque = 10.0;
 	actual_torque= 	get_torque_actual_mNm(slave_number, slv_handles);
 
 	steps = init_linear_profile_params(final_target_torque, actual_torque, torque_slope, slave_number, slv_handles);
@@ -136,7 +136,7 @@ int main()
 			}
 		}
 	}
-	/*while(1)
+	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -146,12 +146,12 @@ int main()
 			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
 			printf("actual_torque %f \n",actual_torque);
 		}
-	}*/
+	}
 
 
 
-	shutdown_operation(CST, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
+	//shutdown_operation(CST, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+while(1);
 	return 0;
 }
 

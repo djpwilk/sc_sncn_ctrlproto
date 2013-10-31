@@ -10,7 +10,7 @@
 #define MAX_ACCELERATION_1   			5000     			// rpm/s
 #define ENCODER_RESOLUTION_1 			4000				// Max count of Quadrature Encoder (4X decoding)
 #define MOTOR_TORQUE_CONSTANT_1			33					// mNm/A
-#define POLARITY_1 						1					// 1 / -1
+#define POLARITY_1 						-1					// 1 / -1
 
 
 /* Somanet IFM Internal Config */
@@ -35,7 +35,7 @@
 #define QEI_COMMUTATION_OFFSET_CCLK_1 	2773
 
 /* Position Sensor Types */
-#define SENSOR_SELECTION_CODE_1     	HALL
+#define SENSOR_SELECTION_CODE_1     	QEI_INDEX
 
 /* Control specific constants/variables */
 	/*Torque Control*/
