@@ -227,52 +227,52 @@ typedef struct
 	/**
 	 * outgoing commands
 	 */
-	int motorctrl_out;				/*only 16 bits valid*/
+	int16_t motorctrl_out;				/*only 16 bits valid*/
 
 	/**
 	 * outgoing torque (use fromFloatFunction to set it)
 	 */
-	int torque_setpoint;			/*only 16 bits valid*/
+	int16_t torque_setpoint;			/*only 16 bits valid*/
 
 	/**
 	 * outgoing torque
 	 */
-	int speed_setpoint;				/*only 32 bits valid*/
+	int32_t speed_setpoint;				/*only 32 bits valid*/
 
 	/**
 	 * outgoing position
 	 */
-	int position_setpoint;			/*only 32 bits valid*/
+	int32_t position_setpoint;			/*only 32 bits valid*/
 
 	/**
 	 * outgoing modes of operation
 	 */
-	int operation_mode;				/*only 8 bits valid*/
+	int8_t operation_mode;				/*only 8 bits valid*/
 
 	/**
 	 * incoming motorctrl command (readback)
 	 */
-	int motorctrl_status_in;		/*only 16 bits valid*/
+	int16_t motorctrl_status_in;		/*only 16 bits valid*/
 
 	/**
 	 * incoming torque
 	 */
-	int torque_in;					/*only 16 bits valid*/
+	int16_t torque_in;					/*only 16 bits valid*/
 
 	/**
 	 * incoming speed
 	 */
-	int speed_in;					/*only 32 bits valid*/
+	int32_t speed_in;					/*only 32 bits valid*/
 
 	/**
 	 * incoming position
 	 */
-	int position_in;				/*only 32 bits valid*/
+	int32_t position_in;				/*only 32 bits valid*/
 
 	/**
 	 * incoming display mode of operation
 	 */
-	int operation_mode_disp;		/*only 8 bits valid*/
+	int8_t operation_mode_disp;		/*only 8 bits valid*/
 
 	/**
 	 * motor config struct
