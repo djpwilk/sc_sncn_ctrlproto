@@ -60,12 +60,12 @@ int get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles)
 
 void initialize_torque(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-	printf(" tor %f", slv_handles[slave_number].factor_torq );
+//	printf(" tor %f", slv_handles[slave_number].factor_torq );
 	slv_handles[slave_number].factor_torq = (float) slv_handles[slave_number].motor_config_param.s_motor_torque_constant.motor_torque_constant;
 	slv_handles[slave_number].factor_torq *= slv_handles[slave_number].factor_torq;
 	slv_handles[slave_number].factor_torq *= ((float) slv_handles[slave_number].motor_config_param.s_nominal_current.nominal_current);
 	slv_handles[slave_number].factor_torq /= ((float) slv_handles[slave_number].motor_config_param.s_max_torque.max_torque);
-	printf(" tor %f", slv_handles[slave_number].factor_torq );
+//	printf(" tor %f", slv_handles[slave_number].factor_torq );
 	return;
 }
 
@@ -643,7 +643,7 @@ int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_v
 				//op_enable_state = check_op_enable(status_word);
 				if (slv_handles[slave_number].operation_mode_disp == 100)
 					break;
-				printf("operation_m %d %d %d\n",slv_handles[slave_number].speed_setpoint, slv_handles[slave_number].position_setpoint, slv_handles[slave_number].torque_setpoint);
+				//printf("operation_m %d %d %d\n",slv_handles[slave_number].speed_setpoint, slv_handles[slave_number].position_setpoint, slv_handles[slave_number].torque_setpoint);
 			}
 			else
 				continue;
