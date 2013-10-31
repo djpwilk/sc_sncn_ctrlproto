@@ -31,6 +31,30 @@ void config_sdo_handler(chanend coe_out)
 {
 	int sdo_value;
 
+
+/*	GET_SDO_DATA(CIA402_QEI_OFFSET, 1, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_QEI_OFFSET, 2, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_QEI_OFFSET, 3, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_QEI_OFFSET, 4, sdo_value);
+	printintln(sdo_value);*/
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, sdo_value);  //motor tor const
+	printintln(sdo_value);
+
+	GET_SDO_DATA(CIA402_CURRENT_GAIN, 1, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_CURRENT_GAIN, 2, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_CURRENT_GAIN, 3, sdo_value);
+	printintln(sdo_value);
+
+	GET_SDO_DATA(CIA402_MAX_TORQUE, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_TORQUE_SLOPE, 0, sdo_value);
+	printintln(sdo_value);
+
 	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, sdo_value);
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, sdo_value);
@@ -106,6 +130,14 @@ void config_sdo_handler(chanend coe_out)
 	return {max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, polarity};
 }
 
+{int, int} pt_sdo_update(chanend coe_out)
+{
+	int torque_slope, polarity;
+	GET_SDO_DATA(CIA402_TORQUE_SLOPE, 0, torque_slope);
+	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	return {torque_slope, polarity};
+}
+
 {int, int, int} position_sdo_update(chanend coe_out)
 {
 	int Kp, Ki, Kd;
@@ -115,6 +147,30 @@ void config_sdo_handler(chanend coe_out)
 	GET_SDO_DATA(CIA402_POSITION_GAIN, 3, Kd);
 
 	return {Kp, Ki, Kd};
+}
+
+{int, int, int} torque_sdo_update(chanend coe_out)
+{
+	int Kp, Ki, Kd;
+
+	GET_SDO_DATA(CIA402_CURRENT_GAIN, 1, Kp);
+	GET_SDO_DATA(CIA402_CURRENT_GAIN, 2, Ki);
+	GET_SDO_DATA(CIA402_CURRENT_GAIN, 3, Kd);
+
+	return {Kp, Ki, Kd};
+}
+
+{int, int, int, int, int} cst_sdo_update(chanend coe_out)
+{
+	int  nominal_current, max_motor_speed, polarity, max_torque, motor_torque_constant;
+
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
+	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	GET_SDO_DATA(CIA402_MAX_TORQUE, 0, max_torque);
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
+
+	return {nominal_current, max_motor_speed, polarity, max_torque, motor_torque_constant};
 }
 
 {int, int, int, int, int, int} csp_sdo_update(chanend coe_out)

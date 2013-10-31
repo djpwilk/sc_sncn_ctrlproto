@@ -66,22 +66,27 @@ ctrl_proto_values_t init_ctrl_proto(void);
 
 void config_sdo_handler(chanend coe_out);
 
-{int, int, int, int, int, int, int, int, int} pp_sdo_update(chanend coe_out);
+int sensor_select_sdo(chanend coe_out);
+
+{int, int, int} qei_sdo_update(chanend coe_out);
+
+{int, int} hall_sdo_update(chanend coe_out);
+
+{int, int} pt_sdo_update(chanend coe_out);
 
 {int, int, int, int, int} pv_sdo_update(chanend coe_out);
 
-{int, int, int} velocity_sdo_update(chanend coe_out);
+{int, int, int, int, int, int, int, int, int} pp_sdo_update(chanend coe_out);
 
-{int, int} hall_sdo_update(chanend coe_out);
+{int, int, int, int, int} cst_sdo_update(chanend coe_out);
 
 {int, int, int, int} csv_sdo_update(chanend coe_out);
 
 {int, int, int, int, int, int} csp_sdo_update(chanend coe_out);
 
-{int, int, int} qei_sdo_update(chanend coe_out);
+{int, int, int} torque_sdo_update(chanend coe_out);
+
+{int, int, int} velocity_sdo_update(chanend coe_out);
 
 {int, int, int} position_sdo_update(chanend coe_out);
-
-int sensor_select_sdo(chanend coe_out);
-
 #endif
