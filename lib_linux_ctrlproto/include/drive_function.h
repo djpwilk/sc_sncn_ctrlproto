@@ -131,6 +131,8 @@ int get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles);
 void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 void set_torque(int target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+int target_torque_reached(int slave_number, float target_torque, float tolerance, ctrlproto_slv_handle *slv_handles);
 /**
  * \brief Sets target velocity for Profile Velocity mode(PPM) & Cyclic Synchronous Velocity(CSV) mode
  *

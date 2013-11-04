@@ -698,6 +698,7 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 	else if(update_sequence == TQ_MOTOR_UPDATE)
 	{
+		//printf("\n %d",motor_config_param.s_torque_slope.update_state);
 		if(!motor_config_param.s_torque_slope.update_state)
 			 motor_config_param.s_torque_slope.update_state = _motor_config_update(request[23], \
 				motor_config_param.s_torque_slope.update_state,  \

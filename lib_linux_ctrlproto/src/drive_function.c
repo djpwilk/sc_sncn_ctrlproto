@@ -178,6 +178,22 @@ int target_velocity_reached(int slave_number, int target_velocity, int tolerance
 		return 0;
 }
 
+int target_torque_reached(int slave_number, float target_torque, float tolerance, ctrlproto_slv_handle *slv_handles)
+{
+	float actual_torque =  get_torque_actual_mNm(slave_number, slv_handles);
+  //  return check_target_reached(read_statusword(slave_number, slv_handles));
+	if(actual_torque > target_torque-tolerance/2.0f && actual_torque < target_torque + tolerance/2.0f)
+	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
+		{
+			return 1;
+		}
+		else
+			return 0;
+	}
+	else
+		return 0;
+}
+
 int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	int ready = 0;
@@ -292,7 +308,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 		}
 	}*/
 
-	if(operation_mode == CST)
+	if(operation_mode == CST || operation_mode == TQ)
 	{
 		while(1)
 		{
@@ -328,7 +344,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
 			{
-				//slv_handles[slave_number].motor_config_param.update_flag = 0;
+				slv_handles[slave_number].motor_config_param.update_flag = 0;
 				break;
 			}
 			else
@@ -338,39 +354,6 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 				fflush(stdout);
 			}
 		}
-	}
-
-	else if (operation_mode == TQ)
-	{
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, CST_MOTOR_UPDATE, slave_number);  //mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
-
-		while(1)
-		{
-			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-			{
-				slv_handles[slave_number].motor_config_param.update_flag = 0;
-				break;
-			}
-			else
-			{
-				sdo_handle_ecat(master_setup, slv_handles, TQ_MOTOR_UPDATE, slave_number);  //mode specific updates
-				printf (".");
-				fflush(stdout);
-			}
-		}
 
 		while(1)
 		{
@@ -381,13 +364,13 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
-				sdo_handle_ecat(master_setup, slv_handles, TORQUE_CTRL_UPDATE, slave_number);  //mode specific updates
+				sdo_handle_ecat(master_setup, slv_handles, TQ_MOTOR_UPDATE, slave_number);  //mode specific updates
 				printf (".");
 				fflush(stdout);
 			}
 		}
-
 	}
+
 
 	else if (operation_mode == CSV)
 	{
