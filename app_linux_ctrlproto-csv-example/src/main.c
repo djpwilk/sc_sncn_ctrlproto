@@ -12,9 +12,6 @@
 
 int main()
 {
-	int quick_stop_active = 0;
-	int ack_stop = 0;
-	int control_word;
 	int flag = 0;
 
 	int final_target_velocity = -1000;			//rpm
@@ -27,7 +24,6 @@ int main()
 	int actual_velocity = 0;
 
 	int slave_number = 0;
-	int status_word = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 

@@ -13,29 +13,17 @@
 
 int main()
 {
-	int quick_stop_active = 0;
-	int ack_stop = 0;
-	int control_word;
 	int flag = 0;
 	int flag_position_set = 0;
 
-	int acc = 350;				//rpm/s
-	int dec = 350;   			//rpm/s
-	int velocity =200;			//rpm
-	float actual_position = 0;	//degree
-	float target_position = -350.0f;	//degree
-	int steps = 0;
-	int i = 1;
-	int position_ramp = 0;
+	float actual_position = 0;			// degree
+	float target_position = -350.0f;	// degree
 
-	float tolerance = .1f;	 	// 0.1 degree
+	float tolerance = .1f;	 			// 0.1 degree
 
 	int slave_number = 0;
 	int ack = 0;
 
-
-	int op_enable_state = 0;
-	int status_word = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 

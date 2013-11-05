@@ -5,20 +5,21 @@ MASTER_INSTALLDIR := /opt/etherlab
 
 SOURCES += src/main.c 
 SOURCES += ../../sc_sncn_motorctrl_sin/module_profile/profile_linear_mode/profile_linear.c
+SOURCES += ../../sc_sncn_motorctrl_sin/module_profile/profile_position_mode/profile_position.c
 
 INCLUDE_DIRS += -I ../inc_ctrlproto-common   
 INCLUDE_DIRS += -I config/motor
-#sc_sncn_motorctrl_sin/module_profile
-#INCLUDE_DIRS += -I ../module_ctrlproto/src
 INCLUDE_DIRS += -I ../../sc_sncn_motorctrl_sin/module_profile/include
 
+INCLUDE_DIRS += -I ../lib_linux_motor_drive/include
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I ../lib_linux_ctrlproto/include
 
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
 LIB_DIRS += -L ../lib_linux_ctrlproto/lib
+LIB_DIRS += -L ../lib_linux_motor_drive/lib
 
-LIBS += -lsncn_ctrlproto
+LIBS += -lsncn_ctrlproto -lsncn_motor_drive
 LIBS += -lethercat -lm
 
 FLAGS = -static

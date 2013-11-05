@@ -9,11 +9,9 @@
 #include <sys/time.h>
 #include <time.h>
 
+
 int main()
 {
-	int quick_stop_active = 0;
-	int ack_stop = 0;
-	int control_word;
 	int flag = 0;
 
 	int acceleration = 350;				//rpm/s

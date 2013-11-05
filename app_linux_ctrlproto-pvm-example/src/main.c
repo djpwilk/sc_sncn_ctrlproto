@@ -14,32 +14,18 @@
 
 int main()
 {
-//	int ready = 0;
-//	int switch_enable = 0;
-//	int status_word = 0;
-//	int switch_on_state = 0;
-//	int op_enable_state = 0;
-	int quick_stop_active = 0;
-	int ack_stop = 0;
-	int control_word;
 	int flag = 0;
 
-	int acc = 350;				//rpm/s
-	int dec = 350;   			//rpm/s
 	int actual_velocity = 0;	//rpm
 	int target_velocity = 4000;	//rpm
 	int tolerance = 20; 		//rpm
 
-	int steps = 0;
-	int i = 1;
 
 	int flag_velocity_set = 0;
 
 	int slave_number = 0;
 	int ack = 0;
 
-	int op_enable_state = 0;
-	int status_word = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -123,7 +109,15 @@ int main()
 	}
 
 	printf("reached \n");
-
+	while(1)
+	{
+		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+		if(master_setup.op_flag)//Check if we are up
+		{
+			actual_velocity =  get_velocity_actual(slave_number, slv_handles);
+			printf("velocity %d \n", actual_velocity);
+		}
+	}
 	return 0;
 }
 
