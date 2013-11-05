@@ -502,11 +502,12 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
 {
 	int sdo_update_value;
-	if(!update)
+	if(update==0)
 	{
 		write_sdo(request, value);
 		pause();
 		sdo_update_value = read_sdo(request);
+		pause();
 		if(sdo_update_value == value)
 		{
 			update = 1;
@@ -660,6 +661,10 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 		motor_config_param.update_flag = motor_config_param.s_velocity_p_gain.update_state \
 			& motor_config_param.s_velocity_i_gain.update_state \
 			& motor_config_param.s_velocity_d_gain.update_state;
+	//	printf("\n %d %d %d \n",motor_config_param.s_velocity_p_gain.update_state,\
+				motor_config_param.s_velocity_i_gain.update_state,\
+				motor_config_param.s_velocity_d_gain.update_state);
+
 	}
 
 	else if(update_sequence == POSITION_CTRL_UPDATE)

@@ -2,9 +2,12 @@ UNAME := $(shell uname)
 MASTER_INSTALLDIR := /opt/etherlab
 INCLUDE_DIRS = -I include
 INCLUDE_DIRS += -I ../app_linux_ctrlproto-master-example/config/motor
+INCLUDE_DIRS += -I ../lib_linux_ctrlproto/include/
 INCLUDE_DIRS += -I ../inc_ctrlproto-common/
 INCLUDE_DIRS += -I ../../sc_sncn_ethercat/module_ethercat/src/canod/
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
+INCLUDE_DIRS += -I ../../sc_sncn_motorctrl_sin/module_profile/include
+SOURCES = ../../sc_sncn_motorctrl_sin/module_profile/profile_position_mode/profile_position.c
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
 
 LIBS += -lethercat
@@ -21,9 +24,11 @@ else
 		@if test -d $(MASTER_INSTALLDIR); \
 		then \
 		mkdir lib -p;\
-		gcc src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.so -lstdc++ -shared -fPIC;\
-		gcc -c src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.o;\
-		ar rcs lib/libsncn_ctrlproto.a lib/*.o;\
+		gcc ../../sc_sncn_motorctrl_sin/module_profile/profile_position_mode/profile_position.c $(INCLUDE_DIRS) -o lib/libsncn_profile.so -lstdc++ -shared -fPIC;\
+		gcc -c ../../sc_sncn_motorctrl_sin/module_profile/profile_position_mode/profile_position.c $(INCLUDE_DIRS) -o lib/libsncn_profile.o;\
+		gcc src/drive_function.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_drive_function.so -lstdc++ -shared -fPIC;\
+		gcc -c src/drive_function.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_drive_function.o;\
+		ar rcs lib/libsncn_motor_drive.a lib/*.o;\
 		rm -f lib/*.o;\
 		else echo \
 		"\n\

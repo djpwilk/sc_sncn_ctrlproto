@@ -20,10 +20,10 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 {
 	timer t;
 
-	const unsigned int delay = 100000;
+	unsigned int delay = 100000;
 	unsigned int time = 0;
 
-	static int16_t i=0;
+	int i = 0;
 	ctrl_proto_values_t InOut;
 	ctrl_proto_values_t InOutOld;
 	InOut = init_ctrl_proto();
@@ -31,62 +31,53 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 
 	while(1)
 	{
+		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
+
 		i++;
 		if(i >= 999)
 			i = 100;
-		InOut.position_actual=i;
-		InOut.torque_actual=i;
-		InOut.velocity_actual=i;
 
-
-
-		InOut.status_word = 32000;	//undefined
-
-		ctrlproto_protocol_handler_function(pdo_out,pdo_in,InOut);
-		//velocity_sdo_update(coe_out);
-		//config_sdo_handler(coe_out);
-
+		InOut.position_actual = i;
+		InOut.torque_actual = i;
+		InOut.velocity_actual = i;
+		InOut.status_word = 255;
 		InOut.operation_mode_display = InOut.operation_mode;
-//		printhexln(InOut.control_word);
-//		printhexln(InOut.operation_mode);
-//		printhexln(InOut.target_position);
-//		printhexln(InOut.target_velocity);
-//		printhexln(InOut.target_torque);
 
-//		if(InOutOld.control_word != InOut.control_word)
-//		{
-//			printstr("\nMotor: ");
-//			printintln(InOut.control_word);
-//		}
-//
-//		if(InOutOld.operation_mode != InOut.operation_mode )
-//		{
-//			printstr("\nOperation mode: ");
-//			printintln(InOut.operation_mode);
-//		}
-//
-//		if(InOutOld.target_position != InOut.target_position)
-//		{
-//			printstr("\nPosition: ");
-//			printintln(InOut.target_position);
-//		}
-//
-//		if(InOutOld.target_velocity != InOut.target_velocity)
-//		{
-//			printstr("\nSpeed: ");
-//			printintln(InOut.target_velocity);
-//		}
-//
-//		if(InOutOld.target_torque != InOut.target_torque )
-//		{
-//			printstr("\nTorque: ");
-//			printintln(InOut.target_torque);
-//		}
-//	   InOutOld.control_word 	= InOut.control_word;
-//	   InOutOld.target_position = InOut.target_position;
-//	   InOutOld.target_velocity = InOut.target_velocity;
-//	   InOutOld.target_torque = InOut.target_torque;
-//	   InOutOld.operation_mode = InOut.operation_mode;
+
+		if(InOutOld.control_word != InOut.control_word)
+		{
+			printstr("\nMotor: ");
+			printintln(InOut.control_word);
+		}
+
+		if(InOutOld.operation_mode != InOut.operation_mode )
+		{
+			printstr("\nOperation mode: ");
+			printintln(InOut.operation_mode);
+		}
+
+		if(InOutOld.target_position != InOut.target_position)
+		{
+			printstr("\nPosition: ");
+			printintln(InOut.target_position);
+		}
+
+		if(InOutOld.target_velocity != InOut.target_velocity)
+		{
+			printstr("\nSpeed: ");
+			printintln(InOut.target_velocity);
+		}
+
+		if(InOutOld.target_torque != InOut.target_torque )
+		{
+			printstr("\nTorque: ");
+			printintln(InOut.target_torque);
+		}
+	   InOutOld.control_word 	= InOut.control_word;
+	   InOutOld.target_position = InOut.target_position;
+	   InOutOld.target_velocity = InOut.target_velocity;
+	   InOutOld.target_torque = InOut.target_torque;
+	   InOutOld.operation_mode = InOut.operation_mode;
 
 	   t when timerafter(time+delay) :> time;
 

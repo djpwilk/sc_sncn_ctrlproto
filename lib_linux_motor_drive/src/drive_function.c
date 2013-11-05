@@ -207,6 +207,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf("updating motor parameters\n");
 	fflush(stdout);
 	/***** Set up Parameters *****/
+	slv_handles[slave_number].motor_config_param.update_flag = 0;
 	while(1)
 	{
 		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -310,6 +311,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	if(operation_mode == CST || operation_mode == TQ)
 	{
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -325,6 +327,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 		}
 
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -340,6 +343,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 		}
 
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -355,6 +359,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 		}
 
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -374,6 +379,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	else if (operation_mode == CSV)
 	{
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -389,6 +395,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 		}
 
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -406,6 +413,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	}
 	else if (operation_mode == CSP)
 	{
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -421,6 +429,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 		}
 
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -440,6 +449,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	else if (operation_mode == PV)
 	{
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -454,6 +464,8 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 				fflush(stdout);
 			}
 		}
+
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -472,6 +484,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	else if (operation_mode == PP)
 	{
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)
@@ -487,6 +500,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 		}
 
+		slv_handles[slave_number].motor_config_param.update_flag = 0;
 		while(1)
 		{
 			if(slv_handles[slave_number].motor_config_param.update_flag == 1)

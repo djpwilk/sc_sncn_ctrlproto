@@ -4,13 +4,9 @@ SOURCE_DIRS = src
 MASTER_INSTALLDIR := /opt/etherlab
 
 SOURCES += src/main.c
-SOURCES += ../../sc_sncn_motorctrl_sin/module_profile/profile_velocity_mode/profile_velocity.c
 
 INCLUDE_DIRS += -I ../inc_ctrlproto-common   
 INCLUDE_DIRS += -I config/motor
-#sc_sncn_motorctrl_sin/module_profile
-#INCLUDE_DIRS += -I ../module_ctrlproto/src
-INCLUDE_DIRS += -I ../../sc_sncn_motorctrl_sin/module_profile/include
 
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
 INCLUDE_DIRS += -I ../lib_linux_ctrlproto/include
