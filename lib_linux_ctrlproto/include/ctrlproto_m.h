@@ -12,7 +12,8 @@
 #include <ecrt.h>
 #include <inttypes.h>
 #include <motor_define.h>
-
+#include "bldc_motor_config_1.h"
+#include "bldc_motor_config_2.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -139,10 +140,10 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{QUICK_STOP_DECELERATION(CONFIG_NUMBER), 0},\
 		{PROFILE_VELOCITY(CONFIG_NUMBER), 0},\
 		\
-		{QEI_OFFSET_CLK(CONFIG_NUMBER), 0},\
-		{QEI_OFFSET_CCLK(CONFIG_NUMBER), 0},\
-		{QEI_COMMUTATION_OFFSET_CLK(CONFIG_NUMBER), 0},\
-		{QEI_COMMUTATION_OFFSET_CCLK(CONFIG_NUMBER), 0},\
+		{0, 0},\
+		{0, 0},\
+		{0, 0},\
+		{0, 0},\
 		\
 		0},\
 		0.0f,\

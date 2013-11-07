@@ -453,7 +453,7 @@ ec_sdo_request_t* _config_sdo_request(ec_slave_config_t *slave_config, ec_sdo_re
 		fprintf(stderr, "Failed to create SDO request for object 0x%4x\n", index);
 		exit(-1);
 	}
-	ecrt_sdo_request_timeout(request, 500);
+	ecrt_sdo_request_timeout(request, 10500);
 	return request;
 }
 
@@ -464,7 +464,7 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 	request[2] = _config_sdo_request(slave_config, request[2], CIA402_MOTOR_SPECIFIC, 1, 4);  //nominal current
 	request[3] = _config_sdo_request(slave_config, request[3], CIA402_MOTOR_SPECIFIC, 4, 4);	//nominal speed
 	request[4] = _config_sdo_request(slave_config, request[4], CIA402_POLARITY, 0, 4);
-	request[5] = _config_sdo_request(slave_config, request[5], CIA402_MOTOR_SPECIFIC, 3, 1);  //pole pairs
+	request[5] = _config_sdo_request(slave_config, request[5], CIA402_MOTOR_SPECIFIC, 3, 4);  //pole pairs
 	request[6] = _config_sdo_request(slave_config, request[6], CIA402_POSITION_ENC_RESOLUTION, 0, 2);
 	request[7] = _config_sdo_request(slave_config, request[7], CIA402_SENSOR_SELECTION_CODE, 0, 2);
 
@@ -493,10 +493,10 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 	request[25] = _config_sdo_request(slave_config, request[25], CIA402_CURRENT_GAIN, 2, 4);
 	request[26] = _config_sdo_request(slave_config, request[26], CIA402_CURRENT_GAIN, 3, 4);
 
-	request[27] = _config_sdo_request(slave_config, request[27], CIA402_QEI_OFFSET, 1, 2);
+/*	request[27] = _config_sdo_request(slave_config, request[27], CIA402_QEI_OFFSET, 1, 2);
 	request[28] = _config_sdo_request(slave_config, request[28], CIA402_QEI_OFFSET, 2, 2);
 	request[29] = _config_sdo_request(slave_config, request[29], CIA402_QEI_OFFSET, 3, 2);
-	request[30] = _config_sdo_request(slave_config, request[30], CIA402_QEI_OFFSET, 4, 2);
+	request[30] = _config_sdo_request(slave_config, request[30], CIA402_QEI_OFFSET, 4, 2);*/
 }
 
 int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
@@ -506,7 +506,9 @@ int _motor_config_update(ec_sdo_request_t *request, int update, int value, int s
 	{
 		write_sdo(request, value);
 		pause();
+		pause();
 		sdo_update_value = read_sdo(request);
+		pause();
 		pause();
 		if(sdo_update_value == value)
 		{
@@ -564,7 +566,7 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 	}
 
-	else if (update_sequence == QEI_CALIBRATE_UPDATE)
+/*	else if (update_sequence == QEI_CALIBRATE_UPDATE)
 	{
 		if(!motor_config_param.s_qei_offset_clk.update_state)
 			motor_config_param.s_qei_offset_clk.update_state = _motor_config_update(request[27], \
@@ -592,7 +594,7 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 					& motor_config_param.s_qei_commutation_offset_cclk.update_state;
 
 	}
-
+*/
 	else if(update_sequence == CST_MOTOR_UPDATE)
 	{
 		if(!motor_config_param.s_max_torque.update_state)
@@ -776,5 +778,6 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 	return motor_config_param;
 }
+
 
 

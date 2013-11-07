@@ -1,7 +1,6 @@
 #ifndef MOTOR_DEFINE_H_
 #define MOTOR_DEFINE_H_
-#include "bldc_motor_config_1.h"
-#include "bldc_motor_config_2.h"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -244,10 +243,6 @@ typedef struct
 #define PROFILE_DECELERATION(n)  	PROFILE_DECELERATION_##n
 #define QUICK_STOP_DECELERATION(n) 	QUICK_STOP_DECELERATION_##n
 
-#define QEI_OFFSET_CLK(n) 			QEI_OFFSET_CLK_##n
-#define QEI_OFFSET_CCLK(n) 			QEI_OFFSET_CCLK_##n
-#define QEI_COMMUTATION_OFFSET_CLK(n)	QEI_COMMUTATION_OFFSET_CLK_##n
-#define QEI_COMMUTATION_OFFSET_CCLK(n) 	QEI_COMMUTATION_OFFSET_CCLK_##n
 
 #ifdef __cplusplus
 }
