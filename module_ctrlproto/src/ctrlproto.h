@@ -80,7 +80,7 @@ int sensor_select_sdo(chanend coe_out);
 
 {int, int, int, int, int} cst_sdo_update(chanend coe_out);
 
-{int, int, int, int} csv_sdo_update(chanend coe_out);
+{int, int, int, int, int} csv_sdo_update(chanend coe_out);
 
 {int, int, int, int, int, int} csp_sdo_update(chanend coe_out);
 

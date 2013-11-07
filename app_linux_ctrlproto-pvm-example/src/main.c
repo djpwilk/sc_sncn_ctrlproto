@@ -26,8 +26,10 @@ int main()
 	int slave_number = 0;
 	int ack = 0;
 
-
+	printf(" gear %d", slv_handles[slave_number].motor_config_param.s_gear_ratio.gear_ratio);
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -40,9 +42,9 @@ int main()
 
 		if(master_setup.op_flag)//Check if we are up
 		{
-			set_velocity(target_velocity, slave_number, slv_handles);
+			set_velocity_rpm(target_velocity, slave_number, slv_handles);
 			ack = target_velocity_reached(slave_number, target_velocity, tolerance, slv_handles);
-			actual_velocity =  get_velocity_actual(slave_number, slv_handles);
+			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
 			printf("velocity %d ack %d\n", actual_velocity, ack);
 		}
 		if(ack == 1)
@@ -59,7 +61,7 @@ int main()
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 		if(master_setup.op_flag)//Check if we are up
 		{
-			actual_velocity =  get_velocity_actual(slave_number, slv_handles);
+			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
 			if(actual_velocity > 0 || actual_velocity < 0)
 			{
 				quick_stop_velocity(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -75,7 +77,7 @@ int main()
 //		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 //		if(master_setup.op_flag)//Check if we are up
 //		{
-//			actual_velocity =  get_velocity_actual(slave_number, slv_handles);
+//			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
 //			printf("velocity %d \n", actual_velocity);
 //		}
 //	}
@@ -97,9 +99,9 @@ int main()
 
 		if(master_setup.op_flag)//Check if we are up
 		{
-			set_velocity(target_velocity, slave_number, slv_handles);
+			set_velocity_rpm(target_velocity, slave_number, slv_handles);
 			ack = target_velocity_reached(slave_number, target_velocity, tolerance, slv_handles);
-			actual_velocity =  get_velocity_actual(slave_number, slv_handles);
+			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
 			printf("velocity %d ack %d\n", actual_velocity, ack);
 		}
 		if(ack == 1)
@@ -114,7 +116,7 @@ int main()
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 		if(master_setup.op_flag)//Check if we are up
 		{
-			actual_velocity =  get_velocity_actual(slave_number, slv_handles);
+			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
 			printf("velocity %d \n", actual_velocity);
 		}
 	}

@@ -173,6 +173,20 @@ void config_sdo_handler(chanend coe_out)
 	return {nominal_current, max_motor_speed, polarity, max_torque, motor_torque_constant};
 }
 
+{int, int, int, int, int} csv_sdo_update(chanend coe_out)
+{
+	int max_motor_speed, nominal_current, polarity, motor_torque_constant, max_acceleration;
+
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
+
+	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
+	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration)
+	//printintln(max_motor_speed);printintln(nominal_current);printintln(polarity);printintln(max_acceleration);printintln(motor_torque_constant);
+	return {max_motor_speed, nominal_current, polarity, max_acceleration, motor_torque_constant};
+}
+
 {int, int, int, int, int, int} csp_sdo_update(chanend coe_out)
 {
 	int  max_motor_speed, polarity, nominal_current, min, max, max_acc;
@@ -216,17 +230,7 @@ int sensor_select_sdo(chanend coe_out)
 	return {pole_pairs, gear_ratio};
 }
 
-{int, int, int, int} csv_sdo_update(chanend coe_out)
-{
-	int max_motor_speed, nominal_current, polarity, motor_torque_constant, max_acceleration;
 
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
-	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
-	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
-	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration)
-
-	return {max_motor_speed, nominal_current, polarity, max_acceleration};
-}
 
 {int, int, int} qei_sdo_update(chanend coe_out)
 {

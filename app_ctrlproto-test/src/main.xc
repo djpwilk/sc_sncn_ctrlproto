@@ -1,11 +1,11 @@
-/* app_ethercat_test
+/* app_ctrlproto_test
  *
  * Test appliction for module_ethercat.
  *
  * Copyright 2011, Synapticon GmbH. All rights reserved.
  * Author: Frank Jeschke <jeschke@fjes.de>
  * Changes: Christian Holl <choll@synapticon.com>
- * TODO make independent of motor_ctrl
+ *
  */
 
 #include <platform.h>
@@ -14,6 +14,7 @@
 #include <foefs.h>
 #include <print.h>
 #include <ctrlproto.h>
+#include <flash_somanet.h>
 
 
 static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
@@ -87,16 +88,18 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 
 
 
-int main(void) {
-	chan coe_in;   ///< CAN from module_ethercat to consumer
-	chan coe_out;  ///< CAN from consumer to module_ethercat
-	chan eoe_in;   ///< Ethernet from module_ethercat to consumer
-	chan eoe_out;  ///< Ethernet from consumer to module_ethercat
+int main(void)
+{
+	chan coe_in;  	 	///< CAN from module_ethercat to consumer
+	chan coe_out;  		///< CAN from consumer to module_ethercat
+	chan eoe_in;   		///< Ethernet from module_ethercat to consumer
+	chan eoe_out;  		///< Ethernet from consumer to module_ethercat
 	chan eoe_sig;
-	chan foe_in;   ///< File from module_ethercat to consumer
-	chan foe_out;  ///< File from consumer to module_ethercat
+	chan foe_in;   		///< File from module_ethercat to consumer
+	chan foe_out;  		///< File from consumer to module_ethercat
 	chan pdo_in;
 	chan pdo_out;
+	chan c_sig;
 
 	par
 	{
@@ -105,6 +108,10 @@ int main(void) {
 			ecat_handler(coe_out, coe_in, eoe_out, eoe_in, eoe_sig, foe_out, foe_in, pdo_out, pdo_in);
 		}
 
+		on stdcore[0] :
+		{
+			firmware_update(foe_out, foe_in, c_sig); // firmware update over EtherCat
+		}
 
 		on stdcore[0] : {
 			pdo_handler(coe_out, pdo_out, pdo_in);

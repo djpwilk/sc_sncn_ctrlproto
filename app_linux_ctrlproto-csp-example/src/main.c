@@ -24,9 +24,11 @@ int main()
 	int position_ramp = 0;
 
 	int slave_number = 0;
-
+printf(" gear %d", slv_handles[slave_number].motor_config_param.s_gear_ratio.gear_ratio);
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -47,14 +49,14 @@ int main()
 			if(i<steps && flag == 0)
 			{
 				position_ramp = position_profile_generate(i);
-				set_position_deg(position_ramp, slave_number, slv_handles);
+				set_position_degree(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
 
 			if(i<steps - steps/2&& flag == 1)
 			{
 				position_ramp = position_profile_generate(i);
-				set_position_deg(position_ramp, slave_number, slv_handles);
+				set_position_degree(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
 			else if(flag == 1 && i >=steps-steps/2)
@@ -63,14 +65,14 @@ int main()
 			}
 			if(i>=steps && flag == 0)
 			{
-				actual_position = get_position_actual_deg(slave_number, slv_handles);
+				actual_position = get_position_actual_degree(slave_number, slv_handles);
 				target_position = 50.0f; velocity = 1350; acceleration = 350; deceleration = 350;
 				steps = init_position_profile_params(target_position, actual_position,	velocity, acceleration, deceleration);
 				i = 1;
 				flag = 1;
 			}
 
-			printf("actual position %f\n", get_position_actual_deg(slave_number, slv_handles));
+			printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
 		}
 	}
 
@@ -86,12 +88,12 @@ int main()
 //	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
-	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+/*	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
-	actual_position = get_position_actual_deg(slave_number, slv_handles);
+	actual_position = get_position_actual_degree(slave_number, slv_handles);
 	target_position = (actual_position + 200.0f);  //degree
 	if(target_position>360.0f)
 		target_position = target_position - 360.0f;
@@ -112,21 +114,21 @@ int main()
 			if(i<steps)
 			{
 				position_ramp = position_profile_generate(i);
-				set_position_deg(position_ramp, slave_number, slv_handles);
+				set_position_degree(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
 			else if(i>=steps)
 				break;
 		}
-		printf("actual position %f\n", get_position_actual_deg(slave_number, slv_handles));
+		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
 	}
 
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		printf("actual position %f\n", get_position_actual_deg(slave_number, slv_handles));
-	}
+		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
+	}*/
 	//shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 

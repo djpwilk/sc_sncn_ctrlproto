@@ -23,9 +23,11 @@ int main()
 
 	int slave_number = 0;
 	int ack = 0;
-
+	printf(" gear %d", slv_handles[slave_number].motor_config_param.s_gear_ratio.gear_ratio);
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -33,16 +35,16 @@ int main()
 
 
 	ack = 0;
+	target_position = 350.0f;
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		target_position = 350.0f;
 		if(master_setup.op_flag)//Check if we are up
 		{
-			set_profile_position_deg(target_position, slave_number, slv_handles);
+			set_profile_position_degree(target_position, slave_number, slv_handles);
 			ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
-			actual_position = get_position_actual_deg(slave_number, slv_handles);
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
 			printf("position %f ack %d\n", actual_position, ack);
 		}
 		if(ack == 1)
@@ -54,15 +56,16 @@ int main()
 	printf("reached \n");
 
 	flag_position_set = 0;
+	target_position = 30.0f;
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-		target_position = 30.0f;
+
 		if(master_setup.op_flag)//Check if we are up
 		{
-			set_profile_position_deg(target_position, slave_number, slv_handles);
+			set_profile_position_degree(target_position, slave_number, slv_handles);
 			flag_position_set = position_set_flag(slave_number, slv_handles); 		//ensures the new way point is taken awhen ack = 0;
-			actual_position = get_position_actual_deg(slave_number, slv_handles);
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
 
 			printf("position %f ack %d   position_set_flag %d\n", actual_position, ack , flag_position_set);
 		}
@@ -79,7 +82,7 @@ int main()
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 		if(master_setup.op_flag)//Check if we are up
 		{
-			actual_position = get_position_actual_deg(slave_number, slv_handles);
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
 			if(actual_position < 50.0f)
 			{
 				quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -96,7 +99,7 @@ int main()
 //		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 //		if(master_setup.op_flag)//Check if we are up
 //		{
-//			actual_position = get_position_actual_deg(slave_number, slv_handles);
+//			actual_position = get_position_actual_degree(slave_number, slv_handles);
 //			printf("position %f \n", actual_position);
 //		}
 //	}
@@ -109,15 +112,15 @@ int main()
 //	shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
-
+	target_position = 300.0f;
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-		target_position = 300.0f;
+
 		if(master_setup.op_flag)//Check if we are up
 		{
-			set_profile_position_deg(target_position, slave_number, slv_handles);
-			actual_position = get_position_actual_deg(slave_number, slv_handles);
+			set_profile_position_degree(target_position, slave_number, slv_handles);
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
 			ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
 			printf("position %f ack %d\n", actual_position, ack);
 		}

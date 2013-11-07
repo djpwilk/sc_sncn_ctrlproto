@@ -22,10 +22,12 @@ int main()
 	float actual_torque = 0.0;
 
 	int slave_number = 0;
-
+	printf(" gear %d", slv_handles[slave_number].motor_config_param.s_gear_ratio.gear_ratio);
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	initialize_torque(slave_number, slv_handles);
+
+	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(CST, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -144,14 +146,14 @@ int main()
 		{
 
 			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
-			printf("actual_torque %f \n",actual_torque);
+			printf("actual_torque %f \n", actual_torque);
 		}
 	}
 
 
 
 	//shutdown_operation(CST, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-while(1);
+
 	return 0;
 }
 

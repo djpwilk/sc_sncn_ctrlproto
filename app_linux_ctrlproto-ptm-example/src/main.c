@@ -18,8 +18,11 @@ int main()
 	int ack = 0;
 
 	int slave_number = 0;
+	printf(" gear %d", slv_handles[slave_number].motor_config_param.s_gear_ratio.gear_ratio);
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	initialize_torque(slave_number, slv_handles);
 

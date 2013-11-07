@@ -9,7 +9,7 @@ TARGET = C22
 APP_NAME = app_ctrlproto-test
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = module_ctrlproto sc_sncn_ethercat/module_ethercat
+USED_MODULES = module_ctrlproto sc_sncn_ethercat/module_ethercat sc_somanet-base/module_fwupdate
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:

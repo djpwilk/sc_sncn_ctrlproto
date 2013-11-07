@@ -23,7 +23,7 @@ extern int init_linear_profile_float(float target_value, float actual_value, flo
  */
 int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
-
+void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 /**
  * \brief Enables the operation mode specified
  *
@@ -49,6 +49,7 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
 
 
 int quick_stop_torque(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
+
 /**
  * \brief Sets target position cyclically for Cyclic Synchronous Position(CSP) mode only
  *
@@ -56,7 +57,7 @@ int quick_stop_torque(int slave_number, master_setup_variables_t *master_setup, 
  * \param slave_number			Specify the slave number to which the motor is connected
  * \param slv_handles 			The handle struct for the slaves
  */
-void set_position_deg(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
+void set_position_degree(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 /**
@@ -66,7 +67,7 @@ void set_position_deg(int target_position, int slave_number, ctrlproto_slv_handl
  * \param slave_number			Specify the slave number to which the motor is connected
  * \param slv_handles 			The handle struct for the slaves
  */
-void set_profile_position_deg(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
+void set_profile_position_degree(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 /**
@@ -77,7 +78,7 @@ void set_profile_position_deg(float target_position, int slave_number, ctrlproto
  *
  * \return actual_position from the slave number specified
  */
-float get_position_actual_deg(int slave_number, ctrlproto_slv_handle *slv_handles);
+float get_position_actual_degree(int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 /**
@@ -124,15 +125,12 @@ void initialize_torque(int slave_number, ctrlproto_slv_handle *slv_handles);
 
 int init_linear_profile_params(float target_torque, float actual_torque, float torque_slope, int slave_number, ctrlproto_slv_handle *slv_handles);
 
-float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles);
-
-int get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles);
-
 void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
 
-void set_torque(int target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
+float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles);
 
 int target_torque_reached(int slave_number, float target_torque, float tolerance, ctrlproto_slv_handle *slv_handles);
+
 /**
  * \brief Sets target velocity for Profile Velocity mode(PPM) & Cyclic Synchronous Velocity(CSV) mode
  *
@@ -140,7 +138,7 @@ int target_torque_reached(int slave_number, float target_torque, float tolerance
  * \param slave_number			Specify the slave number to which the motor is connected
  * \param slv_handles 			The handle struct for the slaves
  */
-void set_velocity(int target_velocity, int slave_number, ctrlproto_slv_handle *slv_handles);
+void set_velocity_rpm(int target_velocity, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 /**
@@ -151,7 +149,7 @@ void set_velocity(int target_velocity, int slave_number, ctrlproto_slv_handle *s
  *
  * \return actual_velocity in rpm from the slave number specified
  */
-int get_velocity_actual(int slave_number, ctrlproto_slv_handle *slv_handles);
+int get_velocity_actual_rpm(int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 /**

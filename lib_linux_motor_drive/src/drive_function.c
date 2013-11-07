@@ -43,19 +43,9 @@ int check_shutdown_active(int status_word)
 	return (status_word & VOLTAGE_ENABLED_STATE)>>4;
 }
 
-void set_torque(int target_torque, int slave_number, ctrlproto_slv_handle *slv_handles)
-{
-	slv_handles[slave_number].torque_setpoint = target_torque;
-}
-
-void set_velocity(int target_velocity, int slave_number, ctrlproto_slv_handle *slv_handles)
+void set_velocity_rpm(int target_velocity, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	slv_handles[slave_number].speed_setpoint = target_velocity;
-}
-
-int get_torque_actual(int slave_number, ctrlproto_slv_handle *slv_handles)
-{
-	return slv_handles[slave_number].torque_in;
 }
 
 void initialize_torque(int slave_number, ctrlproto_slv_handle *slv_handles)
@@ -82,22 +72,22 @@ float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles)
 			/slv_handles[slave_number].motor_config_param.s_motor_torque_constant.motor_torque_constant ;
 }
 
-int get_velocity_actual(int slave_number, ctrlproto_slv_handle *slv_handles)
+int get_velocity_actual_rpm(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	return slv_handles[slave_number].speed_in;
 }
 
-float get_position_actual_deg(int slave_number, ctrlproto_slv_handle *slv_handles)
+float get_position_actual_degree(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	return ((float)slv_handles[slave_number].position_in )/10000.0f;
 }
 
-void set_position_deg(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
+void set_position_degree(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	slv_handles[slave_number].position_setpoint = target_position;
 }
 
-void set_profile_position_deg(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
+void set_profile_position_degree(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	//int ack = 1;
 	slv_handles[slave_number].position_setpoint = (int) round( (target_position*10000.0f) );
@@ -148,7 +138,7 @@ int init_linear_profile_params(float target_torque, float actual_torque, float t
 
 int target_position_reached(int slave_number, float target_position, float tolerance, ctrlproto_slv_handle *slv_handles)
 {
-	float actual_position =  get_position_actual_deg(slave_number, slv_handles);
+	float actual_position =  get_position_actual_degree(slave_number, slv_handles);
 //	printf("\n act pos %f", actual_position);
 	if(actual_position > target_position-tolerance/2.0f && actual_position < target_position + tolerance/2.0f)
 	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
@@ -164,7 +154,7 @@ int target_position_reached(int slave_number, float target_position, float toler
 
 int target_velocity_reached(int slave_number, int target_velocity, int tolerance, ctrlproto_slv_handle *slv_handles)
 {
-	int actual_velocity =  get_velocity_actual(slave_number, slv_handles);
+	int actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
 //	printf("\n act vel %d min %d max %d \n", actual_velocity , target_velocity-tolerance/2,  target_velocity + tolerance/2);
 	if(actual_velocity > target_velocity-tolerance/2 && actual_velocity < target_velocity + tolerance/2)
 	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
@@ -194,6 +184,20 @@ int target_torque_reached(int slave_number, float target_torque, float tolerance
 		return 0;
 }
 
+void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
+{
+	//check if node settings are up
+	set_controlword(5, slave_number, slv_handles);
+	while(1)
+	{
+		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
+		if(master_setup->op_flag)
+		{
+			if(slv_handles[slave_number].operation_mode_disp == 105)
+				break;
+		}
+	}
+}
 int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	int ready = 0;
@@ -207,6 +211,8 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf("updating motor parameters\n");
 	fflush(stdout);
 	/***** Set up Parameters *****/
+
+
 	slv_handles[slave_number].motor_config_param.update_flag = 0;
 	while(1)
 	{
@@ -613,7 +619,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 		else
 			continue;
 	}
-	set_position_deg(get_position_actual_deg(slave_number, slv_handles)*10000, slave_number, slv_handles);
+	set_position_degree(get_position_actual_degree(slave_number, slv_handles)*10000, slave_number, slv_handles);
 	#ifndef print_slave
 	printf("ack stop received \n");
 	fflush(stdout);
@@ -795,68 +801,4 @@ int renable_velocity_ctrl(int slave_number, master_setup_variables_t *master_set
 	fflush(stdout);
 	#endif
 }
-void run_drive()
-{
-/*	int ready = 0;
-	int switch_enable = 0;
-	int status_word = 0;
-	int switch_on_state = 0;
-	int op_enable_state = 0;
-	int control_word;
 
-	while(!ready)
-	{
-		//check ready
-		status_word = get_statusword(info);
-		ready = check_ready(status_word);
-	}
-#ifndef print_slave
-	printstrln("ready");
-#endif
-
-	while(!switch_enable)
-	{
-		//check switch
-		status_word = get_statusword(info);
-		switch_enable = check_switch_enable(status_word);
-	}
-#ifndef print_slave
-	printstrln("switch_enable");
-#endif
-
-	//out CW for S ON
-	control_word = SWITCH_ON_CONTROL;
-	set_controlword(control_word, info);
-
-
-	while(!switch_on_state)
-	{
-		set_controlword(control_word, info);
-		printintln(control_word);
-		//check switch_on_state
-		status_word = get_statusword(info);
-		switch_on_state = check_switch_on(status_word);
-	}
-
-#ifndef print_slave
-	printstrln("switch_on_state");
-#endif
-	//out CW for En OP
-	control_word = ENABLE_OPERATION_CONTROL;
-	set_controlword(control_word, info);
-
-	while(!op_enable_state)
-	{
-		//check op_enable_state
-		status_word = get_statusword(info);
-		op_enable_state = check_op_enable(status_word);
-	}
-
-#ifndef print_slave
-	printstrln("op_enable_state");
-#endif
-*/
-
-
-
-}
