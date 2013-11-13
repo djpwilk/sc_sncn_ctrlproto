@@ -555,6 +555,10 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				motor_config_param.s_motor_torque_constant.update_state,  \
 				motor_config_param.s_motor_torque_constant.motor_torque_constant, 7);
 
+		if(motor_config_param.s_motor_torque_constant.update_state && !motor_config_param.s_nominal_motor_speed.update_state)
+			motor_config_param.s_nominal_motor_speed.update_state = _motor_config_update(request[3],\
+				motor_config_param.s_nominal_motor_speed.update_state,  \
+				motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 8);
 
 		motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state \
 			& motor_config_param.s_max_acceleration.update_state \
@@ -562,7 +566,8 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 			& motor_config_param.s_position_encoder_resolution.update_state \
 			& motor_config_param.s_sensor_selection_code.update_state \
 			& motor_config_param.s_polarity.update_state \
-			& motor_config_param.s_motor_torque_constant.update_state;
+			& motor_config_param.s_motor_torque_constant.update_state\
+			& motor_config_param.s_nominal_motor_speed.update_state;
 
 	}
 
@@ -607,18 +612,17 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 	else if(update_sequence == CSV_MOTOR_UPDATE)
 	{
-		if(!motor_config_param.s_nominal_motor_speed.update_state)
+/*		if(!motor_config_param.s_nominal_motor_speed.update_state)
 			motor_config_param.s_nominal_motor_speed.update_state = _motor_config_update(request[3],\
 				motor_config_param.s_nominal_motor_speed.update_state,  \
-				motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 1);
+				motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 1);*/
 
-		if(motor_config_param.s_nominal_motor_speed.update_state && !motor_config_param.s_nominal_current.update_state)
+		if(!motor_config_param.s_nominal_current.update_state)
 			motor_config_param.s_nominal_current.update_state = _motor_config_update(request[2], \
 				motor_config_param.s_nominal_current.update_state,\
-				motor_config_param.s_nominal_current.nominal_current, 2);
+				motor_config_param.s_nominal_current.nominal_current, 1);
 
-		motor_config_param.update_flag = motor_config_param.s_nominal_current.update_state \
-			& motor_config_param.s_nominal_motor_speed.update_state;
+		motor_config_param.update_flag = motor_config_param.s_nominal_current.update_state;
 	}
 
 	else if(update_sequence == TORQUE_CTRL_UPDATE)

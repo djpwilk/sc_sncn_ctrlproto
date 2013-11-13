@@ -187,6 +187,13 @@ void config_sdo_handler(chanend coe_out)
 	return {max_motor_speed, nominal_current, polarity, max_acceleration, motor_torque_constant};
 }
 
+int speed_sdo_update(chanend coe_out)
+{
+	int max_motor_speed;
+	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
+	return max_motor_speed;
+}
+
 {int, int, int, int, int, int} csp_sdo_update(chanend coe_out)
 {
 	int  max_motor_speed, polarity, nominal_current, min, max, max_acc;

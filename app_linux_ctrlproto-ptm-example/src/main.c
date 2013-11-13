@@ -12,9 +12,9 @@
 
 int main()
 {
-	float target_torque = -15.0; //mNm
+	float target_torque = -25.0; //mNm
 	float actual_torque = 0;
-	float tolerance = .76; //mNm
+	float tolerance = 0.76; //mNm
 	int ack = 0;
 
 	int slave_number = 0;
@@ -41,6 +41,7 @@ int main()
 			set_torque_mNm(target_torque, slave_number, slv_handles);
 			ack = target_torque_reached(slave_number, target_torque, tolerance, slv_handles);
 			actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
+			printf("target_torque %f \n",target_torque);
 			printf("actual_torque %f ack %d\n", actual_torque, ack);
 		}
 
@@ -60,7 +61,7 @@ int main()
 		if(master_setup.op_flag)//Check if we are up
 		{
 			actual_torque =  get_torque_actual_mNm(slave_number, slv_handles);
-			if(actual_torque > 0.6f || actual_torque < -0.6f)
+			if(actual_torque > tolerance || actual_torque < -tolerance)
 			{
 				quick_stop_torque(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 				ack = 1;
@@ -76,7 +77,7 @@ int main()
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	target_torque = 27.0; //mNm
+	target_torque = 15.0; //mNm
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -87,6 +88,7 @@ int main()
 			set_torque_mNm(target_torque, slave_number, slv_handles);
 			ack = target_torque_reached(slave_number, target_torque, tolerance, slv_handles);
 			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
+			printf("target_torque %f \n",target_torque);
 			printf("actual_torque %f ack %d\n", actual_torque, ack);
 		}
 

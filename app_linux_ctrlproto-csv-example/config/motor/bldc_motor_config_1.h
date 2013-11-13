@@ -28,7 +28,7 @@
 #define TORQUE_SLOPE_1 					6000 	// mNm/s * IFM_RESOLUTION
 
 /*Position Sensor Types*/
-#define SENSOR_SELECTION_CODE_1     	HALL	// HALL/QEI_INDEX/QEI_NO_INDEX
+#define SENSOR_SELECTION_CODE_1     	QEI_INDEX	// HALL/QEI_INDEX/QEI_NO_INDEX
 
 /* control specific constants/variables */
 	/*Torque Control*/

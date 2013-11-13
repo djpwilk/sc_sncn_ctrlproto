@@ -12,7 +12,7 @@
 
 int main()
 {
-	float final_target_torque = 28.0;			//mNm
+	float final_target_torque = 25.0;			//mNm
 	float initial_torque = 0;					//mNm
 	float torque_slope = 10.0;					//mNm/s
 	int steps = 0;
@@ -112,7 +112,7 @@ int main()
 
 
 	i = 0;
-	final_target_torque = 10.0;
+	final_target_torque = -15.0;
 	actual_torque= 	get_torque_actual_mNm(slave_number, slv_handles);
 
 	steps = init_linear_profile_params(final_target_torque, actual_torque, torque_slope, slave_number, slv_handles);

@@ -89,4 +89,6 @@ int sensor_select_sdo(chanend coe_out);
 {int, int, int} velocity_sdo_update(chanend coe_out);
 
 {int, int, int} position_sdo_update(chanend coe_out);
+
+int speed_sdo_update(chanend coe_out);
 #endif

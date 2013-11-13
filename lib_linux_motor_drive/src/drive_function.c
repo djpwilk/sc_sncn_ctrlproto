@@ -61,15 +61,13 @@ void initialize_torque(int slave_number, ctrlproto_slv_handle *slv_handles)
 
 void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-	slv_handles[slave_number].torque_setpoint =  (int) round( (target_torque * \
-			slv_handles[slave_number].motor_config_param.s_motor_torque_constant.motor_torque_constant)/slv_handles[slave_number].factor_torq);
-	//printf("\n%d",slv_handles[slave_number].torque_setpoint );
+	slv_handles[slave_number].torque_setpoint =  (int) round( (target_torque)/slv_handles[slave_number].factor_torq);
+	//printf("\n%d  %f \n",slv_handles[slave_number].torque_setpoint ,round( (target_torque)/slv_handles[slave_number].factor_torq));
 }
 
 float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-	return (  ((float) slv_handles[slave_number].torque_in ) * slv_handles[slave_number].factor_torq )\
-			/slv_handles[slave_number].motor_config_param.s_motor_torque_constant.motor_torque_constant ;
+	return (  ((float) slv_handles[slave_number].torque_in ) * slv_handles[slave_number].factor_torq );
 }
 
 int get_velocity_actual_rpm(int slave_number, ctrlproto_slv_handle *slv_handles)
