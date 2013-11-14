@@ -7,7 +7,7 @@ INCLUDE_DIRS += -I ../../sc_sncn_ethercat/module_ethercat/src/canod/
 INCLUDE_DIRS += -I $(MASTER_INSTALLDIR)/include
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
 
-LIBS += -lethercat
+LIBS += -lethercat -lm
 
 all:
 

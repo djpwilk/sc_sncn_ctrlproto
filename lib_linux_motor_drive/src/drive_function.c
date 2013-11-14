@@ -373,6 +373,9 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			}
 			else
 			{
+				slv_handles[slave_number].motor_config_param.s_torque_slope.torque_slope = \
+						ceil( (float) slv_handles[slave_number].motor_config_param.s_torque_slope.torque_slope / slv_handles[slave_number].factor_torq);
+			//	printf("\n %d \n ",slv_handles[slave_number].motor_config_param.s_torque_slope.torque_slope);
 				sdo_handle_ecat(master_setup, slv_handles, TQ_MOTOR_UPDATE, slave_number);  //mode specific updates
 				printf (".");
 				fflush(stdout);

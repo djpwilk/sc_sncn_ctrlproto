@@ -26,7 +26,7 @@
 #define PROFILE_DECELERATION_1  		2000	// rpm/s
 #define QUICK_STOP_DECELERATION_1 		2000	// rpm/s
 #define MAX_TORQUE_1					MOTOR_TORQUE_CONSTANT_1 * IFM_RESOLUTION_1 * MAX_NOMINAL_CURRENT_1
-#define TORQUE_SLOPE_1 					6000 	// mNm/s * IFM_RESOLUTION
+#define TORQUE_SLOPE_1 					60 		// mNm/s
 
 
 /*Position Sensor Types*/

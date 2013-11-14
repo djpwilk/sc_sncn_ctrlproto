@@ -88,7 +88,7 @@ printf(" gear %d", slv_handles[slave_number].motor_config_param.s_gear_ratio.gea
 //	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
-/*	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -128,7 +128,7 @@ printf(" gear %d", slv_handles[slave_number].motor_config_param.s_gear_ratio.gea
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
-	}*/
+	}
 	//shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 

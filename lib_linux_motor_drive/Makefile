@@ -10,7 +10,7 @@ INCLUDE_DIRS += -I ../../sc_sncn_motorctrl_sin/module_profile/include
 SOURCES = ../../sc_sncn_motorctrl_sin/module_profile/profile_position_mode/profile_position.c
 LIB_DIRS += -L $(MASTER_INSTALLDIR)/lib
 
-LIBS += -lethercat
+LIBS += -lethercat -lm
 
 all:
 

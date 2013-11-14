@@ -5,7 +5,6 @@ MASTER_INSTALLDIR := /opt/etherlab
 
 SOURCES += src/main.c 
 SOURCES += ../../sc_sncn_motorctrl_sin/module_profile/profile_linear_mode/profile_linear.c
-SOURCES += ../../sc_sncn_motorctrl_sin/module_profile/profile_position_mode/profile_position.c
 
 INCLUDE_DIRS += -I ../inc_ctrlproto-common   
 INCLUDE_DIRS += -I config/motor

@@ -19,7 +19,7 @@ LIB_DIRS += -L ../lib_linux_ctrlproto/lib
 LIB_DIRS += -L ../lib_linux_motor_drive/lib
 
 LIBS += -lsncn_ctrlproto
-LIBS += -lethercat -lm -lsncn_motor_drive
+LIBS += -lethercat -lsncn_motor_drive -lm 
 
 FLAGS = -static
 FLAGS += -std=c99

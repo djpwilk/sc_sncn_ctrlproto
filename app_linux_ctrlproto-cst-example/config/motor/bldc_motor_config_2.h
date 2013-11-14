@@ -26,7 +26,7 @@
 #define PROFILE_DECELERATION_2  		2001		// rpm/s
 #define QUICK_STOP_DECELERATION_2 		2001		// rpm/s
 #define MAX_TORQUE_2					MOTOR_TORQUE_CONSTANT_2 * IFM_RESOLUTION_2 * MAX_NOMINAL_CURRENT_2
-#define TORQUE_SLOPE_2 					6001 		// mNm/s * IFM_RESOLUTION
+#define TORQUE_SLOPE_2 					60	 		// mNm/s
 
 /* Position Sensor Types */
 #define SENSOR_SELECTION_CODE_2     	HALL	// HALL/QEI_INDEX/QEI_NO_INDEX
