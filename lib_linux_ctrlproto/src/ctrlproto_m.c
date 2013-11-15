@@ -80,11 +80,9 @@
 
 /****************************************************************************/
 // Application parameters
-#define FREQUENCY 1000
-#define PRIORITY 1
+#define FREQUENCY 	1000	// KHz
+#define PRIORITY 	1
 
-// Optional features
-#define PARAMETER_UPDATE 1
 
 /****************************************************************************/
 
@@ -299,12 +297,12 @@ void pdo_handle_ecat(master_setup_variables_t *master_setup,
 			slv_handles[slv].torque_in = EC_READ_U16(master_setup->domain_pd + slv_handles[slv].__ecat_slave_in[4]);
 		}
 
-//		printf("\n%x", 	slv_handles[slv].motorctrl_status_in);
-//		printf("\n%x",  slv_handles[slv].operation_mode_disp);
-//		printf("\n%x",  slv_handles[slv].position_in);
-//		printf("\n%x",  slv_handles[slv].speed_in);
-//		printf("\n%x",  slv_handles[slv].torque_in);
-
+/*		printf("\n%x", 	slv_handles[slv].motorctrl_status_in);
+		printf("\n%x",  slv_handles[slv].operation_mode_disp);
+		printf("\n%x",  slv_handles[slv].position_in);
+		printf("\n%x",  slv_handles[slv].speed_in);
+		printf("\n%x",  slv_handles[slv].torque_in);
+*/
 
 		for(slv=0;slv<total_no_of_slaves;++slv)
 		{
@@ -396,9 +394,9 @@ void init_master(master_setup_variables_t *master_setup, ctrlproto_slv_handle *s
 		  exit(-1);
 		}
 
-	#if PARAMETER_UPDATE
+	//#if PARAMETER_UPDATE
 		motor_config_request(slv_handles[slv].slave_config, slv_handles[slv].__request);
-	#endif
+	//#endif
 	}
 
     if (ecrt_domain_reg_pdo_entry_list(master_setup->domain, master_setup->domain_regs)) {
@@ -493,10 +491,6 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 	request[25] = _config_sdo_request(slave_config, request[25], CIA402_CURRENT_GAIN, 2, 4);
 	request[26] = _config_sdo_request(slave_config, request[26], CIA402_CURRENT_GAIN, 3, 4);
 
-/*	request[27] = _config_sdo_request(slave_config, request[27], CIA402_QEI_OFFSET, 1, 2);
-	request[28] = _config_sdo_request(slave_config, request[28], CIA402_QEI_OFFSET, 2, 2);
-	request[29] = _config_sdo_request(slave_config, request[29], CIA402_QEI_OFFSET, 3, 2);
-	request[30] = _config_sdo_request(slave_config, request[30], CIA402_QEI_OFFSET, 4, 2);*/
 }
 
 int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
@@ -571,35 +565,6 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 	}
 
-/*	else if (update_sequence == QEI_CALIBRATE_UPDATE)
-	{
-		if(!motor_config_param.s_qei_offset_clk.update_state)
-			motor_config_param.s_qei_offset_clk.update_state = _motor_config_update(request[27], \
-					motor_config_param.s_qei_offset_clk.update_state,  \
-					motor_config_param.s_qei_offset_clk.qei_offset_clk, 1);
-
-		if(motor_config_param.s_qei_offset_clk.update_state && !motor_config_param.s_qei_offset_cclk.update_state)
-				motor_config_param.s_qei_offset_cclk.update_state = _motor_config_update(request[28], \
-						motor_config_param.s_qei_offset_cclk.update_state,  \
-						motor_config_param.s_qei_offset_cclk.qei_offset_cclk, 2);
-
-		if(motor_config_param.s_qei_offset_cclk.update_state && !motor_config_param.s_qei_commutation_offset_clk.update_state)
-				motor_config_param.s_qei_commutation_offset_clk.update_state = _motor_config_update(request[29], \
-						motor_config_param.s_qei_commutation_offset_clk.update_state,  \
-						motor_config_param.s_qei_commutation_offset_clk.qei_commutation_offset_clk, 3);
-
-		if(motor_config_param.s_qei_commutation_offset_clk.update_state && !motor_config_param.s_qei_commutation_offset_cclk.update_state)
-				motor_config_param.s_qei_commutation_offset_cclk.update_state = _motor_config_update(request[30], \
-						motor_config_param.s_qei_commutation_offset_cclk.update_state,  \
-						motor_config_param.s_qei_commutation_offset_cclk.qei_commutation_offset_cclk, 4);
-
-		motor_config_param.update_flag = motor_config_param.s_qei_offset_clk.update_state\
-					& motor_config_param.s_qei_offset_cclk.update_state\
-					& motor_config_param.s_qei_commutation_offset_clk.update_state\
-					& motor_config_param.s_qei_commutation_offset_cclk.update_state;
-
-	}
-*/
 	else if(update_sequence == CST_MOTOR_UPDATE)
 	{
 		if(!motor_config_param.s_max_torque.update_state)
@@ -612,11 +577,6 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 	else if(update_sequence == CSV_MOTOR_UPDATE)
 	{
-/*		if(!motor_config_param.s_nominal_motor_speed.update_state)
-			motor_config_param.s_nominal_motor_speed.update_state = _motor_config_update(request[3],\
-				motor_config_param.s_nominal_motor_speed.update_state,  \
-				motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 1);*/
-
 		if(!motor_config_param.s_nominal_current.update_state)
 			motor_config_param.s_nominal_current.update_state = _motor_config_update(request[2], \
 				motor_config_param.s_nominal_current.update_state,\
@@ -667,10 +627,6 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 		motor_config_param.update_flag = motor_config_param.s_velocity_p_gain.update_state \
 			& motor_config_param.s_velocity_i_gain.update_state \
 			& motor_config_param.s_velocity_d_gain.update_state;
-	//	printf("\n %d %d %d \n",motor_config_param.s_velocity_p_gain.update_state,\
-				motor_config_param.s_velocity_i_gain.update_state,\
-				motor_config_param.s_velocity_d_gain.update_state);
-
 	}
 
 	else if(update_sequence == POSITION_CTRL_UPDATE)
@@ -709,7 +665,6 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 	else if(update_sequence == TQ_MOTOR_UPDATE)
 	{
-		//printf("\n %d",motor_config_param.s_torque_slope.update_state);
 		if(!motor_config_param.s_torque_slope.update_state)
 			 motor_config_param.s_torque_slope.update_state = _motor_config_update(request[23], \
 				motor_config_param.s_torque_slope.update_state,  \
