@@ -25,6 +25,7 @@ else
 		gcc -c src/ctrlproto_m.c  $(INCLUDE_DIRS) $(LIBS) $(LIB_DIRS) -o lib/libsncn_ctrlproto.o;\
 		ar rcs lib/libsncn_ctrlproto.a lib/*.o;\
 		rm -f lib/*.o;\
+		rm -f lib/*.so;\
 		else echo \
 		"\n\
 		-----------------------------------------------------------------------------------------------------------------\n\
