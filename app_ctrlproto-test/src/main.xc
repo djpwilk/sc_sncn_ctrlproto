@@ -143,7 +143,8 @@ int main(void)
 			firmware_update(foe_out, foe_in, c_sig); 	// firmware update over EtherCat
 		}
 
-		on stdcore[0] : {
+		on stdcore[1] :
+		{
 			pdo_handler(coe_out, pdo_out, pdo_in);		// handle pdos from EtherCat
 		}
 	}
