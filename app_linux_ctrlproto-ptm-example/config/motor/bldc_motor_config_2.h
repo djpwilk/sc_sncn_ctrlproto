@@ -2,7 +2,7 @@
 /**
  *
  * \file bldc_motor_config_2.h
- *	Motor Control config file on PC
+ *	Motor Control config file for motor 2 on PC
  *
  *	Please define your the motor specifications here
  *
