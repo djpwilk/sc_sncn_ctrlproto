@@ -101,7 +101,7 @@
 #define POSITION_Ki_DENOMINATOR_2  		102000
 #define POSITION_Kd_NUMERATOR_2    		100
 #define POSITION_Kd_DENOMINATOR_2  		10000
-#define MAX_POSITION_LIMIT_2 			359		// degree
-#define MIN_POSITION_LIMIT_2 			-359	// degree
+#define MAX_POSITION_LIMIT_2 			350		// degree should not exceed 359
+#define MIN_POSITION_LIMIT_2 			-350	// degree should not exceed -359
 
 #endif

@@ -86,7 +86,7 @@ extern "C" {
  */
 void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
-
+int position_limit(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
 /**
  * \brief Sets operation mode via defines for modes of operation in drive_config.h
  *
