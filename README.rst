@@ -22,8 +22,7 @@ Key Features
 Known Issues
 ============
 
-   * Profile Torque Control not yet supported for IFM DC100 
-   * Cyclic Synchronous Torque Control not yet supported for IFM DC100
+   None
 
 Support
 =======
