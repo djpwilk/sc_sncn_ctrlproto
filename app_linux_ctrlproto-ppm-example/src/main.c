@@ -60,7 +60,7 @@ int main()
 	float actual_position = 0;			// degree
 	float target_position = -350.0f;	// degree
 
-	float tolerance = .1f;	 			// 0.1 degree
+	float tolerance = 1.0f;	 			// 1 degree
 
 	int slave_number = 0;
 	int ack = 0;

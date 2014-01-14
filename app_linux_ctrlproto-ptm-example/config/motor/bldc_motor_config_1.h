@@ -59,10 +59,10 @@
 #define ENCODER_RESOLUTION_1 			4000	// 4 x Max count of Quadrature Encoder (4X decoding)
 
 /* Somanet IFM Internal Config */
-#define IFM_RESOLUTION_1				DC900_RESOLUTION	// DC100_RESOLUTION /* Specifies the current sensor resolution/A
+#define IFM_RESOLUTION_1				DC100_RESOLUTION	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
 
 /* Changes direction of the motor drive */
-#define POLARITY_1 						-1		// 1 / -1
+#define POLARITY_1 						1		// 1 / -1
 
 /* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_1  		MAX_NOMINAL_SPEED_1
@@ -75,11 +75,11 @@
 #define TORQUE_SLOPE_1 					33	 	// mNm/s
 
 /* Position Sensor Types (select your sensor type here) */
-#define SENSOR_SELECTION_CODE_1     	QEI_INDEX 	//HALL/QEI_INDEX/QEI_NO_INDEX
+#define SENSOR_SELECTION_CODE_1     	HALL 	//HALL/QEI_INDEX/QEI_NO_INDEX
 
 /* Control specific constants/variables */
 	/*Torque Control (Mandatory if Torque control used)*/
-#define TORQUE_Kp_NUMERATOR_1 	   		50
+#define TORQUE_Kp_NUMERATOR_1 	   		20
 #define TORQUE_Kp_DENOMINATOR_1  		10
 #define TORQUE_Ki_NUMERATOR_1    		11
 #define TORQUE_Ki_DENOMINATOR_1  		110
@@ -101,7 +101,7 @@
 #define POSITION_Ki_DENOMINATOR_1  		102000
 #define POSITION_Kd_NUMERATOR_1    		100
 #define POSITION_Kd_DENOMINATOR_1  		10000
-#define MAX_POSITION_LIMIT_1 			359  	// degree
-#define MIN_POSITION_LIMIT_1 			-359	// degree
+#define MAX_POSITION_LIMIT_1 			350		// degree should not exceed 359
+#define MIN_POSITION_LIMIT_1 			-350	// degree should not exceed -359
 
 #endif
