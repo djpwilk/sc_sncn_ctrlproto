@@ -122,7 +122,7 @@ int main()
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	i = 0;
+	/*i = 0;
 	flag = 0;
 	final_target_velocity = 1000; //rpm
 	initial_velocity = get_velocity_actual_rpm(slave_number, slv_handles); //rpm
@@ -157,10 +157,10 @@ int main()
 		}
 	}
 
-
+*/
 
 	shutdown_operation(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//*/
+
 	return 0;
 }
 

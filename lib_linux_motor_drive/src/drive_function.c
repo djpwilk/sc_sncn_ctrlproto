@@ -260,7 +260,7 @@ int target_torque_reached(int slave_number, float target_torque, float tolerance
 void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	//check if node settings are up
-	set_controlword(5, slave_number, slv_handles);
+	set_controlword(6, slave_number, slv_handles);
 	while(1)
 	{
 		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
@@ -306,7 +306,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf ("\n");
 	fflush(stdout);
 
-	set_controlword(SHUTDOWN, slave_number, slv_handles);//*/
+	set_controlword(5, slave_number, slv_handles);//*/
 
 	/**********************check ready***********************/
 	while(!ready)

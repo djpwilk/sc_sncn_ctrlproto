@@ -53,9 +53,9 @@
 
 int main()
 {
-	float final_target_torque = 25.0;			//mNm
-	float initial_torque = 0;					//mNm
-	float torque_slope = 10.0;					//mNm/s
+	float final_target_torque = 25.0;			// mNm
+	float initial_torque = 0;					// mNm
+	float torque_slope = 10.0;					// mNm/s
 	int steps = 0;
 	int i = 1;
 
@@ -76,12 +76,12 @@ int main()
 
 	i = 0;
 	steps = init_linear_profile_params(final_target_torque, actual_torque, torque_slope, slave_number, slv_handles);
-	printf("steps %d \n", steps);
+
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag) // Check if the master is active
 		{
 			if(i<steps)
 			{
@@ -104,7 +104,7 @@ int main()
 	i = 0;
 	final_target_torque = 18.0;
 	steps = init_linear_profile_params(final_target_torque, actual_torque, torque_slope, slave_number, slv_handles);
-	printf("steps %d \n", steps);
+
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -152,12 +152,12 @@ int main()
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
-	i = 0;
+	/*i = 0;
 	final_target_torque = -15.0;
 	actual_torque= 	get_torque_actual_mNm(slave_number, slv_handles);
 
 	steps = init_linear_profile_params(final_target_torque, actual_torque, torque_slope, slave_number, slv_handles);
-	printf("steps %d \n", steps);
+
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -178,8 +178,8 @@ int main()
 				break;
 			}
 		}
-	}
-	while(1)
+	}*/
+/*	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -189,11 +189,11 @@ int main()
 			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
 			printf("actual_torque %f \n", actual_torque);
 		}
-	}
+	}*/
 
 
 
-	//shutdown_operation(CST, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	shutdown_operation(CST, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	return 0;
 }

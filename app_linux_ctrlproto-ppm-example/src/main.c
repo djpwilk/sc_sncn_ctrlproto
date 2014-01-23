@@ -50,15 +50,14 @@
 #include <sys/time.h>
 #include <time.h>
 
-//#define print_slave
+
 
 int main()
 {
-	int flag = 0;
 	int flag_position_set = 0;
 
 	float actual_position = 0;			// degree
-	float target_position = -350.0f;	// degree
+	float target_position = 350.0f;		// degree
 
 	float tolerance = 1.0f;	 			// 1 degree
 
@@ -75,12 +74,11 @@ int main()
 
 
 	ack = 0;
-	target_position = 350.0f;
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 			set_profile_position_degree(target_position, slave_number, slv_handles);
 			ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
@@ -149,9 +147,10 @@ int main()
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-//	shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
+/*
 	target_position = 300.0f;
 	while(1)
 	{
@@ -172,6 +171,7 @@ int main()
 	}
 
 	printf("reached \n");
+*/
 
 	//shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);//*/
 

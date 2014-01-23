@@ -55,11 +55,11 @@ int main()
 {
 	int flag = 0;
 
-	int acceleration = 350;				//rpm/s
-	int deceleration = 350;   			//rpm/s
-	int velocity = 1200;				//rpm
-	float actual_position = 0.0f;		//degree
-	float target_position = 350.0f;		//degree
+	int acceleration = 350;				// rpm/s
+	int deceleration = 350;   			// rpm/s
+	int velocity = 350;					// rpm
+	float actual_position = 0.0f;		// degree
+	float target_position = 350.0f;		// degree
 	int steps = 0;
 	int i = 1;
 	int position_ramp = 0;
@@ -84,7 +84,7 @@ int main()
 
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	//Check if the master is active
 		{
 			if(i<steps && flag == 0)
 			{
@@ -106,7 +106,7 @@ int main()
 			if(i>=steps && flag == 0)
 			{
 				actual_position = get_position_actual_degree(slave_number, slv_handles);
-				target_position = 50.0f; velocity = 1350; acceleration = 350; deceleration = 350;
+				target_position = 50.0f; velocity = 350; acceleration = 350; deceleration = 350;
 				steps = init_position_profile_params(target_position, actual_position,	velocity, acceleration, deceleration);
 				i = 1;
 				flag = 1;
@@ -121,12 +121,13 @@ int main()
 
 	renable_ctrl_quick_stop(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES); //after quick-stop
 
-//	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-//	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-//	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+/*
 
 	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -162,14 +163,15 @@ int main()
 		}
 		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
 	}
+*/
 
-	while(1)
+	/*while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
-	}
-	//shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	}*/
+//	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
 	return 0;

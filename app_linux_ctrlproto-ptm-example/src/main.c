@@ -53,9 +53,9 @@
 
 int main()
 {
-	float target_torque = -25.0; //mNm
+	float target_torque = -25.0; 	// mNm
 	float actual_torque = 0;
-	float tolerance = 0.76; //mNm
+	float tolerance = 0.76; 		// mNm
 	int ack = 0;
 
 	int slave_number = 0;
@@ -75,7 +75,7 @@ int main()
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 
 			set_torque_mNm(target_torque, slave_number, slv_handles);
@@ -98,7 +98,7 @@ int main()
 	while(!ack)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 			actual_torque =  get_torque_actual_mNm(slave_number, slv_handles);
 			if(actual_torque > tolerance || actual_torque < -tolerance)
@@ -117,12 +117,12 @@ int main()
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	target_torque = 15.0; //mNm
+	/*target_torque = 15.0; // mNm
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 
 			set_torque_mNm(target_torque, slave_number, slv_handles);
@@ -137,8 +137,8 @@ int main()
 			break;
 		}
 	}
-
-	printf("reached \n");
+*/
+	/*printf("reached \n");
 
 	while(1)
 	{
@@ -150,11 +150,11 @@ int main()
 			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
 			printf("actual_torque %f \n",actual_torque);
 		}
-	}
+	}*/
 
 
 
-	//shutdown_operation(TQ, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	shutdown_operation(TQ, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	return 0;
 }
