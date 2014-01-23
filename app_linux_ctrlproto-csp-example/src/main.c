@@ -106,7 +106,10 @@ int main()
 			if(i>=steps && flag == 0)
 			{
 				actual_position = get_position_actual_degree(slave_number, slv_handles);
-				target_position = 50.0f; velocity = 350; acceleration = 350; deceleration = 350;
+				target_position = 50.0f;
+				velocity = 350;
+				acceleration = 350;
+				deceleration = 350;
 				steps = init_position_profile_params(target_position, actual_position,	velocity, acceleration, deceleration);
 				i = 1;
 				flag = 1;
