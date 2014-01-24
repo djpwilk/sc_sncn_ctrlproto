@@ -16,3 +16,30 @@
 *.exe
 *.out
 *.app
+
+## ignore XDE(ecipse) files
+.metadata/
+
+## generic files to ignore
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+
+## ignore build directories
+## and binary stuff ...
+.build_*
+*.d
+*.a
+*.so
+*.xe
+*.o
+bin/
+
+#settings directory
+.settings
+
+## ignore KDE files
+.directory
+
