@@ -5,7 +5,7 @@
  *
  * \brief Test appliction for Ctrlproto on Somanet
  *
- * Copyright (c) 2013, Synapticon GmbH
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
  * Author: Frank Jeschke <jeschke@fjes.de> & Christian Holl <choll@synapticon.com>
  *
