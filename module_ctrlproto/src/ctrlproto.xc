@@ -5,7 +5,7 @@
  *
  * \brief Control Protocol Handler
  *
- * Copyright (c) 2013, Synapticon GmbH
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
  * Author: Christian Holl <choll@synapticon.com> & Pavan Kanajar <pkanajar@synapticon.com>
  *
@@ -71,14 +71,6 @@ void config_sdo_handler(chanend coe_out)
 	int sdo_value;
 
 
-/*	GET_SDO_DATA(CIA402_QEI_OFFSET, 1, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_QEI_OFFSET, 2, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_QEI_OFFSET, 3, sdo_value);
-	printintln(sdo_value);
-	GET_SDO_DATA(CIA402_QEI_OFFSET, 4, sdo_value);
-	printintln(sdo_value);*/
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, sdo_value);  //motor tor const
 	printintln(sdo_value);
 
@@ -222,7 +214,7 @@ void config_sdo_handler(chanend coe_out)
 
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
 	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration)
-	//printintln(max_motor_speed);printintln(nominal_current);printintln(polarity);printintln(max_acceleration);printintln(motor_torque_constant);
+
 	return {max_motor_speed, nominal_current, polarity, max_acceleration, motor_torque_constant};
 }
 
@@ -304,11 +296,10 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 
 	pdo_in <: DATA_REQUEST;
 	pdo_in :> count;
-	//printstr("count  ");
-	//printintln(count);
+
 	for (i = 0; i < count; i++) {
 		pdo_in :> buffer[i];
-		//printhexln(buffer[i]);
+
 	}
 
 	//Test for matching number of words
@@ -319,11 +310,7 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 		InOut.target_torque   =  ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
 		InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
 		InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
-//		printhexln(InOut.control_word);
-//		printhexln(InOut.operation_mode);
-//		printhexln(InOut.target_torque);
-//		printhexln(InOut.target_position);
-//		printhexln(InOut.target_velocity);
+
 	}
 
 	if(count > 0)

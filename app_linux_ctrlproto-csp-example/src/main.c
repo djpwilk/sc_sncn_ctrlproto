@@ -7,7 +7,7 @@
  *
  *
  *
- * Copyright (c) 2013, Synapticon GmbH
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
  * Author: Pavan Kanajar <pkanajar@synapticon.com> & Christian Holl <choll@synapticon.com>
  *
@@ -129,53 +129,6 @@ int main()
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-/*
-
-	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
-	actual_position = get_position_actual_degree(slave_number, slv_handles);
-	target_position = (actual_position + 200.0f);  //degree
-	if(target_position>360.0f)
-		target_position = target_position - 360.0f;
-	velocity = 1250;								//rpm
-	acceleration = 350;								//rpm/s
-	deceleration = 350;								//rpm/s
-
-	printf("target position %f\n", target_position);
-	steps = init_position_profile_params(target_position, actual_position,	velocity, acceleration, deceleration);
-	i = 0;
-
-	while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)//Check if we are up
-		{
-			if(i<steps)
-			{
-				position_ramp = position_profile_generate(i);
-				set_position_degree(position_ramp, slave_number, slv_handles);
-				i = i+1;
-			}
-			else if(i>=steps)
-				break;
-		}
-		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
-	}
-*/
-
-	/*while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
-	}*/
-//	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
 
 	return 0;
 }

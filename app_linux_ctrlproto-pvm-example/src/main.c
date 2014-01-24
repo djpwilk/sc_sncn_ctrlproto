@@ -108,17 +108,6 @@ int main()
 	}
 	printf("reached \n");
 
-//	while(1)
-//	{
-//		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//		if(master_setup.op_flag)//Check if we are up
-//		{
-//			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
-//			printf("velocity %d \n", actual_velocity);
-//		}
-//	}
-
-
 	renable_ctrl_quick_stop(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -127,36 +116,6 @@ int main()
 
 	shutdown_operation(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	/*target_velocity = -300;
-	while(1)
-	{
-
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)	// Check if the master is active
-		{
-			set_velocity_rpm(target_velocity, slave_number, slv_handles);
-			ack = target_velocity_reached(slave_number, target_velocity, tolerance, slv_handles);
-			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
-			printf("velocity %d ack %d\n", actual_velocity, ack);
-		}
-		if(ack == 1)
-		{
-			break;
-		}
-	}*/
-
-/*	printf("reached \n");
-	while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-		if(master_setup.op_flag)//Check if we are up
-		{
-			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
-			printf("velocity %d \n", actual_velocity);
-		}
-	}*/
-	//shutdown_operation(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 	return 0;
 }
 

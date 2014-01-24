@@ -7,7 +7,7 @@
  *
  *
  *
- * Copyright (c) 2013, Synapticon GmbH
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
  * Author: Pavan Kanajar <pkanajar@synapticon.com> & Christian Holl <choll@synapticon.com>
  *
@@ -99,7 +99,7 @@ int main()
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 			set_profile_position_degree(target_position, slave_number, slv_handles);
 			flag_position_set = position_set_flag(slave_number, slv_handles); 		//ensures the new way point is taken awhen ack = 0;
@@ -132,15 +132,6 @@ int main()
 	printf("reached \n");
 
 
-//	while(1)
-//	{
-//		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//		if(master_setup.op_flag)//Check if we are up
-//		{
-//			actual_position = get_position_actual_degree(slave_number, slv_handles);
-//			printf("position %f \n", actual_position);
-//		}
-//	}
 	renable_ctrl_quick_stop(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -148,32 +139,6 @@ int main()
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
-/*
-	target_position = 300.0f;
-	while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)//Check if we are up
-		{
-			set_profile_position_degree(target_position, slave_number, slv_handles);
-			actual_position = get_position_actual_degree(slave_number, slv_handles);
-			ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
-			printf("position %f ack %d\n", actual_position, ack);
-		}
-		if(ack == 1)
-		{
-			break;
-		}
-
-	}
-
-	printf("reached \n");
-*/
-
-	//shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);//*/
 
 	return 0;
 }

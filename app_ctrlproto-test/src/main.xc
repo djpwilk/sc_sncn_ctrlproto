@@ -120,13 +120,13 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 
 int main(void)
 {
-	chan coe_in;  	 	///< CAN from module_ethercat to consumer
-	chan coe_out;  		///< CAN from consumer to module_ethercat
-	chan eoe_in;   		///< Ethernet from module_ethercat to consumer
-	chan eoe_out;  		///< Ethernet from consumer to module_ethercat
+	chan coe_in;  	 	// CAN from module_ethercat to consumer
+	chan coe_out;  		// CAN from consumer to module_ethercat
+	chan eoe_in;   		// Ethernet from module_ethercat to consumer
+	chan eoe_out;  		// Ethernet from consumer to module_ethercat
 	chan eoe_sig;
-	chan foe_in;   		///< File from module_ethercat to consumer
-	chan foe_out;  		///< File from consumer to module_ethercat
+	chan foe_in;   		// File from module_ethercat to consumer
+	chan foe_out;  		// File from consumer to module_ethercat
 	chan pdo_in;
 	chan pdo_out;
 	chan c_sig;

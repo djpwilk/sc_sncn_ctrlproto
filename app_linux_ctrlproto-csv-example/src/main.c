@@ -7,7 +7,7 @@
  *
  *
  *
- * Copyright (c) 2013, Synapticon GmbH
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
  * Author: Pavan Kanajar <pkanajar@synapticon.com> & Christian Holl <choll@synapticon.com>
  *
@@ -121,43 +121,6 @@ int main()
 	set_operation_mode(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-	/*i = 0;
-	flag = 0;
-	final_target_velocity = 1000; //rpm
-	initial_velocity = get_velocity_actual_rpm(slave_number, slv_handles); //rpm
-	steps = init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration, MAX_PROFILE_VELOCITY(1));
-
-	while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)//Check if we are up
-		{
-			if(i<steps)
-			{
-				target_velocity = velocity_profile_generate(i);
-				set_velocity_rpm(target_velocity, slave_number, slv_handles);
-				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-				printf("velocity %d position %f\n",actual_velocity, get_position_actual_degree(slave_number, slv_handles));
-				i = i+1;
-			}
-			if(i>=steps && flag == 0)
-			{
-				initial_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-				final_target_velocity = 0; //rpm
-				steps = init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration, MAX_PROFILE_VELOCITY(1));
-				i = 1;
-				flag = 1;
-			}
-			if(i >= steps && flag == 1)
-			{
-				break;
-			}
-		}
-	}
-
-*/
 
 	shutdown_operation(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 

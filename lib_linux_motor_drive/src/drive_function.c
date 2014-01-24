@@ -5,7 +5,7 @@
  *
  * \brief Motor Drive functions over Ethercat
  *
- * Copyright (c) 2013, Synapticon GmbH
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
  * Author: Pavan Kanajar <pkanajar@synapticon.com>
  *
@@ -83,19 +83,19 @@ void set_velocity_rpm(int target_velocity, int slave_number, ctrlproto_slv_handl
 
 void initialize_torque(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-//	printf(" tor %f", slv_handles[slave_number].factor_torq );
+
 	slv_handles[slave_number].factor_torq = (float) slv_handles[slave_number].motor_config_param.s_motor_torque_constant.motor_torque_constant;
 	slv_handles[slave_number].factor_torq *= slv_handles[slave_number].factor_torq;
 	slv_handles[slave_number].factor_torq *= ((float) slv_handles[slave_number].motor_config_param.s_nominal_current.nominal_current);
 	slv_handles[slave_number].factor_torq /= ((float) slv_handles[slave_number].motor_config_param.s_max_torque.max_torque);
-//	printf(" tor %f", slv_handles[slave_number].factor_torq );
+
 	return;
 }
 
 void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	slv_handles[slave_number].torque_setpoint =  (int) round( (target_torque)/slv_handles[slave_number].factor_torq);
-	//printf("\n%d  %f \n",slv_handles[slave_number].torque_setpoint ,round( (target_torque)/slv_handles[slave_number].factor_torq));
+
 }
 
 float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles)
@@ -117,23 +117,20 @@ float get_position_actual_degree(int slave_number, ctrlproto_slv_handle *slv_han
 
 int position_limit(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-	//int position = (int) round( (target_position*10000.0f) );
+
 	float position_min = (float) slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min;
 	float position_max =(float) slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max;
 
 	if (target_position > position_max)
 	{
-		//printf(" %d", (int) round( (position_max * 10000.0f) ));
-		return   (int) round( (position_max * 10000.0f) ); //slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max;
+		return   (int) round( (position_max * 10000.0f) );
 	}
 	else if (target_position < position_min)
 	{
-		//printf(" %d", (int) round( (position_max * 10000.0f) ));
-		return (int) round( (position_min * 10000.0f) ); //slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min;
+		return (int) round( (position_min * 10000.0f) );
 	}
 	else if (target_position >= position_min && target_position <= position_max)
 	{
-		//printf(" %d", (int) round( (position_max * 10000.0f) ));
 		return  (int) round( (target_position*10000.0f) );
 	}
 }
@@ -144,12 +141,10 @@ void set_position_degree(int target_position, int slave_number, ctrlproto_slv_ha
 
 	if(target_position > slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max*10000)
 	{
-		//printf(" %d", slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max*10000);
 		position = slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max*10000;
 	}
 	else if (target_position < slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min * 10000)
 	{
-		//printf(" %d", slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min * 10000);
 		position = slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min * 10000;
 	}
 	else if (target_position >= slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min * 10000 \
@@ -162,7 +157,6 @@ void set_position_degree(int target_position, int slave_number, ctrlproto_slv_ha
 
 void set_profile_position_degree(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-	//int ack = 1;
 	slv_handles[slave_number].position_setpoint = position_limit(target_position, slave_number, slv_handles);
 }
 
@@ -205,14 +199,14 @@ int init_linear_profile_params(float target_torque, float actual_torque, float t
 {
 	float max_torque =  slv_handles[slave_number].motor_config_param.s_motor_torque_constant.motor_torque_constant \
 			* slv_handles[slave_number].motor_config_param.s_nominal_current.nominal_current;
-	//printf("\n max torque %f slo %f tar %f, ac %f ", max_torque, torque_slope, target_torque, actual_torque);
-	return init_linear_profile_float(target_torque, actual_torque, torque_slope, torque_slope, max_torque); //max_torque
+
+	return init_linear_profile_float(target_torque, actual_torque, torque_slope, torque_slope, max_torque);
 }
 
 int target_position_reached(int slave_number, float target_position, float tolerance, ctrlproto_slv_handle *slv_handles)
 {
 	float actual_position =  get_position_actual_degree(slave_number, slv_handles);
-//	printf("\n act pos %f", actual_position);
+
 	if(actual_position > target_position-tolerance/2.0f && actual_position < target_position + tolerance/2.0f)
 	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
 		{
@@ -228,7 +222,7 @@ int target_position_reached(int slave_number, float target_position, float toler
 int target_velocity_reached(int slave_number, int target_velocity, int tolerance, ctrlproto_slv_handle *slv_handles)
 {
 	int actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
-//	printf("\n act vel %d min %d max %d \n", actual_velocity , target_velocity-tolerance/2,  target_velocity + tolerance/2);
+
 	if(actual_velocity > target_velocity-tolerance/2 && actual_velocity < target_velocity + tolerance/2)
 	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
 		{
@@ -244,7 +238,7 @@ int target_velocity_reached(int slave_number, int target_velocity, int tolerance
 int target_torque_reached(int slave_number, float target_torque, float tolerance, ctrlproto_slv_handle *slv_handles)
 {
 	float actual_torque =  get_torque_actual_mNm(slave_number, slv_handles);
-  //  return check_target_reached(read_statusword(slave_number, slv_handles));
+
 	if(actual_torque > target_torque-tolerance/2.0f && actual_torque < target_torque + tolerance/2.0f)
 	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
 		{
@@ -371,22 +365,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf("updating control parameters\n");
 	fflush(stdout);
 	/***** Set up Parameters *****/
-/*	while(1)
-	{
-		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-		{
-			slv_handles[slave_number].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
-			break;
-		}
 
-		else
-		{
-			sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, MOTOR_PARAM_UPDATE, slave_number);
-			printf (".");
-			fflush(stdout);
-
-		}
-	}*/
 
 	if(operation_mode == CST || operation_mode == TQ)
 	{
@@ -450,7 +429,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 			{
 				slv_handles[slave_number].motor_config_param.s_torque_slope.torque_slope = \
 						ceil( (float) slv_handles[slave_number].motor_config_param.s_torque_slope.torque_slope / slv_handles[slave_number].factor_torq);
-			//	printf("\n %d \n ",slv_handles[slave_number].motor_config_param.s_torque_slope.torque_slope);
+
 				sdo_handle_ecat(master_setup, slv_handles, TQ_MOTOR_UPDATE, slave_number);  //mode specific updates
 				printf (".");
 				fflush(stdout);
@@ -601,7 +580,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf ("\n");
 	fflush(stdout);
 
-//*/
+
 
 
 	/**********************output Mode of Operation******************/
@@ -672,7 +651,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 		}
 		else
 			continue;
-		//printf("\n stats %x", status_word);
+
 	}
 #ifndef print_slave
 	printf("quick_stop_active\n");
@@ -689,8 +668,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
 			/*************check quick_stop_state**************/
 			status_word = read_statusword(slave_number, slv_handles);
 			quick_stop_inactive = check_quick_stop_active(status_word);
-			//printf("%d\n",quick_stop_active);
-			//printf("\n stats %x", status_word);
+
 		}
 		else
 			continue;
@@ -718,11 +696,9 @@ int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_v
 
 				/*************check operation_mode display**************/
 				set_controlword(QUICK_STOP_CONTROL, slave_number, slv_handles);
-				//status_word = read_statusword();
-				//op_enable_state = check_op_enable(status_word);
+
 				if (slv_handles[slave_number].operation_mode_disp == 100)
 					break;
-				//printf("operation_m %d %d %d\n",slv_handles[slave_number].speed_setpoint, slv_handles[slave_number].position_setpoint, slv_handles[slave_number].torque_setpoint);
 			}
 			else
 				continue;
@@ -732,24 +708,7 @@ int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_v
 	fflush(stdout);
 	#endif
 
-	/**********************output Mode of Operation******************/
-//	while(1)
-//	{
-//			pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-//			if(master_setup->op_flag)
-//			{
-//				slv_handles[slave_number].operation_mode = operation_mode;
-//				/*************check operation_mode display**************/
-//				if (slv_handles[slave_number].operation_mode_disp == operation_mode)
-//					break;
-//			}
-//			else
-//				continue;
-//	}
-//	#ifndef print_slave
-//	printf("operation_mode enabled\n");
-//	fflush(stdout);
-	//#endif
+
 }
 
 int shutdown_operation(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
@@ -760,14 +719,13 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
 			pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
 			if(master_setup->op_flag)
 			{
-				//if(operation_mode == CSV)
+
 				slv_handles[slave_number].operation_mode = 100;
 				/*************check operation_mode display**************/
 				set_controlword(SHUTDOWN, slave_number, slv_handles);
 				status_word = read_statusword(slave_number, slv_handles);
 				ack_stop = check_shutdown_active(status_word);
-				//printf("status %x\n",status_word);
-				//op_enable_state = check_op_enable(status_word);
+
 			}
 			else
 				continue;
@@ -793,7 +751,7 @@ int quick_stop(int slave_number, master_setup_variables_t *master_setup, ctrlpro
 		}
 		else
 			continue;
-		//printf("\n stats %x", status_word);
+
 	}
 
 	#ifndef print_slave
@@ -810,8 +768,7 @@ int quick_stop(int slave_number, master_setup_variables_t *master_setup, ctrlpro
 			/*************check quick_stop_state**************/
 			status_word = read_statusword(slave_number, slv_handles);
 			ack_stop = check_quick_stop_inactive(status_word);;
-			//printf("%d\n",quick_stop_active);
-			//printf("\n stats %x", status_word);
+
 		}
 		else
 			continue;
@@ -844,8 +801,7 @@ int renable_velocity_ctrl(int slave_number, master_setup_variables_t *master_set
 				slv_handles[slave_number].operation_mode = 100;
 				/*************check operation_mode display**************/
 				set_controlword(QUICK_STOP_CONTROL, slave_number, slv_handles);
-				//status_word = read_statusword();
-				//op_enable_state = check_op_enable(status_word);
+
 				if (slv_handles[slave_number].operation_mode_disp == 100)
 					break;
 			}
@@ -864,8 +820,7 @@ int renable_velocity_ctrl(int slave_number, master_setup_variables_t *master_set
 			{
 				slv_handles[slave_number].operation_mode = CSV;
 				/*************check operation_mode display**************/
-				//status_word = read_statusword();
-				//op_enable_state = check_op_enable(status_word);
+
 				if (slv_handles[slave_number].operation_mode_disp == CSV)
 					break;
 			}
