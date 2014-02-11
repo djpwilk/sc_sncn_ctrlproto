@@ -44,6 +44,7 @@
 #include <ecrt.h>
 #include <inttypes.h>
 #include <motor_define.h>
+#include <profile.h>
 #include "bldc_motor_config_1.h"
 #include "bldc_motor_config_2.h"
 
@@ -313,6 +314,12 @@ typedef struct
 	motor_config motor_config_param; /*set via bldc_motor_config header file*/
 
 	float factor_torq;
+
+	profile_position_param profile_position_params;
+
+	profile_linear_param profile_linear_params;
+
+	profile_velocity_param profile_velocity_params;
 
 }ctrlproto_slv_handle;
 

@@ -75,8 +75,9 @@ int main()
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
-	init_position_profile_limits(GEAR_RATIO_1, MAX_ACCELERATION_1, MAX_NOMINAL_SPEED_1);
-	steps = init_position_profile_params(target_position, actual_position,	velocity, acceleration, deceleration);
+	initialize_position_profile_limits(slave_number, slv_handles);
+	steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
+			deceleration, slave_number, slv_handles);
 
 
 	while(1)
@@ -88,14 +89,14 @@ int main()
 		{
 			if(i<steps && flag == 0)
 			{
-				position_ramp = position_profile_generate(i);
+				position_ramp =  generate_profile_position(i, slave_number, slv_handles);
 				set_position_degree(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
 
 			if(i<steps - steps/2&& flag == 1)
 			{
-				position_ramp = position_profile_generate(i);
+				position_ramp = generate_profile_position(i, slave_number, slv_handles);
 				set_position_degree(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
@@ -110,7 +111,8 @@ int main()
 				velocity = 350;
 				acceleration = 350;
 				deceleration = 350;
-				steps = init_position_profile_params(target_position, actual_position,	velocity, acceleration, deceleration);
+				steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
+							deceleration, slave_number, slv_handles);
 				i = 1;
 				flag = 1;
 			}
@@ -146,8 +148,9 @@ int main()
 	deceleration = 350;								//rpm/s
 
 	printf("target position %f\n", target_position);
-	steps = init_position_profile_params(target_position, actual_position,	velocity, acceleration, deceleration);
-	i = 0;
+	steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
+		deceleration, slave_number, slv_handles);
+	i = 1;
 
 	while(1)
 	{
@@ -157,7 +160,7 @@ int main()
 		{
 			if(i<steps)
 			{
-				position_ramp = position_profile_generate(i);
+				position_ramp = generate_profile_position(i, slave_number, slv_handles);
 				set_position_degree(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}

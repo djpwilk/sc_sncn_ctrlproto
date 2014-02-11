@@ -57,7 +57,8 @@ extern "C" {
 	 * Output
 	 * \return no. of steps for linear profile : range [1 - steps-1]
 	 */
-	extern int init_linear_profile_float(float target_value, float actual_value, float acceleration, float deceleration, float max_value);
+	extern int init_linear_profile_float(float target_value, float actual_value, float acceleration, \
+			float deceleration, float max_value, profile_linear_param *profile_linear_params);
 
 	/**
 	 * \brief Generate Linear Profile
@@ -68,7 +69,7 @@ extern "C" {
 	 * Output
 	 * \return corresponding target value at the step input
 	 */
-	extern float linear_profile_generate_float(int step);
+	extern float linear_profile_generate_float(int step, profile_linear_param *profile_linear_params);
 
 #ifdef __cplusplus
 }
@@ -86,7 +87,7 @@ extern "C" {
  */
 void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
-int position_limit(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
+
 /**
  * \brief Sets operation mode via defines for modes of operation in drive_config.h
  *
@@ -176,6 +177,18 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
  */
 int target_position_reached(int slave_number, float target_position, float tolerance, ctrlproto_slv_handle *slv_handles);
 
+
+/**
+ * \brief Initialise Position Profile Limits
+ *
+ *  Input
+ * \param slave_number			Specify the slave number to which the motor is connected
+ * \param slv_handles 			The handle struct for the slaves
+ *
+ */
+void initialize_position_profile_limits(int slave_number, ctrlproto_slv_handle *slv_handles);
+
+
 /**
  * \brief Initialize Position Profile parameters
  *
@@ -184,9 +197,60 @@ int target_position_reached(int slave_number, float target_position, float toler
  * \param velocity				Specify the velocity (in rpm)
  * \param acceleration			Specify the acceleration (in rpm/s)
  * \param deceleration			Specify the deceleration (in rpm/s)
+ * \param slave_number			Specify the slave number to which the motor is connected
+ * \param slv_handles 			The handle struct for the slaves
  *
  */
-int init_position_profile_params(float target_position, float actual_position, int velocity, int acceleration, int deceleration);
+int init_position_profile_params(float target_position, float actual_position, int velocity, \
+		int acceleration, int deceleration, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+
+/**
+ * \brief Generate Position Profile
+ *
+ *  Input
+ * \param step current step of the profile
+ * \param slave_number			Specify the slave number to which the motor is connected
+ * \param slv_handles 			The handle struct for the slaves
+ *
+ * Output
+ * \return corresponding target position at the step input
+ */
+int generate_profile_position(int step, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+
+/**
+ * \brief Sets target torque for Profile Torque mode(PTM) & Cyclic Synchronous Torque(CST) mode
+ *
+ * \param target_torque			Specify the target torque to follow (in mNm)
+ * \param slave_number			Specify the slave number to which the motor is connected
+ * \param slv_handles 			The handle struct for the slaves
+ */
+void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+
+/**
+ * \brief Gets actual torque
+ *
+ * \param slave_number			Specify the slave number to which the motor is connected
+ * \param slv_handles 			The handle struct for the slaves
+ *
+ * \return actual torque in mNm from the slave number specified
+ */
+float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles);
+
+
+/**
+ * \brief Check target torque reached for Profile torque Mode
+ *
+ * \param slave_number			Specify the slave number to which the motor is connected
+ * \param target_torque			Specify the target torque set (in nNm)
+ * \param tolerance 			Specify the tolerance for target torque (in mNm)
+ * \param slv_handles 			The handle struct for the slaves
+ *
+ * \return 1 if target torque reached else 0
+ */
+int target_torque_reached(int slave_number, float target_torque, float tolerance, ctrlproto_slv_handle *slv_handles);
 
 
 /**
@@ -211,36 +275,18 @@ void initialize_torque(int slave_number, ctrlproto_slv_handle *slv_handles);
  */
 int init_linear_profile_params(float target_torque, float actual_torque, float torque_slope, int slave_number, ctrlproto_slv_handle *slv_handles);
 
-/**
- * \brief Sets target torque for Profile Torque mode(PTM) & Cyclic Synchronous Torque(CST) mode
- *
- * \param target_torque			Specify the target torque to follow (in mNm)
- * \param slave_number			Specify the slave number to which the motor is connected
- * \param slv_handles 			The handle struct for the slaves
- */
-void set_torque_mNm(float target_torque, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 /**
- * \brief Gets actual torque
+ * \brief Generate Linear Profile
  *
- * \param slave_number			Specify the slave number to which the motor is connected
- * \param slv_handles 			The handle struct for the slaves
+ *  Input
+ * \param step current step of the profile
  *
- * \return actual torque in mNm from the slave number specified
+ * Output
+ * \return corresponding target value at the step input
  */
-float get_torque_actual_mNm(int slave_number, ctrlproto_slv_handle *slv_handles);
+float generate_profile_linear(int step, int slave_number, ctrlproto_slv_handle *slv_handles);
 
-/**
- * \brief Check target torque reached for Profile torque Mode
- *
- * \param slave_number			Specify the slave number to which the motor is connected
- * \param target_torque			Specify the target torque set (in nNm)
- * \param tolerance 			Specify the tolerance for target torque (in mNm)
- * \param slv_handles 			The handle struct for the slaves
- *
- * \return 1 if target torque reached else 0
- */
-int target_torque_reached(int slave_number, float target_torque, float tolerance, ctrlproto_slv_handle *slv_handles);
 
 /**
  * \brief Quick Stop Torque
@@ -251,6 +297,7 @@ int target_torque_reached(int slave_number, float target_torque, float tolerance
  * \param total_no_of_slaves 	Number of connected slaves to the master
  */
 int quick_stop_torque(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
+
 
 /**
  * \brief Sets target velocity for Profile Velocity mode(PPM) & Cyclic Synchronous Velocity(CSV) mode
@@ -296,6 +343,38 @@ int target_velocity_reached(int slave_number, int target_velocity, int tolerance
 
 
 /**
+ * \brief Initialise Velocity Profile
+ *
+ *  Input
+ * \param target_velocity
+ * \param actual_velocity
+ * \param acceleration for the velocity profile
+ * \param deceleration for the velocity profile
+ * \param max_velocity for the velocity profile
+ * \param slave_number	Specify the slave number to which the motor is connected
+ * \param slv_handles 	The handle struct for the slaves
+ *
+ * Output
+ * \return no. of steps for velocity profile : range [1 - steps]
+ */
+int init_velocity_profile_params(int target_velocity, int actual_velocity, int acceleration, \
+		int deceleration, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+/**
+ * \brief Generate Velocity Profile
+ *
+ *  Input
+ * \param step current step of the profile
+ * \param slave_number Specify the slave number to which the motor is connected
+ * \param slv_handles The handle struct for the slaves
+ *
+ * Output
+ * \return corresponding target velocity at the step input
+ */
+int generate_profile_velocity(int step, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+
+/**
  * \brief Check velocity set for Profile velocity mode
  *
  * \param slave_number			Specify the slave number to which the motor is connected
@@ -324,3 +403,9 @@ int position_set_flag(int slave_number, ctrlproto_slv_handle *slv_handles);
  */
 int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
+
+/*Internal Function */
+int position_limit(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
+
+
+int check_home_active(int status_word);

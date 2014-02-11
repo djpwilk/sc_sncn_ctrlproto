@@ -194,11 +194,40 @@ int read_statusword(int slave_number, ctrlproto_slv_handle *slv_handles)
 	return slv_handles[slave_number].motorctrl_status_in;
 }
 
-int init_position_profile_params(float target_position, float actual_position, int velocity, int acceleration, int deceleration)
+void initialize_position_profile_limits(int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	__initialize_position_profile_limits(slv_handles[slave_number].motor_config_param.s_gear_ratio.gear_ratio,\
+			slv_handles[slave_number].motor_config_param.s_max_acceleration.max_acceleration,\
+			slv_handles[slave_number].motor_config_param.s_nominal_motor_speed.nominal_motor_speed,\
+			&slv_handles[slave_number].profile_position_params);
+}
+
+int generate_profile_position(int step, int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	return __position_profile_generate_in_steps(step, &slv_handles[slave_number].profile_position_params);
+}
+
+//position_profile_generate_in_steps(int step, profile_position_param *profile_pos_params);
+int init_position_profile_params(float target_position, float actual_position, int velocity, \
+		int acceleration, int deceleration, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	int target = (int) (target_position * 10000.0f);
 	int actual = (int) (actual_position * 10000.0f);
-	init_position_profile(target, actual,	velocity, acceleration, deceleration);
+	return __initialize_position_profile(target, actual,	velocity, acceleration, deceleration, &slv_handles[slave_number].profile_position_params);
+}
+//init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration, MAX_PROFILE_VELOCITY(1));
+//slv_handles[slave_number].motor_config_param.s_max_profile_velocity.max_profile_velocity
+int init_velocity_profile_params(int target_velocity, int actual_velocity, int acceleration, \
+		int deceleration, int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	return __initialize_velocity_profile(target_velocity, actual_velocity, acceleration, \
+			 deceleration, slv_handles[slave_number].motor_config_param.s_max_profile_velocity.max_profile_velocity, \
+			 &slv_handles[slave_number].profile_velocity_params);
+}
+
+int generate_profile_velocity(int step, int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	return __velocity_profile_generate_in_steps(step, &slv_handles[slave_number].profile_velocity_params);
 }
 
 int init_linear_profile_params(float target_torque, float actual_torque, float torque_slope, int slave_number, ctrlproto_slv_handle *slv_handles)
@@ -206,7 +235,13 @@ int init_linear_profile_params(float target_torque, float actual_torque, float t
 	float max_torque =  slv_handles[slave_number].motor_config_param.s_motor_torque_constant.motor_torque_constant \
 			* slv_handles[slave_number].motor_config_param.s_nominal_current.nominal_current;
 	//printf("\n max torque %f slo %f tar %f, ac %f ", max_torque, torque_slope, target_torque, actual_torque);
-	return init_linear_profile_float(target_torque, actual_torque, torque_slope, torque_slope, max_torque); //max_torque
+	return __init_linear_profile_float(target_torque, actual_torque, torque_slope, torque_slope, max_torque,\
+			&slv_handles[slave_number].profile_linear_params); //max_torque
+}
+
+float generate_profile_linear(int step, int slave_number, ctrlproto_slv_handle *slv_handles)
+{
+	return __linear_profile_generate_float(step, &slv_handles[slave_number].profile_linear_params);
 }
 
 int target_position_reached(int slave_number, float target_position, float tolerance, ctrlproto_slv_handle *slv_handles)
@@ -271,6 +306,7 @@ void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlpro
 		}
 	}
 }
+
 int set_operation_mode(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	int ready = 0;
@@ -371,22 +407,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf("updating control parameters\n");
 	fflush(stdout);
 	/***** Set up Parameters *****/
-/*	while(1)
-	{
-		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-		{
-			slv_handles[slave_number].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
-			break;
-		}
 
-		else
-		{
-			sdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves, MOTOR_PARAM_UPDATE, slave_number);
-			printf (".");
-			fflush(stdout);
-
-		}
-	}*/
 
 	if(operation_mode == CST || operation_mode == TQ)
 	{
@@ -878,3 +899,6 @@ int renable_velocity_ctrl(int slave_number, master_setup_variables_t *master_set
 	#endif
 }
 
+int check_home_active(int status_word) {
+	return (status_word & 0x2000) >> 13;
+}

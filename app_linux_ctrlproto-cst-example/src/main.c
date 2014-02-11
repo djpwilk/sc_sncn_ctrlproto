@@ -74,7 +74,7 @@ int main()
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	i = 0;
+	i = 1;
 	steps = init_linear_profile_params(final_target_torque, actual_torque, torque_slope, slave_number, slv_handles);
 
 	while(1)
@@ -85,7 +85,7 @@ int main()
 		{
 			if(i<steps)
 			{
-				target_torque = linear_profile_generate_float(i);
+				target_torque = generate_profile_linear(i, slave_number, slv_handles);
 				printf("target_torque %f \n",target_torque);
 				set_torque_mNm(target_torque, slave_number, slv_handles);
 				actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
@@ -101,7 +101,7 @@ int main()
 	}
 
 
-	i = 0;
+	i = 1;
 	final_target_torque = 18.0;
 	steps = init_linear_profile_params(final_target_torque, actual_torque, torque_slope, slave_number, slv_handles);
 
@@ -113,7 +113,7 @@ int main()
 		{
 			if(i<steps)
 			{
-				target_torque = linear_profile_generate_float(i);
+				target_torque = generate_profile_linear(i, slave_number, slv_handles);
 				printf("target_torque %f \n",target_torque);
 				set_torque_mNm(target_torque, slave_number, slv_handles);
 				actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
@@ -152,7 +152,7 @@ int main()
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
-	/*i = 0;
+	/*i = 1;
 	final_target_torque = -15.0;
 	actual_torque= 	get_torque_actual_mNm(slave_number, slv_handles);
 
@@ -166,7 +166,7 @@ int main()
 		{
 			if(i<steps)
 			{
-				target_torque = linear_profile_generate_float(i);
+				target_torque = generate_profile_linear(i, slave_number, slv_handles);
 				printf("target_torque %f \n",target_torque);
 				set_torque_mNm(target_torque, slave_number, slv_handles);
 				actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
