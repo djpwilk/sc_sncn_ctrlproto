@@ -45,3 +45,6 @@
 #define HALL 						1
 #define QEI_INDEX  					2
 #define QEI_NO_INDEX				3
+
+#define STAR_WINDING				1
+#define DELTA_WINDING				2
