@@ -1,4 +1,4 @@
-SOFTWARE COMPONENT Control Protocol: Communication protocol layer for motor control
+Control Protocol SOFTWARE COMPONENT
 ...................................
 .. image:: http://forum.synapticon.com/Themes/MinimalistAndEffective_by_SMFSimple/images/logo.png
 
