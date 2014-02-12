@@ -134,6 +134,7 @@ int sensor_select_sdo(chanend coe_out);
  */
 {int, int} hall_sdo_update(chanend coe_out);
 
+{int, int, int} commutation_sdo_update(chanend coe_out);
 /**
  * \brief read profile torque params from Ethercat
  *

@@ -197,6 +197,24 @@ typedef struct
 
 typedef struct
 {
+	int commutation_offset_clk;
+	int update_state;
+} commutation_offset_clk_s;
+
+typedef struct
+{
+	int commutation_offset_cclk;
+	int update_state;
+} commutation_offset_cclk_s;
+
+typedef struct
+{
+	int motor_winding_type;
+	int update_state;
+} motor_winding_type_s;
+
+typedef struct
+{
 	pole_pair_s s_pole_pair;
 	gear_ratio_s s_gear_ratio;
 	nominal_motor_speed_s s_nominal_motor_speed;
@@ -235,6 +253,10 @@ typedef struct
 	qei_offset_cclk_s s_qei_offset_cclk;
 	qei_commutation_offset_clk_s s_qei_commutation_offset_clk;
 	qei_commutation_offset_cclk_s s_qei_commutation_offset_cclk;
+
+	commutation_offset_clk_s s_commutation_offset_clk;
+	commutation_offset_cclk_s s_commutation_offset_cclk;
+	motor_winding_type_s s_motor_winding_type;
 
 	int update_flag;
 } motor_config;
@@ -280,6 +302,11 @@ typedef struct
 #define PROFILE_ACCELERATION(n)		PROFILE_ACCELERATION_##n
 #define PROFILE_DECELERATION(n)  	PROFILE_DECELERATION_##n
 #define QUICK_STOP_DECELERATION(n) 	QUICK_STOP_DECELERATION_##n
+
+#define COMMUTATION_OFFSET_CLK(n) 	COMMUTATION_OFFSET_CLK_##n
+#define COMMUTATION_OFFSET_CCLK(n) 	COMMUTATION_OFFSET_CCLK_##n
+#define WINDING_TYPE(n) 			WINDING_TYPE_##n
+
 
 
 #ifdef __cplusplus

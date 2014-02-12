@@ -178,6 +178,10 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{0, 0},\
 		{0, 0},\
 		\
+		{COMMUTATION_OFFSET_CLK(CONFIG_NUMBER), 0},\
+		{COMMUTATION_OFFSET_CCLK(CONFIG_NUMBER), 0},\
+		{WINDING_TYPE(CONFIG_NUMBER), 0},\
+		\
 		0},\
 		0.0f,\
 }

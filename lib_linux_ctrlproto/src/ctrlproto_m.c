@@ -497,6 +497,10 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 	request[25] = _config_sdo_request(slave_config, request[25], CIA402_CURRENT_GAIN, 2, 4);
 	request[26] = _config_sdo_request(slave_config, request[26], CIA402_CURRENT_GAIN, 3, 4);
 
+	request[27] = _config_sdo_request(slave_config, request[27], COMMUTATION_OFFSET_CLKWISE, 0, 2);
+	request[28] = _config_sdo_request(slave_config, request[28], COMMUTATION_OFFSET_CCLKWISE, 0, 2);
+	request[29] = _config_sdo_request(slave_config, request[29], MOTOR_WINDING_TYPE, 0, 1);
+
 }
 
 int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
@@ -560,6 +564,21 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				motor_config_param.s_nominal_motor_speed.update_state,  \
 				motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 8);
 
+		if(motor_config_param.s_nominal_motor_speed.update_state && !motor_config_param.s_commutation_offset_clk.update_state)
+			motor_config_param.s_commutation_offset_clk.update_state = _motor_config_update(request[27],\
+				motor_config_param.s_commutation_offset_clk.update_state,  \
+				motor_config_param.s_commutation_offset_clk.commutation_offset_clk, 9);
+
+		if(motor_config_param.s_commutation_offset_clk.update_state && !motor_config_param.s_commutation_offset_cclk.update_state)
+			motor_config_param.s_commutation_offset_cclk.update_state = _motor_config_update(request[28],\
+				motor_config_param.s_commutation_offset_cclk.update_state,  \
+				motor_config_param.s_commutation_offset_cclk.commutation_offset_cclk, 10);
+
+		if(motor_config_param.s_commutation_offset_cclk.update_state && !motor_config_param.s_motor_winding_type.update_state)
+			motor_config_param.s_motor_winding_type.update_state = _motor_config_update(request[29],\
+				motor_config_param.s_motor_winding_type.update_state,  \
+				motor_config_param.s_motor_winding_type.motor_winding_type, 11);
+
 		motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state \
 			& motor_config_param.s_max_acceleration.update_state \
 			& motor_config_param.s_pole_pair.update_state \
@@ -567,7 +586,10 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 			& motor_config_param.s_sensor_selection_code.update_state \
 			& motor_config_param.s_polarity.update_state \
 			& motor_config_param.s_motor_torque_constant.update_state\
-			& motor_config_param.s_nominal_motor_speed.update_state;
+			& motor_config_param.s_nominal_motor_speed.update_state\
+			& motor_config_param.s_commutation_offset_clk.update_state\
+			& motor_config_param.s_commutation_offset_cclk.update_state\
+			& motor_config_param.s_motor_winding_type.update_state;
 
 	}
 
