@@ -62,7 +62,7 @@
 #define IFM_RESOLUTION_1				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
 
 /* Position Sensor Types (select your sensor type here) */
-#define SENSOR_SELECTION_CODE_1         HALL	// HALL/QEI_INDEX/QEI_NO_INDEX
+#define SENSOR_SELECTION_CODE_1         QEI_INDEX	// HALL/QEI_INDEX/QEI_NO_INDEX
 
 /* Changes direction of the motor drive */
 #define POLARITY_1 						1		// 1 / -1
