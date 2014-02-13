@@ -54,4 +54,4 @@ Please see `LICENSE`_.
 
 .. _DOCUMENTATION: http://synapticon.github.io/sc_sncn_ctrlproto/
 .. _0.9beta: None
-.. _LICENSE: https://github.com/synapticon/sc_sncn_ctrolproto/blob/master/LICENSE
+.. _LICENSE: https://github.com/synapticon/sc_sncn_ctrolproto/blob/master/LICENSE.dox
