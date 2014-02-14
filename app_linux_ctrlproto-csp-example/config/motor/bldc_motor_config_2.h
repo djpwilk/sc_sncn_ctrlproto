@@ -74,6 +74,9 @@
 /*Motor Winding type*/
 #define WINDING_TYPE_2					DELTA_WINDING   	// 1 star-type(Y) 2 delta-type
 
+#define LIMIT_SWITCH_TYPES_1			ACTIVE_HIGH				// ACTIVE_LOW
+#define HOMING_METHOD_1                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
+
 /* Profile defines (Mandatory for profile modes)*/
 #define MAX_PROFILE_VELOCITY_2  		MAX_NOMINAL_SPEED_2
 #define PROFILE_VELOCITY_2				1000	// rpm

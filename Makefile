@@ -4,7 +4,7 @@
 #
 # If the variable is set to "all" then all directories that start with app_
 # are built.
-BUILD_SUBDIRS = app_ctrlproto-test app_linux_ctrlproto-csp-example app_linux_ctrlproto-master-example lib_linux_ctrlproto lib_linux_motor_drive
+BUILD_SUBDIRS = app_linux_ctrlproto-csp-example app_linux_ctrlproto-hm-example lib_linux_ctrlproto lib_linux_motor_drive
 
 XMOS_MAKE_PATH ?= ..
 include $(XMOS_MAKE_PATH)/xcommon/module_xcommon/build/Makefile.toplevel

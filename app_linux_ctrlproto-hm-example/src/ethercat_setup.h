@@ -1,12 +1,15 @@
 
 /**
  *
- * \file common_config.h
+ * \file ethercat_setup.h
  *
+ * \brief Ethercat Node Setup
+ *
+ *	Please define your the node structure and configuration for each node.
  *
  * Copyright (c) 2013, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com>
+ * Author: Christian Holl <choll@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,21 +39,39 @@
  *
  */
 
-#define QEI_WITH_INDEX				1
-#define QEI_WITH_NO_INDEX 			0
+#ifndef ETHERCAT_SETUP_H_
+#define ETHERCAT_SETUP_H_
 
-#define DC100_RESOLUTION 			740 	// resolution/A
-#define DC300_RESOLUTION			264 	// resolution/A
+/**
+ * Number of SOMANET Slaves
+ */
+#define TOTAL_NUM_OF_SLAVES 1
 
-#define HALL 						1
-#define QEI_INDEX  					2
-#define QEI_NO_INDEX				3
+SOMANET_C22_CTRLPROTO_CSTRUCT();
 
-#define STAR_WINDING				1
-#define DELTA_WINDING				2
+//Slave Handles Array
+static ctrlproto_slv_handle slv_handles[]=
+{												//ALIAS / POSITION / CONFIG_NUMBER
+		SOMANET_C22_CTRLPROTO_SLAVE_HANDLES_ENTRY(0,             0, 	1)
+};
 
-#define HOMING_NEGATIVE_SWITCH		1
-#define HOMING_POSITIVE_SWITCH		2
+//Domain entries for the pdos
+const static ec_pdo_entry_reg_t domain_regs[] = {
+												//ALIAS / POSITION / ARRAY POSITION inside SLV_HANDLES
+		SOMANET_C22_CTRLPROTO_DOMAIN_REGS_ENTRIES(0,		0,			0),
+{0}
+};
 
-#define ACTIVE_HIGH					1       // the switch output is high upon activation
-#define ACTIVE_LOW					2		// the switch output is low upon activation
+/*
+ * Master setup struct
+ */
+MASTER_SETUP_INIT();
+
+
+/**
+ * Increase priority of the master process
+ * !! YOU WILL NEED TO RUN THIS AS ROOT OTHERWISE THE PRIORITY WILL NOT CHANGE!!
+ */
+#define PRIORITY
+
+#endif /* ETHERCAT_SETUP_H_ */

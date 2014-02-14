@@ -501,6 +501,9 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 	request[28] = _config_sdo_request(slave_config, request[28], COMMUTATION_OFFSET_CCLKWISE, 0, 2);
 	request[29] = _config_sdo_request(slave_config, request[29], MOTOR_WINDING_TYPE, 0, 1);
 
+	request[30] = _config_sdo_request(slave_config, request[30], CIA402_HOMING_METHOD, 0, 1);
+	request[31] = _config_sdo_request(slave_config, request[31], LIMIT_SWITCH_TYPE, 0, 1);
+
 }
 
 int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
@@ -579,6 +582,17 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				motor_config_param.s_motor_winding_type.update_state,  \
 				motor_config_param.s_motor_winding_type.motor_winding_type, 11);
 
+
+		if(motor_config_param.s_motor_winding_type.update_state && !motor_config_param.s_limit_switch_type.update_state)
+			motor_config_param.s_limit_switch_type.update_state = _motor_config_update(request[31],\
+					motor_config_param.s_limit_switch_type.update_state,  \
+					motor_config_param.s_limit_switch_type.limit_switch_type, 12);
+
+		if(motor_config_param.s_limit_switch_type.update_state && !motor_config_param.s_homing_method.update_state)
+			motor_config_param.s_homing_method.update_state = _motor_config_update(request[30],\
+					motor_config_param.s_homing_method.update_state,  \
+					motor_config_param.s_homing_method.homing_method, 13);
+
 		motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state \
 			& motor_config_param.s_max_acceleration.update_state \
 			& motor_config_param.s_pole_pair.update_state \
@@ -589,7 +603,9 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 			& motor_config_param.s_nominal_motor_speed.update_state\
 			& motor_config_param.s_commutation_offset_clk.update_state\
 			& motor_config_param.s_commutation_offset_cclk.update_state\
-			& motor_config_param.s_motor_winding_type.update_state;
+			& motor_config_param.s_motor_winding_type.update_state\
+			& motor_config_param.s_limit_switch_type.update_state\
+			& motor_config_param.s_homing_method.update_state;
 
 	}
 

@@ -1,0 +1,9 @@
+auto lo
+iface lo inet loopback
+
+auto eoe0s0
+allow-hotplug eoe0s0
+iface eoe0s0 inet static
+address 192.168.0.250
+netmask 255.255.255.0
+network 192.168.0.0

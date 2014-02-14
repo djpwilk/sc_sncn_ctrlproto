@@ -408,7 +408,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	fflush(stdout);
 	/***** Set up Parameters *****/
 
-
+	slv_handles[slave_number].motor_config_param.update_flag = 0;
 	if(operation_mode == CST || operation_mode == TQ)
 	{
 		slv_handles[slave_number].motor_config_param.update_flag = 0;
@@ -899,6 +899,4 @@ int renable_velocity_ctrl(int slave_number, master_setup_variables_t *master_set
 	#endif
 }
 
-int check_home_active(int status_word) {
-	return (status_word & 0x2000) >> 13;
-}
+

@@ -1,0 +1,2 @@
+This must be configured, otherwise the PDOs are not read by the master!
+Currently this can make network manager non working on a reboot!

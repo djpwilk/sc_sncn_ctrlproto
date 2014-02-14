@@ -86,7 +86,7 @@ extern "C" {
  * \param total_no_of_slaves 	Number of connected slaves to the master
  */
 void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
-
+int check_target_reached(int status_word);
 
 /**
  * \brief Sets operation mode via defines for modes of operation in drive_config.h

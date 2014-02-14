@@ -182,6 +182,9 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{COMMUTATION_OFFSET_CCLK(CONFIG_NUMBER), 0},\
 		{WINDING_TYPE(CONFIG_NUMBER), 0},\
 		\
+		{LIMIT_SWITCH_TYPES(CONFIG_NUMBER), 0},\
+		{HOMING_METHOD(CONFIG_NUMBER), 0},\
+		\
 		0},\
 		0.0f,\
 }
@@ -209,7 +212,7 @@ typedef struct
 	 * The SDO entries
 	 */
 
-	ec_sdo_request_t *__request[31];
+	ec_sdo_request_t *__request[32];
 
 	/**
 	 * The PDO entries

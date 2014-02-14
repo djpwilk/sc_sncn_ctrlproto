@@ -70,6 +70,10 @@ void config_sdo_handler(chanend coe_out)
 {
 	int sdo_value;
 
+	GET_SDO_DATA(LIMIT_SWITCH_TYPE, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_HOMING_METHOD, 0, sdo_value);
+	printintln(sdo_value);
 	GET_SDO_DATA(COMMUTATION_OFFSET_CLKWISE, 0, sdo_value);
 	printintln(sdo_value);
 	GET_SDO_DATA(COMMUTATION_OFFSET_CCLKWISE, 0, sdo_value);
@@ -143,6 +147,17 @@ void config_sdo_handler(chanend coe_out)
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, sdo_value);
 	printintln(sdo_value);
 
+}
+
+{int, int} homing_sdo_update(chanend coe_out)
+{
+	int homing_method;
+	int limit_switch_type;
+
+	GET_SDO_DATA(LIMIT_SWITCH_TYPE, 0, limit_switch_type);
+	GET_SDO_DATA(CIA402_HOMING_METHOD, 0, homing_method);
+
+	return {homing_method, limit_switch_type};
 }
 
 {int, int, int} commutation_sdo_update(chanend coe_out)

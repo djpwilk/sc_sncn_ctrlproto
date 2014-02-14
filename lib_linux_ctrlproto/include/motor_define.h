@@ -215,6 +215,18 @@ typedef struct
 
 typedef struct
 {
+	int limit_switch_type;
+	int update_state;
+} limit_switch_type_s;
+
+typedef struct
+{
+	int homing_method;
+	int update_state;
+} homing_method_s;
+
+typedef struct
+{
 	pole_pair_s s_pole_pair;
 	gear_ratio_s s_gear_ratio;
 	nominal_motor_speed_s s_nominal_motor_speed;
@@ -257,6 +269,9 @@ typedef struct
 	commutation_offset_clk_s s_commutation_offset_clk;
 	commutation_offset_cclk_s s_commutation_offset_cclk;
 	motor_winding_type_s s_motor_winding_type;
+
+	limit_switch_type_s s_limit_switch_type;
+	homing_method_s s_homing_method;
 
 	int update_flag;
 } motor_config;
@@ -307,7 +322,8 @@ typedef struct
 #define COMMUTATION_OFFSET_CCLK(n) 	COMMUTATION_OFFSET_CCLK_##n
 #define WINDING_TYPE(n) 			WINDING_TYPE_##n
 
-
+#define HOMING_METHOD(n) 			HOMING_METHOD_##n
+#define LIMIT_SWITCH_TYPES(n) 		LIMIT_SWITCH_TYPES_##n
 
 #ifdef __cplusplus
 }

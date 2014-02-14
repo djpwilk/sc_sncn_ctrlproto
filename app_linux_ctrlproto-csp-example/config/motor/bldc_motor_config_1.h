@@ -47,7 +47,7 @@
  * Mandatory constants to be set
  */
 #define POLE_PAIRS_1  					8
-#define MAX_NOMINAL_SPEED_1  			4000	// rpm
+#define MAX_NOMINAL_SPEED_1  			5260	// rpm
 #define MAX_NOMINAL_CURRENT_1  			2		// A
 #define MOTOR_TORQUE_CONSTANT_1			33		// mNm/A
 
@@ -55,14 +55,14 @@
  * If you have any gears added specify gear-ratio
  * and any additional encoders attached specify encoder resolution here (optional)
  */
-#define GEAR_RATIO_1 					26		// if no gears are attached - set to gear ratio to 1
+#define GEAR_RATIO_1 					18		// if no gears are attached - set to gear ratio to 1
 #define ENCODER_RESOLUTION_1 			4000	// 4 x Max count of Quadrature Encoder (4X decoding)
 
 /* Somanet IFM Internal Config */
 #define IFM_RESOLUTION_1				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
 
 /* Position Sensor Types (select your sensor type here) */
-#define SENSOR_SELECTION_CODE_1         QEI_INDEX	// HALL/QEI_INDEX/QEI_NO_INDEX
+#define SENSOR_SELECTION_CODE_1         HALL	// HALL/QEI_INDEX/QEI_NO_INDEX
 
 /* Changes direction of the motor drive */
 #define POLARITY_1 						1		// 1 / -1
@@ -74,10 +74,13 @@
 /*Motor Winding type*/
 #define WINDING_TYPE_1					DELTA_WINDING   	// 1 star-type(Y) 2 delta-type
 
+#define LIMIT_SWITCH_TYPES_1			ACTIVE_HIGH				// ACTIVE_LOW
+#define HOMING_METHOD_1                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
+
 /* Profile defines (Mandatory for profile modes)*/
 #define MAX_PROFILE_VELOCITY_1  		MAX_NOMINAL_SPEED_1
 #define PROFILE_VELOCITY_1				1000	// rpm
-#define MAX_ACCELERATION_1   			5000    // rpm/s
+#define MAX_ACCELERATION_1   			2500    // rpm/s
 #define PROFILE_ACCELERATION_1			2000	// rpm/s
 #define PROFILE_DECELERATION_1  		2000	// rpm/s
 #define QUICK_STOP_DECELERATION_1 		350 	// rpm/s

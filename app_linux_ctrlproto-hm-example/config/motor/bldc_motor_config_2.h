@@ -61,7 +61,10 @@
 /* Somanet IFM Internal Config */
 #define IFM_RESOLUTION_2				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
 
-/* Changes direction of the motor drive */
+/*Position Sensor Types (select your sensor type here) */
+#define SENSOR_SELECTION_CODE_2         HALL	// HALL/QEI_INDEX/QEI_NO_INDEX
+
+/*Changes direction of the motor drive*/
 #define POLARITY_2 						1		// 1 / -1
 
 /*Commutation offset (range 0-4095) */
@@ -71,10 +74,10 @@
 /*Motor Winding type*/
 #define WINDING_TYPE_2					1   	// 1 star-type(Y) 2 delta-type
 
-#define LIMIT_SWITCH_TYPES_2			1
-#define HOMING_METHOD_2                 1
+#define LIMIT_SWITCH_TYPES_1			ACTIVE_HIGH
+#define HOMING_METHOD_1                 HOMING_NEGATIVE_SWITCH
 
-/* Profile defines (Mandatory for profile modes) */
+/* Profile defines (Mandatory for profile modes)*/
 #define MAX_PROFILE_VELOCITY_2  		MAX_NOMINAL_SPEED_2
 #define PROFILE_VELOCITY_2				1000	// rpm
 #define MAX_ACCELERATION_2   			5000    // rpm/s
@@ -84,9 +87,6 @@
 #define MAX_TORQUE_2					MOTOR_TORQUE_CONSTANT_2 * IFM_RESOLUTION_2 * MAX_NOMINAL_CURRENT_2
 #define TORQUE_SLOPE_2 					60 		// mNm/s
 
-
-/* Position Sensor Types (select your sensor type here) */
-#define SENSOR_SELECTION_CODE_2         HALL	// HALL/QEI_INDEX/QEI_NO_INDEX
 
 /* Control specific constants/variables */
 	/* Torque Control (Mandatory if Torque control used) */
