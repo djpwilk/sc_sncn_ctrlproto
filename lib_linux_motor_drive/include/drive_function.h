@@ -87,9 +87,23 @@ extern "C" {
  */
 void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
+
+/**
+ * \brief Homing Mode
+ *
+ *
+ * \param master_setup 			A struct containing the variables for the master
+ * \param slv_handles 			The handle struct for the slaves
+ * \param home_velocity 		Velocity used for homing mode
+ * \param home_acceleration 	Acceleration used for homing mode
+ * \param slave_number			Specify the slave number to which the motor is connected
+ * \param total_no_of_slaves 	Number of connected slaves to the master
+ *
+ */
 void start_homing(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles,\
 		int home_velocity, int home_acceleration, int slave_number, int total_no_of_slaves);
-int check_target_reached(int status_word);
+
+
 
 /**
  * \brief Sets operation mode via defines for modes of operation in drive_config.h
