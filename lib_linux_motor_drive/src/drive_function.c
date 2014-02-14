@@ -773,6 +773,41 @@ int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_v
 	//#endif
 }
 
+void start_homing(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles,\
+		int home_velocity, int home_acceleration, int slave_number, int total_no_of_slaves)
+{
+	int flag = 0;
+	int ack  = 0;
+	int status_word;
+	while(1)
+	{
+
+		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
+
+		if(master_setup->op_flag)	//Check if the master is active
+		{
+			slv_handles[slave_number].speed_setpoint = home_velocity;
+			slv_handles[slave_number].position_setpoint = home_acceleration;
+
+			status_word = slv_handles[slave_number].motorctrl_status_in;
+			ack = check_target_reached(status_word);
+
+			if(ack == 1 && flag == 0)
+			{
+				flag = 1;
+				printf("\n start homing %d", status_word);
+
+			}
+			if(flag == 1 && ack == 0)
+			{
+				printf("\n homing done ");
+				fflush(stdout);
+				break;
+			}
+		}
+	}
+}
+
 int shutdown_operation(int operation_mode, int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
 {
 	int ack_stop = 1, status_word;

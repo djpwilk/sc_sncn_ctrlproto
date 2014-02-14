@@ -65,6 +65,8 @@ int main()
 	int position_ramp = 0;
 	int status_word;
 	int ack;
+	int home_velocity = 250;      		// rpm
+	int home_acceleration = 250;		// rpm/s
 
 	int slave_number = 0;
 
@@ -77,53 +79,9 @@ int main()
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	start_homing(&master_setup, slv_handles, home_velocity, home_acceleration, slave_number, TOTAL_NUM_OF_SLAVES);
 
-	while(1)
-	{
-
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)	//Check if the master is active
-		{
-			slv_handles[slave_number].speed_setpoint = 250;
-			//set_velocity_rpm(2500, slave_number, slv_handles);
-			slv_handles[slave_number].position_setpoint = 250;//acc
-
-			status_word = slv_handles[slave_number].motorctrl_status_in;
-			ack = check_target_reached(status_word);//check_home_active(status_word);
-			printf("\n sw %d", status_word);
-	/*		if(slv_handles[slave_number].operation_mode_disp == 250)
-			{
-				printf("\n homing success");
-				break;
-			}*/
-
-
-				if(ack == 1 && flag == 0)
-				{
-					flag = 1;
-					//slv_handles[slave_number].operation_mode = 100; //dummy
-					//slv_handles[slave_number].motorctrl_out = 0;
-					//slv_handles[slave_number].operation_mode = 200; //dummy
-					printf("\n starting %d", status_word);
-
-				}
-				if(flag == 1 && ack == 0)
-				{
-					printf("\n done ");
-					fflush(stdout);
-				//	slv_handles[slave_number].motorctrl_out = 6;
-					break;
-				}
-
-
-		}
-
-	}
-
-	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-//	renable_ctrl_quick_stop(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES); //after quick-stop
+	shutdown_operation(HM, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -132,6 +90,7 @@ int main()
 
 	initialize_position_profile_limits(slave_number, slv_handles);//*/
 
+	/* Acquire actual position from the node a few times after homing */
 	i = 0;
 	while(1)
 	{
@@ -150,6 +109,7 @@ int main()
 		}
 	}
 
+	/* Now setting a new target position after homing */
 	target_position = actual_position + 200.0f;
 	if(target_position > 350.0f)
 		target_position = 350.0f;
@@ -171,8 +131,14 @@ int main()
 				set_position_degree(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
+			if(i >= steps)
+			{
+				printf("act break");
 
-			printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
+				break;
+			}
+			printf("actual position %f \n", get_position_actual_degree(slave_number, slv_handles));
+
 		}
 	}
 
@@ -187,51 +153,7 @@ int main()
 
 	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);//*/
 
-/*
 
-	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
-	actual_position = get_position_actual_degree(slave_number, slv_handles);
-	target_position = (actual_position + 200.0f);  //degree
-	if(target_position>360.0f)
-		target_position = target_position - 360.0f;
-	velocity = 1250;								//rpm
-	acceleration = 350;								//rpm/s
-	deceleration = 350;								//rpm/s
-
-	printf("target position %f\n", target_position);
-	steps = init_position_profile_params(target_position, actual_position,	velocity, acceleration, deceleration);
-	i = 0;
-
-	while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)//Check if we are up
-		{
-			if(i<steps)
-			{
-				position_ramp = position_profile_generate(i);
-				set_position_degree(position_ramp, slave_number, slv_handles);
-				i = i+1;
-			}
-			else if(i>=steps)
-				break;
-		}
-		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
-	}
-*/
-
-	/*while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
-	}*/
-//	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
 	return 0;
