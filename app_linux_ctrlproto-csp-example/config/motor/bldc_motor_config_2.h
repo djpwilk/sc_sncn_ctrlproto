@@ -61,23 +61,23 @@
 /* Somanet IFM Internal Config */
 #define IFM_RESOLUTION_2				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
 
-/*Position Sensor Types (select your sensor type here) */
+/* Position Sensor Types (select your sensor type here) */
 #define SENSOR_SELECTION_CODE_2         QEI_INDEX	// HALL/QEI_INDEX/QEI_NO_INDEX
 
-/*Changes direction of the motor drive*/
+/* Changes direction of the motor drive */
 #define POLARITY_2 						1		// 1 / -1
 
-/*Commutation offset (range 0-4095) */
+/* Commutation offset (range 0-4095) */
 #define COMMUTATION_OFFSET_CLK_2		683
 #define COMMUTATION_OFFSET_CCLK_2		2731
 
-/*Motor Winding type*/
-#define WINDING_TYPE_2					DELTA_WINDING   	// 1 star-type(Y) 2 delta-type
+/* Motor Winding type */
+#define WINDING_TYPE_2					DELTA_WINDING   		// STAR_WINDING/ DELTA_WINDING
 
-#define LIMIT_SWITCH_TYPES_1			ACTIVE_HIGH				// ACTIVE_LOW
-#define HOMING_METHOD_1                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
+#define LIMIT_SWITCH_TYPES_2			ACTIVE_HIGH				// ACTIVE_LOW
+#define HOMING_METHOD_2                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
 
-/* Profile defines (Mandatory for profile modes)*/
+/* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_2  		MAX_NOMINAL_SPEED_2
 #define PROFILE_VELOCITY_2				1000	// rpm
 #define MAX_ACCELERATION_2   			5000    // rpm/s

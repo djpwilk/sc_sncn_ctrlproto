@@ -55,9 +55,10 @@
 
 int main()
 {
-	int actual_velocity = 0;	// rpm
-	int target_velocity = 1000;	// rpm
-	int tolerance = 20; 		// rpm
+	int actual_velocity = 0;		// rpm
+	int target_velocity = 1000;		// rpm
+	int tolerance = 20; 			// rpm
+	float actual_position = 0.0f; 	// degree
 
 
 	int slave_number = 0;
@@ -81,7 +82,8 @@ int main()
 			set_velocity_rpm(target_velocity, slave_number, slv_handles);
 			ack = target_velocity_reached(slave_number, target_velocity, tolerance, slv_handles);
 			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
-			printf("velocity %d ack %d\n", actual_velocity, ack);
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			printf("velocity %d positon %f ack %d\n", actual_velocity, actual_position, ack);
 		}
 		if(ack == 1)
 		{
@@ -98,12 +100,13 @@ int main()
 		if(master_setup.op_flag)	// Check if the master is active
 		{
 			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
 			if(actual_velocity > 0 || actual_velocity < 0)
 			{
 				quick_stop_velocity(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 				ack = 1;
 			}
-			printf("velocity %d ack %d\n", actual_velocity, ack);
+			printf("velocity %d positon %f ack %d\n", actual_velocity, actual_position, ack);
 		}
 	}
 	printf("reached \n");

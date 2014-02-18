@@ -787,7 +787,8 @@ void start_homing(master_setup_variables_t *master_setup, ctrlproto_slv_handle *
 		if(master_setup->op_flag)	//Check if the master is active
 		{
 			slv_handles[slave_number].speed_setpoint = home_velocity;
-			slv_handles[slave_number].position_setpoint = home_acceleration;
+			//slv_handles[slave_number].position_setpoint = home_acceleration;
+			slv_handles[slave_number].torque_setpoint = home_acceleration;
 
 			status_word = slv_handles[slave_number].motorctrl_status_in;
 			ack = check_target_reached(status_word);

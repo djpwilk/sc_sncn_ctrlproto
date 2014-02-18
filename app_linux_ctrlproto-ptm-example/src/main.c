@@ -56,6 +56,7 @@ int main()
 	float target_torque = -25.0; 	// mNm
 	float actual_torque = 0;
 	float tolerance = 0.76; 		// mNm
+	float actual_position = 0;
 	int ack = 0;
 
 	int slave_number = 0;
@@ -81,8 +82,9 @@ int main()
 			set_torque_mNm(target_torque, slave_number, slv_handles);
 			ack = target_torque_reached(slave_number, target_torque, tolerance, slv_handles);
 			actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
 			printf("target_torque %f \n",target_torque);
-			printf("actual_torque %f ack %d\n", actual_torque, ack);
+			printf("actual_torque %f position %f ack %d\n", actual_torque, actual_position, ack);
 		}
 
 		if(ack == 1)
@@ -101,12 +103,13 @@ int main()
 		if(master_setup.op_flag)	// Check if the master is active
 		{
 			actual_torque =  get_torque_actual_mNm(slave_number, slv_handles);
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
 			if(actual_torque > tolerance || actual_torque < -tolerance)
 			{
 				quick_stop_torque(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 				ack = 1;
 			}
-			printf("actual_torque %f ack %d\n", actual_torque, ack);
+			printf("actual_torque %f position %f ack %d\n", actual_torque, actual_position, ack);
 		}
 	}
 	printf("reached \n");

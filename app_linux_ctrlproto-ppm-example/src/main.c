@@ -109,7 +109,7 @@ int main()
 		}
 		if(flag_position_set == 1)
 		{
-			printf("\nexecuting");
+			printf("\nexecuting \n");
 			break;
 		}
 	}

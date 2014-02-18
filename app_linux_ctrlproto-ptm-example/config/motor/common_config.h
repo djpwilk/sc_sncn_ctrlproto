@@ -45,3 +45,12 @@
 #define HALL 						1
 #define QEI_INDEX  					2
 #define QEI_NO_INDEX				3
+
+#define STAR_WINDING				1
+#define DELTA_WINDING				2
+
+#define HOMING_NEGATIVE_SWITCH		1
+#define HOMING_POSITIVE_SWITCH		2
+
+#define ACTIVE_HIGH					1       // the switch output is high upon activation
+#define ACTIVE_LOW					2		// the switch output is low upon activation

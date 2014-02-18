@@ -56,7 +56,6 @@ int main()
 	int flag = 0;
 
 	int final_target_velocity = -1000;			//rpm
-	int initial_velocity = 0;					//rpm
 	int acceleration= 1000;						//rpm/s
 	int deceleration = 1000;					//rpm/s
 	int steps = 0;
@@ -75,7 +74,7 @@ int main()
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	i = 1;
-	steps = init_velocity_profile_params(final_target_velocity, initial_velocity, acceleration, \
+	steps = init_velocity_profile_params(final_target_velocity, actual_velocity, acceleration, \
 				deceleration, slave_number, slv_handles);
 
 
@@ -95,18 +94,18 @@ int main()
 			}
 			if(i>=steps && flag == 0)
 			{
-				initial_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
+				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
 				final_target_velocity = 2000; //rpm
-				steps = init_velocity_profile_params(final_target_velocity, initial_velocity, acceleration, \
+				steps = init_velocity_profile_params(final_target_velocity, actual_velocity, acceleration, \
 							deceleration, slave_number, slv_handles);
 				i = 1;
 				flag = 1;
 			}
 			if(i>=steps && flag == 1)
 			{
-				initial_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
+				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
 				final_target_velocity = -1000;	//rpm
-				steps = init_velocity_profile_params(final_target_velocity, initial_velocity, acceleration, \
+				steps = init_velocity_profile_params(final_target_velocity, actual_velocity, acceleration, \
 							deceleration, slave_number, slv_handles);
 				i = 1;
 				flag = 2;
@@ -129,8 +128,8 @@ int main()
 	/*i = 0;
 	flag = 0;
 	final_target_velocity = 1000; //rpm
-	initial_velocity = get_velocity_actual_rpm(slave_number, slv_handles); //rpm
-	steps = init_velocity_profile_params(final_target_velocity, initial_velocity, acceleration, \
+	actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles); //rpm
+	steps = init_velocity_profile_params(final_target_velocity, actual_velocity, acceleration, \
 							deceleration, slave_number, slv_handles);
 
 	while(1)
@@ -149,9 +148,9 @@ int main()
 			}
 			if(i>=steps && flag == 0)
 			{
-				initial_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
+				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
 				final_target_velocity = 0; //rpm
-				steps = init_velocity_profile_params(final_target_velocity, initial_velocity, acceleration, \
+				steps = init_velocity_profile_params(final_target_velocity, actual_velocity, acceleration, \
 							deceleration, slave_number, slv_handles);
 				i = 1;
 				flag = 1;

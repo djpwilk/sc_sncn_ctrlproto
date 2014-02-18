@@ -67,12 +67,15 @@
 /* Changes direction of the motor drive */
 #define POLARITY_2 						1		// 1 / -1
 
-/*Commutation offset (range 0-4095) */
+/* Commutation offset (range 0-4095) */
 #define COMMUTATION_OFFSET_CLK_2		683
 #define COMMUTATION_OFFSET_CCLK_2		2731
 
-/*Motor Winding type*/
-#define WINDING_TYPE_2					1   	// 1 star-type(Y) 2 delta-type
+/* Motor Winding type */
+#define WINDING_TYPE_2					DELTA_WINDING   		// STAR_WINDING/ DELTA_WINDING
+
+#define LIMIT_SWITCH_TYPES_2			ACTIVE_HIGH				// ACTIVE_LOW
+#define HOMING_METHOD_2                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
 
 /* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_2  		MAX_NOMINAL_SPEED_2

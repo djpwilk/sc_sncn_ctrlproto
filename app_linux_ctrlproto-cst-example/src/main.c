@@ -54,13 +54,13 @@
 int main()
 {
 	float final_target_torque = 25.0;			// mNm
-	float initial_torque = 0;					// mNm
 	float torque_slope = 10.0;					// mNm/s
 	int steps = 0;
 	int i = 1;
 
 	float target_torque = 0.0;
 	float actual_torque = 0.0;
+	float actual_position = 0.0;
 
 	int slave_number = 0;
 
@@ -89,7 +89,8 @@ int main()
 				printf("target_torque %f \n",target_torque);
 				set_torque_mNm(target_torque, slave_number, slv_handles);
 				actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
-				printf("actual_torque %f \n",actual_torque);
+				actual_position = get_position_actual_degree(slave_number, slv_handles);
+				printf("actual_torque %f actual_position %f\n", actual_torque, actual_position);
 				i = i+1;
 			}
 
@@ -109,7 +110,7 @@ int main()
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 			if(i<steps)
 			{
@@ -117,7 +118,8 @@ int main()
 				printf("target_torque %f \n",target_torque);
 				set_torque_mNm(target_torque, slave_number, slv_handles);
 				actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
-				printf("actual_torque %f \n",actual_torque);
+				actual_position = get_position_actual_degree(slave_number, slv_handles);
+				printf("actual_torque %f actual_position %f\n", actual_torque, actual_position);
 				i = i+1;
 			}
 
@@ -162,7 +164,7 @@ int main()
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag) 	// Check if the master is active
 		{
 			if(i<steps)
 			{
@@ -183,7 +185,7 @@ int main()
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 
 			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
