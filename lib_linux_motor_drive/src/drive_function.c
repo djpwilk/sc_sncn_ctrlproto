@@ -796,7 +796,7 @@ void start_homing(master_setup_variables_t *master_setup, ctrlproto_slv_handle *
 			if(ack == 1 && flag == 0)
 			{
 				flag = 1;
-				printf("\n start homing %d", status_word);
+				printf("\n start homing \n");
 
 			}
 			if(flag == 1 && ack == 0)

@@ -75,22 +75,21 @@ int main()
 
 	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Set operation mode to Homing */
 	set_operation_mode(HM, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Enable Homing Operation */
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	start_homing(&master_setup, slv_handles, home_velocity, home_acceleration, slave_number, TOTAL_NUM_OF_SLAVES);
 
+	/* Shutdown Homing Operation */
 	shutdown_operation(HM, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
-	initialize_position_profile_limits(slave_number, slv_handles);//*/
-
-	/* Acquire actual position from the node a few times after homing */
+	/*
+	 * Acquire actual position from the node a few times after homing and
+	 * set it as target position to avoid setting controller target position to 0 in one step
+	 */
 	i = 0;
 	while(1)
 	{
@@ -100,6 +99,8 @@ int main()
 		if(master_setup.op_flag)	//Check if the master is active
 		{
 			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			target_position = actual_position;
+			set_profile_position_degree(target_position, slave_number, slv_handles);
 			i = i+1;
 		}
 		if(i==3)
@@ -109,14 +110,26 @@ int main()
 		}
 	}
 
+	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+
+	initialize_position_profile_limits(slave_number, slv_handles);//*/
+
+
+
 	/* Now setting a new target position after homing */
 	target_position = actual_position + 200.0f;
 	if(target_position > 350.0f)
 		target_position = 350.0f;
 	printf(" target_position %f\n", target_position);
+
+	/*calculate the no. of steps for the profile*/
 	steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
 			deceleration, slave_number, slv_handles);
 
+	/* Execute the position profile steps in a loop */
 	i = 1;
 	while(1)
 	{
@@ -133,25 +146,23 @@ int main()
 			}
 			if(i >= steps)
 			{
-				printf("act break");
-
+				printf("ack received");
 				break;
 			}
 			printf("actual position %f \n", get_position_actual_degree(slave_number, slv_handles));
-
 		}
 	}
 
-	quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);				// use quick stop in case of emergency
 
-	renable_ctrl_quick_stop(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES); //after quick-stop
+	renable_ctrl_quick_stop(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES); 	// after quick-stop enable control of node
 
-	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);			// set operation mode to CSP
 
-	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);				// enable operation
 
-	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);//*/
+	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);			// stop the node operation. or can continue with new position profile
 
 
 
