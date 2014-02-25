@@ -80,11 +80,11 @@
 #include <stdarg.h>
 #include <ctrlproto_m.h>
 #include <canod.h>
-/****************************************************************************/
-
 #include "ecrt.h"
 
-/****************************************************************************/
+
+
+
 // Application parameters
 #define FREQUENCY 	1000	// KHz
 #define PRIORITY 	1
@@ -173,9 +173,8 @@ int read_sdo(ec_sdo_request_t *req)
             break;
         case EC_REQUEST_SUCCESS:
         	sdo_read_value = EC_READ_S32(ecrt_sdo_request_data(req));
-            //logmsg(1, "SDO value read: 0x%X\n",
-            //		sdo_read_value);
-            ecrt_sdo_request_read(req); // trigger next read
+            //logmsg(1, "SDO value read: 0x%X\n", sdo_read_value);
+            ecrt_sdo_request_write(req); // trigger next write
             break;
         case EC_REQUEST_ERROR:
             //fprintf(stderr, "Failed to read SDO!\n");
@@ -201,7 +200,7 @@ int write_sdo(ec_sdo_request_t *req, unsigned data)
 		case EC_REQUEST_SUCCESS:
 			//logmsg(1, "SDO value written: 0x%X\n", data);
 			pause();
-			ecrt_sdo_request_write(req); // trigger next read ???
+			ecrt_sdo_request_read(req); // trigger next read
 			return 1;
 			break;
 		case EC_REQUEST_ERROR:
@@ -512,11 +511,7 @@ int _motor_config_update(ec_sdo_request_t *request, int update, int value, int s
 	if(update==0)
 	{
 		write_sdo(request, value);
-		pause();
-		pause();
 		sdo_update_value = read_sdo(request);
-		pause();
-		pause();
 		if(sdo_update_value == value)
 		{
 			update = 1;

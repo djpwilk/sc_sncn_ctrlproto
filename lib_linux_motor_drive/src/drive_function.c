@@ -334,8 +334,8 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 		else
 		{
 			sdo_handle_ecat(master_setup, slv_handles, MOTOR_PARAM_UPDATE, slave_number); // motor config update
-			printf (".");
-			fflush(stdout);
+			//printf (".");
+			//fflush(stdout);
 
 		}
 	}
