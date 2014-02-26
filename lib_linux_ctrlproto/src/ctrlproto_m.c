@@ -86,7 +86,7 @@
 
 
 // Application parameters
-#define FREQUENCY 	1000	// KHz
+#define FREQUENCY 	1000	// Hz
 #define PRIORITY 	1
 
 

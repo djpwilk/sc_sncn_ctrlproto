@@ -78,15 +78,15 @@ extern "C" {
 /*External functions*/
 
 /**
- * \brief Initialize node with basic motor configurations via bldc_motor_config.h
+ * \brief Initialize all connected nodes with basic motor configurations via bldc_motor_config headers
  *
  * \param slave_number			Specify the slave number to which the motor is connected
  * \param master_setup 			A struct containing the variables for the master
  * \param slv_handles 			The handle struct for the slaves
  * \param total_no_of_slaves 	Number of connected slaves to the master
  */
-void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
-
+//void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
+void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves);
 
 /**
  * \brief Homing Mode

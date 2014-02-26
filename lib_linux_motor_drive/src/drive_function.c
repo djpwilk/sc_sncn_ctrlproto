@@ -292,17 +292,21 @@ int target_torque_reached(int slave_number, float target_torque, float tolerance
 		return 0;
 }
 
-void init_node(int slave_number, master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves)
+void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *slv_handles, int total_no_of_slaves) //int slave_number,
 {
 	//check if node settings are up
-	set_controlword(6, slave_number, slv_handles);
-	while(1)
+	int i;
+	for(i = 0; i<total_no_of_slaves;i++)
 	{
-		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-		if(master_setup->op_flag)
+		set_controlword(6, i, slv_handles);
+		while(1)
 		{
-			if(slv_handles[slave_number].operation_mode_disp == 105)
-				break;
+			pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
+			if(master_setup->op_flag)
+			{
+				if(slv_handles[i].operation_mode_disp == 105)
+					break;
+			}
 		}
 	}
 }
