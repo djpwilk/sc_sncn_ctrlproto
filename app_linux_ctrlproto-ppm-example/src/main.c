@@ -60,46 +60,76 @@ int main()
 	float target_position = 350.0f;		// degree
 
 	float tolerance = 1.0f;	 			// 1 degree
+	int actual_velocity;
 
 	int slave_number = 0;
+	int stop_position;
 	int ack = 0;
+	int flag = 0;
+	int i = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
+
 	ack = 0;
+	i = 0;
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 		if(master_setup.op_flag)	// Check if the master is active
 		{
-			set_profile_position_degree(target_position, slave_number, slv_handles);
-			ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
-			actual_position = get_position_actual_degree(slave_number, slv_handles);
-			printf("position %f ack %d\n", actual_position, ack);
+			/* Read Actual Position from the node */
+			if(flag == 0)
+			{
+				 actual_position = get_position_actual_degree(slave_number, slv_handles);
+
+				 i = i+1;
+				 if(i>3)
+				 {
+					 target_position =  actual_position + 200.0f;
+					 if(target_position > 350.0f)
+						 target_position = 300.0f;
+					flag = 1;
+					printf("target_position %f actual_position %f\n", target_position, actual_position);
+				 }
+			}
+			if(flag == 1)
+			{
+				set_profile_position_degree(target_position, slave_number, slv_handles);
+				ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
+				actual_position = get_position_actual_degree(slave_number, slv_handles);
+				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
+				printf("position %f velocity %d ack %d\n", actual_position, actual_velocity, ack);
+			}
 		}
 		if(ack == 1)
 		{
 			break;
 		}
+
 	}
 
 	printf("reached \n");
 
 	flag_position_set = 0;
-	target_position = 30.0f;
+	target_position = actual_position - 200.0f;
+	if(target_position < -350.0f)
+		target_position = -350.0f;
+	stop_position = target_position + 40.0f;
+
 	while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 			set_profile_position_degree(target_position, slave_number, slv_handles);
 			flag_position_set = position_set_flag(slave_number, slv_handles); 		//ensures the new way point is taken awhen ack = 0;
@@ -118,15 +148,16 @@ int main()
 	while(!ack)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 			actual_position = get_position_actual_degree(slave_number, slv_handles);
-			if(actual_position < 50.0f)
+			if(actual_position < stop_position)
 			{
 				quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 				ack = 1;
 			}
-			printf("position %f ack %d\n", actual_position, ack);
+			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
+			printf("position %f velocity %d ack %d\n", actual_position, actual_velocity, ack);
 		}
 	}
 	printf("reached \n");
@@ -135,7 +166,7 @@ int main()
 //	while(1)
 //	{
 //		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//		if(master_setup.op_flag)//Check if we are up
+//		if(master_setup.op_flag)	// Check if the master is active
 //		{
 //			actual_position = get_position_actual_degree(slave_number, slv_handles);
 //			printf("position %f \n", actual_position);
@@ -156,7 +187,7 @@ int main()
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag)	// Check if the master is active
 		{
 			set_profile_position_degree(target_position, slave_number, slv_handles);
 			actual_position = get_position_actual_degree(slave_number, slv_handles);

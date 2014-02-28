@@ -60,6 +60,7 @@ int main()
 	int velocity = 350;					// rpm
 	float actual_position = 0.0f;		// degree
 	float target_position = 350.0f;		// degree
+	int actual_velocity;
 	int steps = 0;
 	int i = 1;
 	int position_ramp = 0;
@@ -76,10 +77,9 @@ int main()
 
 
 	initialize_position_profile_limits(slave_number, slv_handles);
-	steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
-			deceleration, slave_number, slv_handles);
 
 
+	i = 0;
 	while(1)
 	{
 
@@ -87,14 +87,37 @@ int main()
 
 		if(master_setup.op_flag)	//Check if the master is active
 		{
-			if(i<steps && flag == 0)
+			/* Read Actual Position from the node */
+			if(flag == 0)
+			{
+			 	 actual_position = get_position_actual_degree(slave_number, slv_handles);
+			 	 i = i+1;
+			 	 if(i>3)
+			 	 {
+			 	 	 target_position =  actual_position + 200.0f;
+			 	 	 if(target_position > 350.0f)
+			 	 	 	 target_position = 300.0f;
+			 	 	 steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
+								deceleration, slave_number, slv_handles);
+			 	 	 flag = 1;
+			 	 	 i = 1;
+			 	 	 printf("steps %d target %f actual %f\n", steps, target_position, actual_position);
+			 	 }
+			}
+
+			if(i<steps && flag == 1)
 			{
 				position_ramp =  generate_profile_position(i, slave_number, slv_handles);
+				//printf(" position_ramp %d\n", position_ramp);
 				set_position_degree(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
+			if(i >= steps && flag == 1)
+			{
+				break;
+			}
 
-			if(i<steps - steps/2&& flag == 1)
+			/*if(i<steps - steps/2&& flag == 1)
 			{
 				position_ramp = generate_profile_position(i, slave_number, slv_handles);
 				set_position_degree(position_ramp, slave_number, slv_handles);
@@ -103,8 +126,9 @@ int main()
 			else if(flag == 1 && i >=steps-steps/2)
 			{
 				break;
-			}
-			if(i>=steps && flag == 0)
+			}*/
+
+			/*if(i>=steps && flag == 0)
 			{
 				actual_position = get_position_actual_degree(slave_number, slv_handles);
 				target_position = 50.0f;
@@ -115,14 +139,14 @@ int main()
 							deceleration, slave_number, slv_handles);
 				i = 1;
 				flag = 1;
-			}
-
-			printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
+			}*/
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
+			printf("actual position %f actual velocity %d\n", actual_position, actual_velocity);
 		}
 	}
 
 	quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
 
 	renable_ctrl_quick_stop(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES); //after quick-stop
 

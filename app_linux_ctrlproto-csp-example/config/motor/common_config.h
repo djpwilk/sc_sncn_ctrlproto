@@ -40,7 +40,8 @@
 #define QEI_WITH_NO_INDEX 			0
 
 #define DC100_RESOLUTION 			740 	// resolution/A
-#define DC300_RESOLUTION			264 	// resolution/A
+#define DC300_RESOLUTION			400 	// resolution/A
+#define OLD_DC300_RESOLUTION		264 	// resolution/A
 
 #define HALL 						1
 #define QEI_INDEX  					2

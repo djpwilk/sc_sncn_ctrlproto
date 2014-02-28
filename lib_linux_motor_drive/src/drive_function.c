@@ -308,6 +308,35 @@ void init_nodes(master_setup_variables_t *master_setup, ctrlproto_slv_handle *sl
 					break;
 			}
 		}
+
+
+		set_controlword(0, i, slv_handles);
+		printf("updating motor parameters for all connected nodes\n");
+		fflush(stdout);
+		/***** Set up Parameters *****/
+
+
+		slv_handles[i].motor_config_param.update_flag = 0;
+		while(1)
+		{
+			if(slv_handles[i].motor_config_param.update_flag == 1)
+			{
+				slv_handles[i].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
+				break;
+			}
+
+			else
+			{
+				sdo_handle_ecat(master_setup, slv_handles, MOTOR_PARAM_UPDATE, i); // motor config update
+				//printf (".");
+				//fflush(stdout);
+
+			}
+		}
+		printf ("\n");
+		fflush(stdout);
+
+		set_controlword(5, i, slv_handles);
 	}
 }
 
@@ -319,11 +348,33 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	int switch_on_state = 0;
 	int op_enable_state = 0;
 
+	float actual_position;
+	int i = 0;
+	// Initial all target values to actual values to keep system stable on restart
+//	while(1)
+//	{
+//		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
+//
+//		if(master_setup->op_flag)	//Check if the master is active
+//		{
+//			if(operation_mode == CSP)
+//			{
+//				actual_position = get_position_actual_degree(slave_number, slv_handles);
+//				set_profile_position_degree(actual_position, slave_number, slv_handles);
+//				printf("actual position %f\n", actual_position);
+//				i = i + 1;
+//				if(i > 3)
+//				{
+//					break;
+//				}
+//			}
+//		}
+//	}
 
-	set_controlword(0, slave_number, slv_handles);
+/*	set_controlword(0, slave_number, slv_handles);
 	printf("updating motor parameters\n");
 	fflush(stdout);
-	/***** Set up Parameters *****/
+	**** Set up Parameters ****
 
 
 	slv_handles[slave_number].motor_config_param.update_flag = 0;
@@ -346,7 +397,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf ("\n");
 	fflush(stdout);
 
-	set_controlword(5, slave_number, slv_handles);//*/
+	set_controlword(5, slave_number, slv_handles);*/
 
 	/**********************check ready***********************/
 	while(!ready)
@@ -658,6 +709,7 @@ int enable_operation(int slave_number, master_setup_variables_t *master_setup, c
 {
 	int op_enable_state = 0;
 	int status_word = 0;
+	float actual_position;
 
 	while(!op_enable_state && master_setup->op_flag)
 	{
@@ -668,6 +720,8 @@ int enable_operation(int slave_number, master_setup_variables_t *master_setup, c
 			/*************check op_enable_state**************/
 			status_word = read_statusword(slave_number, slv_handles);
 			op_enable_state = check_op_enable(status_word);
+			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			set_profile_position_degree(actual_position, slave_number, slv_handles);
 		}
 		else
 			continue;
