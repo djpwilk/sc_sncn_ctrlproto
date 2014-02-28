@@ -57,13 +57,14 @@ int main()
 	float actual_torque = 0;
 	float tolerance = 0.76; 		// mNm
 	float actual_position = 0;
+	int actual_velocity = 0;
 	int ack = 0;
 
 	int slave_number = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	initialize_torque(slave_number, slv_handles);
 
@@ -83,8 +84,9 @@ int main()
 			ack = target_torque_reached(slave_number, target_torque, tolerance, slv_handles);
 			actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
 			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
 			printf("target_torque %f \n",target_torque);
-			printf("actual_torque %f position %f ack %d\n", actual_torque, actual_position, ack);
+			printf("actual_torque %f position %f velocity %d ack %d\n", actual_torque, actual_position, actual_velocity, ack);
 		}
 
 		if(ack == 1)
@@ -104,12 +106,13 @@ int main()
 		{
 			actual_torque =  get_torque_actual_mNm(slave_number, slv_handles);
 			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
 			if(actual_torque > tolerance || actual_torque < -tolerance)
 			{
 				quick_stop_torque(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 				ack = 1;
 			}
-			printf("actual_torque %f position %f ack %d\n", actual_torque, actual_position, ack);
+			printf("actual_torque %f position %f velocity %d ack %d\n", actual_torque, actual_position, actual_velocity, ack);
 		}
 	}
 	printf("reached \n");
