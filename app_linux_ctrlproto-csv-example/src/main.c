@@ -67,7 +67,7 @@ int main()
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
