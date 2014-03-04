@@ -1,0 +1,38 @@
+/**
+
+\mainpage
+
+Implementation of Communication protocol layer for Motor Control on SOMANET over EtherCAT. \n
+
+<div align="left">
+<table style="width:500px" cellpadding="5">
+<tr>
+  <td>Latest release:</td>
+  <td>0.9beta</td>
+</tr>
+<tr>
+  <td>Maintainer</td>
+  <td>support@synapticon.com</td>
+</tr>
+</table> 
+</div> 
+
+##Key Features
+
+  - Cyclic Synchronous Position Control
+  - Cyclic Synchronous Velocity Control
+  - Cyclic Synchronous Torque Control
+  - Profile Position Control 
+  - Profile Velocity Control
+  - Profile Torque Control
+  - Support motor and controller parameter update
+  - Support complex node topology
+
+##Required software
+
+- [sc_somanet-base](http://synapticon.github.io/sc_somanet-base/)
+- [sc_pwm](http://synapticon.github.io/sc_pwm/)
+- [sc_sncn_ethercat](http://synapticon.github.io/sc_sncn_ethercat/) 
+- [sc_sncn_motorctrl_sin](http://synapticon.github.io/sc_sncn_motorctrl_sin/)
+
+*/
