@@ -6,13 +6,13 @@ Control Protocol SOFTWARE COMPONENT
 
 Implementation of Communication protocol layer for Motor Control on SOMANET over EtherCAT.
 
-<table style="width:300px">
+<table >
 <tr>
-  <td>Latest release: </td>
-  <td>0.9beta </td>
+  <td width="150px" height="30px">Latest release: </td>
+  <td width="300px">0.9beta </td>
 </tr>
 <tr>
-  <td>Maintainer:</td>
+  <td height="30px">Maintainer:</td>
   <td>support@synapticon.com</td>
 </tr>
 </table> 
@@ -31,7 +31,7 @@ Key Features
 
 Further information
 ---------
-  * sc_sncn_motorctrl_sin [DOCUMENTATION](http://synapticon.github.io/sc_sncn_ctrlproto/)
+  * sc_sncn_ctrlproto [DOCUMENTATION](http://synapticon.github.io/sc_sncn_ctrlproto/)
 
 Known Issues
 ---------
