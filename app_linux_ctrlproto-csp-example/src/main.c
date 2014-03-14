@@ -95,8 +95,8 @@ int main()
 			 	 if(i>3)
 			 	 {
 			 	 	 target_position =  actual_position + 20000;
-			 	 	 if(target_position > MAX_POSITION_LIMIT(1))
-			 	 	 	 target_position = MAX_POSITION_LIMIT(1);
+			 	 	 if(target_position > 52000)
+			 	 	 	 target_position = 52000;
 			 	 	 steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
 								deceleration, slave_number, slv_handles);
 			 	 	 flag = 1;

@@ -58,8 +58,8 @@ int main()
 	int acceleration = 350;				// rpm/s
 	int deceleration = 350;   			// rpm/s
 	int velocity = 350;					// rpm
-	float actual_position = 0.0f;		// degree
-	float target_position = 350.0f;		// degree
+	int actual_position = 0;			// ticks
+	int target_position = 0;			// ticks
 	int steps = 0;
 	int i = 1;
 	int position_ramp = 0;
@@ -73,7 +73,7 @@ int main()
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	init_node(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	/* Set operation mode to Homing */
 	set_operation_mode(HM, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -91,6 +91,8 @@ int main()
 	 * set it as target position to avoid setting controller target position to 0 in one step
 	 */
 	i = 0;
+	int difference =1500;
+	int previous=0;
 	while(1)
 	{
 
@@ -98,16 +100,23 @@ int main()
 
 		if(master_setup.op_flag)	//Check if the master is active
 		{
-			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			target_position = actual_position;
-			set_profile_position_degree(target_position, slave_number, slv_handles);
+			set_profile_position_ticks(target_position, slave_number, slv_handles);
 			i = i+1;
+
+			difference = actual_position - previous;
+			if(difference <1 && difference >-1)
+			{
+				//printf(" difference %d act %d\n",difference, actual_position);
+				break;
+			}
+
+			previous = actual_position;
+
+			//printf(" difference %d act %d\n",difference, actual_position);
 		}
-		if(i==3)
-		{
-			printf("actual position %f\n", actual_position);
-			break;
-		}
+
 	}
 
 	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -120,10 +129,10 @@ int main()
 
 
 	/* Now setting a new target position after homing */
-	target_position = actual_position + 200.0f;
-	if(target_position > 350.0f)
-		target_position = 350.0f;
-	printf(" target_position %f\n", target_position);
+	target_position = get_position_actual_ticks(slave_number, slv_handles) + 5000;
+	if(target_position > 35000)
+		target_position = 35000;
+	printf(" target_position %d\n", target_position);
 
 	/*calculate the no. of steps for the profile*/
 	steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
@@ -141,7 +150,7 @@ int main()
 			if(i<steps)
 			{
 				position_ramp = generate_profile_position(i, slave_number, slv_handles);
-				set_position_degree(position_ramp, slave_number, slv_handles);
+				set_position_ticks(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
 			if(i >= steps)
@@ -149,7 +158,7 @@ int main()
 				printf("ack received");
 				break;
 			}
-			printf("actual position %f \n", get_position_actual_degree(slave_number, slv_handles));
+			//printf("actual position %d \n", get_position_actual_ticks(slave_number, slv_handles));
 		}
 	}
 

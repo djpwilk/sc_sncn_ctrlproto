@@ -117,24 +117,26 @@ int get_position_actual_ticks(int slave_number, ctrlproto_slv_handle *slv_handle
 
 int position_limit(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-	//int position = (int) round( (target_position*10000.0f) );
+	int position = target_position;
+	//printf("\n tar %d\n", position);
+
 	int position_min = slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min;
 	int position_max = slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max;
 
-	if (target_position > position_max)
-	{
+	if (position > position_max)
+	{//printf("\n tar %d\n", position_max);
 		//printf(" %d", (int) round( (position_max * 10000.0f) ));
 		return   position_max; //slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max;
 	}
-	else if (target_position < position_min)
-	{
+	else if (position < position_min)
+	{//printf("\n tar %d\n", position_min);
 		//printf(" %d", (int) round( (position_max * 10000.0f) ));
 		return position_min; //slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min;
 	}
-	else if (target_position >= position_min && target_position <= position_max)
+	else if (position >= position_min && position <= position_max)
 	{
 		//printf(" %d", (int) round( (position_max * 10000.0f) ));
-		return target_position;
+		return position;
 	}
 }
 
@@ -164,6 +166,7 @@ void set_profile_position_ticks(int target_position, int slave_number, ctrlproto
 {
 	//int ack = 1;
 	slv_handles[slave_number].position_setpoint = position_limit(target_position, slave_number, slv_handles);
+	//printf("\n tar %d\n", slv_handles[slave_number].position_setpoint);
 }
 
 int position_set_flag(int slave_number, ctrlproto_slv_handle *slv_handles)
@@ -361,7 +364,7 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	int switch_on_state = 0;
 	int op_enable_state = 0;
 
-	float actual_position;
+	int actual_position;
 	int i = 0;
 	// Initial all target values to actual values to keep system stable on restart
 //	while(1)
@@ -734,6 +737,7 @@ int enable_operation(int slave_number, master_setup_variables_t *master_setup, c
 			status_word = read_statusword(slave_number, slv_handles);
 			op_enable_state = check_op_enable(status_word);
 			actual_position = get_position_actual_ticks(slave_number, slv_handles);
+			//printf("actual_position %d\n", actual_position);;
 			set_profile_position_ticks(actual_position, slave_number, slv_handles);
 		}
 		else
