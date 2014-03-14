@@ -123,7 +123,7 @@ int sensor_select_sdo(chanend coe_out);
  * \return qei_type
  *
  */
-{int, int, int} qei_sdo_update(chanend coe_out);
+{int, int, int, int, int} qei_sdo_update(chanend coe_out);
 
 /**
  * \brief read hall params from Ethercat
@@ -132,7 +132,7 @@ int sensor_select_sdo(chanend coe_out);
  * \return pole_pairs
  *
  */
-{int, int} hall_sdo_update(chanend coe_out);
+{int, int, int} hall_sdo_update(chanend coe_out);
 
 {int, int, int} commutation_sdo_update(chanend coe_out);
 

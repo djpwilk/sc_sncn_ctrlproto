@@ -147,7 +147,7 @@ int shutdown_operation(int operation_mode, int slave_number, master_setup_variab
  * \param slave_number			Specify the slave number to which the motor is connected
  * \param slv_handles 			The handle struct for the slaves
  */
-void set_position_degree(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
+void set_position_ticks(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 /**
@@ -157,7 +157,7 @@ void set_position_degree(int target_position, int slave_number, ctrlproto_slv_ha
  * \param slave_number			Specify the slave number to which the motor is connected
  * \param slv_handles 			The handle struct for the slaves
  */
-void set_profile_position_degree(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
+void set_profile_position_ticks(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 /**
@@ -168,7 +168,7 @@ void set_profile_position_degree(float target_position, int slave_number, ctrlpr
  *
  * \return actual_position from the slave number specified
  */
-float get_position_actual_degree(int slave_number, ctrlproto_slv_handle *slv_handles);
+int get_position_actual_ticks(int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 /**
@@ -192,7 +192,7 @@ int quick_stop_position(int slave_number, master_setup_variables_t *master_setup
  *
  * \return 1 if target position reached else 0
  */
-int target_position_reached(int slave_number, float target_position, float tolerance, ctrlproto_slv_handle *slv_handles);
+int target_position_reached(int slave_number, int target_position, int tolerance, ctrlproto_slv_handle *slv_handles);
 
 
 /**
@@ -218,9 +218,10 @@ void initialize_position_profile_limits(int slave_number, ctrlproto_slv_handle *
  * \param slv_handles 			The handle struct for the slaves
  *
  */
-int init_position_profile_params(float target_position, float actual_position, int velocity, \
+//int init_position_profile_params(float target_position, float actual_position, int velocity, \
 		int acceleration, int deceleration, int slave_number, ctrlproto_slv_handle *slv_handles);
-
+int init_position_profile_params(int target_position, int actual_position, int velocity, \
+		int acceleration, int deceleration, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 /**
  * \brief Generate Position Profile
@@ -422,7 +423,7 @@ int renable_ctrl_quick_stop(int operation_mode, int slave_number, master_setup_v
 
 
 /*Internal Function */
-int position_limit(float target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
+int position_limit(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles);
 
 
 int check_home_active(int status_word);

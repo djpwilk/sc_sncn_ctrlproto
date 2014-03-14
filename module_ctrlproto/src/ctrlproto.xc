@@ -146,6 +146,8 @@ void config_sdo_handler(chanend coe_out)
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, sdo_value);
 	printintln(sdo_value);
+	GET_SDO_DATA(SENSOR_POLARITY, 0, sdo_value);
+	printintln(sdo_value);
 
 }
 
@@ -331,35 +333,41 @@ int sensor_select_sdo(chanend coe_out)
 	return {Kp, Ki, Kd};
 }
 
-{int, int} hall_sdo_update(chanend coe_out)
+{int, int, int} hall_sdo_update(chanend coe_out)
 {
-	int gear_ratio;
 	int pole_pairs;
+	int min;
+	int max;
 
-	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, gear_ratio);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, pole_pairs);
 
-	return {pole_pairs, gear_ratio};
+	return {pole_pairs, max, min};
 }
 
 
 
-{int, int, int} qei_sdo_update(chanend coe_out)
+{int, int, int, int, int} qei_sdo_update(chanend coe_out)
 {
 	int real_counts;
-	int gear_ratio;
 	int qei_type;
+	int min;
+	int max;
+	int sensor_polarity;
 
-	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, gear_ratio);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
 	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, real_counts);
 	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, qei_type);
+	GET_SDO_DATA(SENSOR_POLARITY, 0, sensor_polarity);
 
 	if(qei_type == QEI_INDEX)
-		return {real_counts, gear_ratio, QEI_WITH_INDEX};
+		return {real_counts, max, min, QEI_WITH_INDEX, sensor_polarity};
 	else if(qei_type == QEI_NO_INDEX)
-		return {real_counts, gear_ratio, QEI_WITH_NO_INDEX};
+		return {real_counts, max, min, QEI_WITH_NO_INDEX, sensor_polarity};
 	else
-		return {real_counts, gear_ratio, QEI_WITH_INDEX};//default
+		return {real_counts, max, min, QEI_WITH_INDEX, sensor_polarity};	//default
 }
 
 int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)

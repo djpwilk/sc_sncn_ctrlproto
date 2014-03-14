@@ -184,6 +184,7 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		\
 		{LIMIT_SWITCH_TYPES(CONFIG_NUMBER), 0},\
 		{HOMING_METHOD(CONFIG_NUMBER), 0},\
+		{QEI_SENSOR_POLARITY(CONFIG_NUMBER), 0},\
 		\
 		0},\
 		0.0f,\
@@ -212,7 +213,7 @@ typedef struct
 	 * The SDO entries
 	 */
 
-	ec_sdo_request_t *__request[32];
+	ec_sdo_request_t *__request[34];
 
 	/**
 	 * The PDO entries

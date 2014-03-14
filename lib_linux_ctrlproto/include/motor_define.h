@@ -227,6 +227,12 @@ typedef struct
 
 typedef struct
 {
+	int sensor_polarity;
+	int update_state;
+} sensor_polarity_s;
+
+typedef struct
+{
 	pole_pair_s s_pole_pair;
 	gear_ratio_s s_gear_ratio;
 	nominal_motor_speed_s s_nominal_motor_speed;
@@ -272,7 +278,7 @@ typedef struct
 
 	limit_switch_type_s s_limit_switch_type;
 	homing_method_s s_homing_method;
-
+	sensor_polarity_s s_sensor_polarity;
 	int update_flag;
 } motor_config;
 
@@ -324,6 +330,7 @@ typedef struct
 
 #define HOMING_METHOD(n) 			HOMING_METHOD_##n
 #define LIMIT_SWITCH_TYPES(n) 		LIMIT_SWITCH_TYPES_##n
+#define QEI_SENSOR_POLARITY(n) 		QEI_SENSOR_POLARITY_##n
 
 #ifdef __cplusplus
 }
