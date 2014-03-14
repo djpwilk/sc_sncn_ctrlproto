@@ -58,8 +58,8 @@ int main()
 	int acceleration = 350;				// rpm/s
 	int deceleration = 350;   			// rpm/s
 	int velocity = 350;					// rpm
-	float actual_position = 0.0f;		// degree
-	float target_position = 350.0f;		// degree
+	int actual_position = 0;			// ticks
+	int target_position = 0;			// ticks
 	int actual_velocity;
 	int steps = 0;
 	int i = 1;
@@ -90,18 +90,18 @@ int main()
 			/* Read Actual Position from the node */
 			if(flag == 0)
 			{
-			 	 actual_position = get_position_actual_degree(slave_number, slv_handles);
+			 	 actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			 	 i = i+1;
 			 	 if(i>3)
 			 	 {
-			 	 	 target_position =  actual_position + 200.0f;
-			 	 	 if(target_position > 350.0f)
-			 	 	 	 target_position = 300.0f;
+			 	 	 target_position =  actual_position + 20000;
+			 	 	 if(target_position > MAX_POSITION_LIMIT(1))
+			 	 	 	 target_position = MAX_POSITION_LIMIT(1);
 			 	 	 steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
 								deceleration, slave_number, slv_handles);
 			 	 	 flag = 1;
 			 	 	 i = 1;
-			 	 	 printf("steps %d target %f actual %f\n", steps, target_position, actual_position);
+			 	 	 printf("steps %d target %d actual %d\n", steps, target_position, actual_position);
 			 	 }
 			}
 
@@ -109,7 +109,7 @@ int main()
 			{
 				position_ramp =  generate_profile_position(i, slave_number, slv_handles);
 				//printf(" position_ramp %d\n", position_ramp);
-				set_position_degree(position_ramp, slave_number, slv_handles);
+				set_position_ticks(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
 			if(i >= steps && flag == 1)
@@ -140,18 +140,18 @@ int main()
 				i = 1;
 				flag = 1;
 			}*/
-			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-			printf("actual position %f actual velocity %d\n", actual_position, actual_velocity);
+			//printf("actual position %d actual velocity %d\n", actual_position, actual_velocity);
 		}
 	}
 
 	quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
+//
 	renable_ctrl_quick_stop(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES); //after quick-stop
-
+//
 	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
+//
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);

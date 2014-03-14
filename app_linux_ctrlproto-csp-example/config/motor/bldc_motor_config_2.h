@@ -64,8 +64,7 @@
 /* Position Sensor Types (select your sensor type here) */
 #define SENSOR_SELECTION_CODE_2         QEI_INDEX	// HALL/QEI_INDEX/QEI_NO_INDEX
 
-/* Changes direction of the motor drive */
-#define POLARITY_2 						1		// 1 / -1
+#define QEI_SENSOR_POLARITY_2		0
 
 /* Commutation offset (range 0-4095) */
 #define COMMUTATION_OFFSET_CLK_2		683
@@ -76,6 +75,9 @@
 
 #define LIMIT_SWITCH_TYPES_2			ACTIVE_HIGH				// ACTIVE_LOW
 #define HOMING_METHOD_2                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
+
+/* Changes direction of the motor drive */
+#define POLARITY_2 						1		// 1 / -1
 
 /* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_2  		MAX_NOMINAL_SPEED_2
