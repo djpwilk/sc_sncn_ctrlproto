@@ -56,10 +56,10 @@ int main()
 {
 	int flag_position_set = 0;
 
-	float actual_position = 0;			// degree
-	float target_position = 350.0f;		// degree
+	int actual_position = 0;			// ticks
+	int target_position = 350;			// ticks
 
-	float tolerance = 1.0f;	 			// 1 degree
+	int tolerance = 5;	 				// ticks
 	int actual_velocity;
 
 	int slave_number = 0;
@@ -89,25 +89,25 @@ int main()
 			/* Read Actual Position from the node */
 			if(flag == 0)
 			{
-				 actual_position = get_position_actual_degree(slave_number, slv_handles);
+				 actual_position = get_position_actual_ticks(slave_number, slv_handles);
 
 				 i = i+1;
 				 if(i>3)
 				 {
-					 target_position =  actual_position + 200.0f;
-					 if(target_position > 350.0f)
-						 target_position = 300.0f;
+					 target_position =  actual_position + 10000;
+					 if(target_position > 52000)
+						 target_position = 52000;
 					flag = 1;
-					printf("target_position %f actual_position %f\n", target_position, actual_position);
+					printf("target_position %d actual_position %d\n", target_position, actual_position);
 				 }
 			}
 			if(flag == 1)
 			{
-				set_profile_position_degree(target_position, slave_number, slv_handles);
+				set_profile_position_ticks(target_position, slave_number, slv_handles);
 				ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
-				actual_position = get_position_actual_degree(slave_number, slv_handles);
+				actual_position = get_position_actual_ticks(slave_number, slv_handles);
 				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-				printf("position %f velocity %d ack %d\n", actual_position, actual_velocity, ack);
+				printf("position %d velocity %d ack %d\n", actual_position, actual_velocity, ack);
 			}
 		}
 		if(ack == 1)
@@ -120,10 +120,10 @@ int main()
 	printf("reached \n");
 
 	flag_position_set = 0;
-	target_position = actual_position - 200.0f;
-	if(target_position < -350.0f)
-		target_position = -350.0f;
-	stop_position = target_position + 40.0f;
+	target_position = actual_position - 10000;
+	if(target_position < -52000)
+		target_position = -52000;
+	stop_position = target_position + 4000;
 
 	while(1)
 	{
@@ -131,11 +131,11 @@ int main()
 
 		if(master_setup.op_flag)	// Check if the master is active
 		{
-			set_profile_position_degree(target_position, slave_number, slv_handles);
+			set_profile_position_ticks(target_position, slave_number, slv_handles);
 			flag_position_set = position_set_flag(slave_number, slv_handles); 		//ensures the new way point is taken awhen ack = 0;
-			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 
-			printf("position %f ack %d   position_set_flag %d\n", actual_position, ack , flag_position_set);
+			printf("position %d ack %d   position_set_flag %d\n", actual_position, ack, flag_position_set);
 		}
 		if(flag_position_set == 1)
 		{
@@ -150,14 +150,14 @@ int main()
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 		if(master_setup.op_flag)	// Check if the master is active
 		{
-			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			if(actual_position < stop_position)
 			{
 				quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 				ack = 1;
 			}
 			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-			printf("position %f velocity %d ack %d\n", actual_position, actual_velocity, ack);
+			printf("position %d velocity %d ack %d\n", actual_position, actual_velocity, ack);
 		}
 	}
 	printf("reached \n");
@@ -168,7 +168,7 @@ int main()
 //		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 //		if(master_setup.op_flag)	// Check if the master is active
 //		{
-//			actual_position = get_position_actual_degree(slave_number, slv_handles);
+//			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 //			printf("position %f \n", actual_position);
 //		}
 //	}
@@ -189,10 +189,10 @@ int main()
 
 		if(master_setup.op_flag)	// Check if the master is active
 		{
-			set_profile_position_degree(target_position, slave_number, slv_handles);
-			actual_position = get_position_actual_degree(slave_number, slv_handles);
+			set_profile_position_ticks(target_position, slave_number, slv_handles);
+			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
-			printf("position %f ack %d\n", actual_position, ack);
+			printf("position %d ack %d\n", actual_position, ack);
 		}
 		if(ack == 1)
 		{

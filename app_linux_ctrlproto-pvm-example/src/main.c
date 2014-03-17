@@ -58,7 +58,7 @@ int main()
 	int actual_velocity = 0;		// rpm
 	int target_velocity = 500;		// rpm
 	int tolerance = 20; 			// rpm
-	int actual_position = 0; 	// ticks
+	int actual_position = 0; 		// ticks
 
 
 	int slave_number = 0;

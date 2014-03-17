@@ -61,8 +61,7 @@
 /* Somanet IFM Internal Config */
 #define IFM_RESOLUTION_1				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
 
-/* Changes direction of the motor drive */
-#define POLARITY_1 						1		// 1 / -1
+#define QEI_SENSOR_POLARITY_1			INVERTED
 
 /* Commutation offset (range 0-4095) */
 #define COMMUTATION_OFFSET_CLK_1		683
@@ -73,6 +72,9 @@
 
 #define LIMIT_SWITCH_TYPES_1			ACTIVE_HIGH				// ACTIVE_LOW
 #define HOMING_METHOD_1                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
+
+/* Changes direction of the motor drive */
+#define POLARITY_1 						1		// 1 / -1
 
 /* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_1  		MAX_NOMINAL_SPEED_1

@@ -46,7 +46,7 @@
  * define Motor Specific Constants (found in motor specification sheet)
  * Mandatory constants to be set
  */
-#define POLE_PAIRS_2  					7
+#define POLE_PAIRS_2  					8
 #define MAX_NOMINAL_SPEED_2  			4000	// rpm
 #define MAX_NOMINAL_CURRENT_2  			2		// A
 #define MOTOR_TORQUE_CONSTANT_2			33		// mNm/A
@@ -55,14 +55,13 @@
  * If you have any gears added specify gear-ratio
  * and any additional encoders attached specify encoder resolution here (optional)
  */
-#define GEAR_RATIO_2 					32		// if no gears are attached - set to gear ratio to 1
+#define GEAR_RATIO_2 					26		// if no gears are attached - set to gear ratio to 1
 #define ENCODER_RESOLUTION_2 			4000	// 4 x Max count of Quadrature Encoder (4X decoding)
 
 /* Somanet IFM Internal Config */
 #define IFM_RESOLUTION_2				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
 
-/* Changes direction of the motor drive */
-#define POLARITY_2 						1		// 1 / -1
+#define QEI_SENSOR_POLARITY_2			INVERTED
 
 /* Commutation offset (range 0-4095) */
 #define COMMUTATION_OFFSET_CLK_2		683
@@ -73,6 +72,9 @@
 
 #define LIMIT_SWITCH_TYPES_2			ACTIVE_HIGH				// ACTIVE_LOW
 #define HOMING_METHOD_2                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
+
+/* Changes direction of the motor drive */
+#define POLARITY_2 						1		// 1 / -1
 
 /* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_2  		MAX_NOMINAL_SPEED_2

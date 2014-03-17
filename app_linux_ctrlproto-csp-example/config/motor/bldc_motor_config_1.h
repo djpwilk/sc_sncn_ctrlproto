@@ -108,13 +108,26 @@
 #define VELOCITY_Kd_DENOMINATOR_1 		1
 
 	/* Position Control (Mandatory if Position control used) */
-#define POSITION_Kp_NUMERATOR_1 		250 	//180
-#define POSITION_Kp_DENOMINATOR_1  		20
-#define POSITION_Ki_NUMERATOR_1    		50	//50
-#define POSITION_Ki_DENOMINATOR_1  		102
-#define POSITION_Kd_NUMERATOR_1    		80	//100
-#define POSITION_Kd_DENOMINATOR_1  		100
-#define MAX_POSITION_LIMIT_1 			GEAR_RATIO_1*ENCODER_RESOLUTION_1//POLE_PAIRS_1*4096		// degree should not exceed 359
-#define MIN_POSITION_LIMIT_1 			-GEAR_RATIO_1*ENCODER_RESOLUTION_1//-POLE_PAIRS_1*4096		// degree should not exceed -359
+#if(SENSOR_SELECTION_CODE_1 == 2 || SENSOR_SELECTION_CODE_1 == 3)
+	#define POSITION_Kp_NUMERATOR_1 		250 	//180
+	#define POSITION_Kp_DENOMINATOR_1  		20
+	#define POSITION_Ki_NUMERATOR_1    		50	//50
+	#define POSITION_Ki_DENOMINATOR_1  		102
+	#define POSITION_Kd_NUMERATOR_1    		80	//100
+	#define POSITION_Kd_DENOMINATOR_1  		100
+	#define MAX_POSITION_LIMIT_1 			GEAR_RATIO_1*ENCODER_RESOLUTION_1		// ticks
+	#define MIN_POSITION_LIMIT_1 			-GEAR_RATIO_1*ENCODER_RESOLUTION_1		// ticks
+#endif
+#if(SENSOR_SELECTION_CODE_1 == 1)
+	#define POSITION_Kp_NUMERATOR_1 	 	2265	//250 //180//
+	#define POSITION_Kp_DENOMINATOR_1  		1000//20
+	#define POSITION_Ki_NUMERATOR_1    		1	//50 //50//
+	#define POSITION_Ki_DENOMINATOR_1  		5000//102
+	#define POSITION_Kd_NUMERATOR_1    		1	//80 //100//
+	#define POSITION_Kd_DENOMINATOR_1  		1000//100
+
+	#define MAX_POSITION_LIMIT_1 			POLE_PAIRS_1*4096*GEAR_RATIO_1		// ticks - qei/hall/any position sensor
+	#define MIN_POSITION_LIMIT_1			-POLE_PAIRS_1*4096*GEAR_RATIO_1		// ticks - qei/hall/any position sensor
+#endif
 
 #endif

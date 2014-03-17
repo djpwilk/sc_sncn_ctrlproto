@@ -60,7 +60,7 @@ int main()
 	int velocity = 350;					// rpm
 	int actual_position = 0;			// ticks
 	int target_position = 0;			// ticks
-	int actual_velocity;
+	int actual_velocity = 0;
 	int steps = 0;
 	int i = 1;
 	int position_ramp = 0;
@@ -147,11 +147,11 @@ int main()
 	}
 
 	quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//
+
 	renable_ctrl_quick_stop(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES); //after quick-stop
-//
+
 	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//
+
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);

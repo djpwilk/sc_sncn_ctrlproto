@@ -64,18 +64,20 @@
 /* Position Sensor Types (select your sensor type here) */
 #define SENSOR_SELECTION_CODE_1    		QEI_INDEX	//HALL/QEI_INDEX/QEI_NO_INDEX
 
-/* Changes direction of the motor drive */
-#define POLARITY_1 						1		// 1 / -1
+#define QEI_SENSOR_POLARITY_1			INVERTED
 
 /* Commutation offset (range 0-4095) */
 #define COMMUTATION_OFFSET_CLK_1		683
 #define COMMUTATION_OFFSET_CCLK_1		2731
 
 /* Motor Winding type */
-#define WINDING_TYPE_1					DELTA_WINDING   		// STAR_WINDING/ DELTA_WINDING
+#define WINDING_TYPE_1					STAR_WINDING   		// STAR_WINDING/ DELTA_WINDING
 
 #define LIMIT_SWITCH_TYPES_1			ACTIVE_HIGH				// ACTIVE_LOW
 #define HOMING_METHOD_1                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
+
+/* Changes direction of the motor drive */
+#define POLARITY_1 						1		// 1 / -1
 
 /* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_1  		MAX_NOMINAL_SPEED_1
@@ -105,13 +107,26 @@
 #define VELOCITY_Kd_DENOMINATOR_1 		1
 
 	/* Position Control (Mandatory if Position control used) */
-#define POSITION_Kp_NUMERATOR_1 		80	//180
-#define POSITION_Kp_DENOMINATOR_1  		2000
-#define POSITION_Ki_NUMERATOR_1    		10	//50
-#define POSITION_Ki_DENOMINATOR_1  		102000
-#define POSITION_Kd_NUMERATOR_1    		0	//100
-#define POSITION_Kd_DENOMINATOR_1  		10000
-#define MAX_POSITION_LIMIT_1 			350		// degree should not exceed 359
-#define MIN_POSITION_LIMIT_1 			-350	// degree should not exceed -359
+#if(SENSOR_SELECTION_CODE_1 == 2 || SENSOR_SELECTION_CODE_1 == 3)
+	#define POSITION_Kp_NUMERATOR_1 		250 	//180
+	#define POSITION_Kp_DENOMINATOR_1  		20
+	#define POSITION_Ki_NUMERATOR_1    		50	//50
+	#define POSITION_Ki_DENOMINATOR_1  		102
+	#define POSITION_Kd_NUMERATOR_1    		80	//100
+	#define POSITION_Kd_DENOMINATOR_1  		100
+	#define MAX_POSITION_LIMIT_1 			GEAR_RATIO_1*ENCODER_RESOLUTION_1		// ticks
+	#define MIN_POSITION_LIMIT_1 			-GEAR_RATIO_1*ENCODER_RESOLUTION_1		// ticks
+#endif
+#if(SENSOR_SELECTION_CODE_1 == 1)
+	#define POSITION_Kp_NUMERATOR_1 	 	2265	//250 //180//
+	#define POSITION_Kp_DENOMINATOR_1  		1000//20
+	#define POSITION_Ki_NUMERATOR_1    		1	//50 //50//
+	#define POSITION_Ki_DENOMINATOR_1  		5000//102
+	#define POSITION_Kd_NUMERATOR_1    		1	//80 //100//
+	#define POSITION_Kd_DENOMINATOR_1  		1000//100
+
+	#define MAX_POSITION_LIMIT_1 			POLE_PAIRS_1*4096*GEAR_RATIO_1		// ticks - qei/hall/any position sensor
+	#define MIN_POSITION_LIMIT_1			-POLE_PAIRS_1*4096*GEAR_RATIO_1		// ticks - qei/hall/any position sensor
+#endif
 
 #endif

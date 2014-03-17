@@ -59,23 +59,25 @@
 #define ENCODER_RESOLUTION_1 			2000		// 4 x Max count of Quadrature Encoder (4X decoding)
 
 /* Somanet IFM Internal Config */
-#define IFM_RESOLUTION_1				400//DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
+#define IFM_RESOLUTION_1				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
 
 /* Position Sensor Types (select your sensor type here) */
 #define SENSOR_SELECTION_CODE_1     	QEI_INDEX	// HALL/QEI_INDEX/QEI_NO_INDEX
 
-/* Changes direction of the motor drive */
-#define POLARITY_1 						1			// 1 / -1
+#define QEI_SENSOR_POLARITY_1			INVERTED
 
 /* Commutation offset (range 0-4095) */
 #define COMMUTATION_OFFSET_CLK_1		683
 #define COMMUTATION_OFFSET_CCLK_1		2731
 
 /* Motor Winding type */
-#define WINDING_TYPE_1					DELTA_WINDING   		// STAR_WINDING/ DELTA_WINDING
+#define WINDING_TYPE_1					STAR_WINDING   		// STAR_WINDING/ DELTA_WINDING
 
 #define LIMIT_SWITCH_TYPES_1			ACTIVE_HIGH				// ACTIVE_LOW
 #define HOMING_METHOD_1                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
+
+/* Changes direction of the motor drive */
+#define POLARITY_1 						1			// 1 / -1
 
 /* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_1  		MAX_NOMINAL_SPEED_1

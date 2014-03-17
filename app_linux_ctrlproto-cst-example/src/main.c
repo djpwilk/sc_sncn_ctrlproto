@@ -60,7 +60,7 @@ int main()
 
 	float target_torque = 0.0;
 	float actual_torque = 0.0;
-	float actual_position = 0.0;
+	int actual_position = 0.0;
 	int actual_velocity = 0;
 
 	int slave_number = 0;
@@ -90,9 +90,9 @@ int main()
 				printf("target_torque %f \n",target_torque);
 				set_torque_mNm(target_torque, slave_number, slv_handles);
 				actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
-				actual_position = get_position_actual_degree(slave_number, slv_handles);
+				actual_position = get_position_actual_ticks(slave_number, slv_handles);
 				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-				printf("actual_torque %f actual_position %f actual_velocity %d\n", actual_torque, actual_position, actual_velocity);
+				printf("actual_torque %f actual_position %d actual_velocity %d\n", actual_torque, actual_position, actual_velocity);
 				i = i+1;
 			}
 
@@ -120,9 +120,9 @@ int main()
 				printf("target_torque %f \n",target_torque);
 				set_torque_mNm(target_torque, slave_number, slv_handles);
 				actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
-				actual_position = get_position_actual_degree(slave_number, slv_handles);
+				actual_position = get_position_actual_ticks(slave_number, slv_handles);
 				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-				printf("actual_torque %f actual_position %f actual_velocity %d\n", actual_torque, actual_position, actual_velocity);
+				printf("actual_torque %f actual_position %d actual_velocity %d\n", actual_torque, actual_position, actual_velocity);
 				i = i+1;
 			}
 

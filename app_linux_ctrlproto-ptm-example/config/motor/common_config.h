@@ -55,3 +55,6 @@
 
 #define ACTIVE_HIGH					1       // the switch output is high upon activation
 #define ACTIVE_LOW					2		// the switch output is low upon activation
+
+#define NORMAL						0
+#define INVERTED					1
