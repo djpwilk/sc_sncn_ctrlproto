@@ -9,11 +9,11 @@ Implementation of Communication protocol layer for Motor Control on SOMANET over
 <table >
 <tr>
   <td width="150px" height="30px">Latest release: </td>
-  <td width="300px">0.9beta </td>
+  <td width="300px"><a href="https://github.com/synapticon/sc_sncn_ctrlproto/releases/tag/v0.9-beta">0.9beta</a></td>
 </tr>
 <tr>
   <td height="30px">Maintainer:</td>
-  <td>support@synapticon.com</td>
+  <td><a href="mailto:support@synapticon.com">support@synapticon.com</a</td>
 </tr>
 </table> 
 
@@ -47,9 +47,9 @@ Required software (dependencies)
 Changelog
 ---------
 
-  * [0.9beta](http://) (2013-01-24)
+  * [0.9beta](https://github.com/synapticon/sc_sncn_ctrlproto/releases/tag/v0.9-beta) (2013-01-24)
 
 License
 ---------
 
-Please see [LICENSE](https://github.com/synapticon/sc_sncn_ctrlproto/blob/master/LICENSE.dox).
+Please see [LICENSE](http://synapticon.github.io/sc_sncn_ctrlproto/legal.html).
