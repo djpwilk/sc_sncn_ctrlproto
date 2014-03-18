@@ -31,7 +31,7 @@ Key Features
 
 Further information
 ---------
-  * sc_sncn_ctrlproto [DOCUMENTATION](http://synapticon.github.io/sc_sncn_ctrlproto/)
+  * sc_sncn_ctrlproto [DOCUMENTATION](http://synapticon.github.io/sc_sncn_ctrlproto/).
 
 Known Issues
 ---------
