@@ -43,5 +43,3 @@ bin/
 ## ignore KDE files
 .directory
 
-## ignore Doxygen
-dox
