@@ -161,7 +161,6 @@ int main()
 
 
 //*/
-
 	/*while(1)
 	{
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
