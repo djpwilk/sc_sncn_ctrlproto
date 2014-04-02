@@ -3,7 +3,8 @@
  *
  * \file common_config.h
  *
- *
+ */
+/*
  * Copyright (c) 2013, Synapticon GmbH
  * All rights reserved.
  * Author: Pavan Kanajar <pkanajar@synapticon.com>
@@ -36,6 +37,7 @@
  *
  */
 
+/* These are fixed configuration parameters (Default values)*/
 #define QEI_WITH_INDEX				1
 #define QEI_WITH_NO_INDEX 			0
 
@@ -56,5 +58,8 @@
 #define ACTIVE_HIGH					1       // the switch output is high upon activation
 #define ACTIVE_LOW					2		// the switch output is low upon activation
 
-#define NORMAL 						0
-#define INVERTED 					1
+#define NORMAL						0
+#define INVERTED					1
+
+#define HALL_POSITION_INTERPOLATED_RANGE 4096
+

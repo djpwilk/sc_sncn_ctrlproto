@@ -2,7 +2,8 @@
 /**
  *
  * \file common_config.h
- *
+ */
+/*
  *
  * Copyright (c) 2013, Synapticon GmbH
  * All rights reserved.
@@ -35,7 +36,7 @@
  * either expressed or implied, of the Synapticon GmbH.
  *
  */
-
+/* These are fixed configuration parameters (Default values)*/
 #define QEI_WITH_INDEX				1
 #define QEI_WITH_NO_INDEX 			0
 
@@ -58,3 +59,5 @@
 
 #define NORMAL						0
 #define INVERTED					1
+
+#define HALL_POSITION_INTERPOLATED_RANGE 4096

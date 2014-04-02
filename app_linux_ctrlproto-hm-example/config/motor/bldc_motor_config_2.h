@@ -5,7 +5,8 @@
  *	Motor Control config file for motor 2 on PC
  *
  *	Please define your the motor specifications here
- *
+ */
+/*
  * Copyright (c) 2013, Synapticon GmbH
  * All rights reserved.
  * Author: Pavan Kanajar <pkanajar@synapticon.com> & Martin Schwarz <mschwarz@synapticon.com>
@@ -43,55 +44,66 @@
 #include <common_config.h>
 
 /**
- * define Motor Specific Constants (found in motor specification sheet)
+ * Define Motor Specific Constants (found in motor specification sheet)
  * Mandatory constants to be set
  */
-#define POLE_PAIRS_2  					1//8//
-#define MAX_NOMINAL_SPEED_2  			2500	// rpm5260//
-#define MAX_NOMINAL_CURRENT_2  			2		// A
-#define MOTOR_TORQUE_CONSTANT_2			33		// mNm/A
+#define POLE_PAIRS_2  					4			// Number of pole pairs
+#define MAX_NOMINAL_SPEED_2  			3000//5260	// rpm
+#define MAX_NOMINAL_CURRENT_2  			6			// A
+#define MOTOR_TORQUE_CONSTANT_2			112			// mNm/A
 
 /**
- * If you have any gears added specify gear-ratio
- * and any additional encoders attached specify encoder resolution here (optional)
+ * If you have any gears added, specify gear-ratio
+ * and any additional encoders attached specify encoder resolution here (Mandatory)
  */
-#define GEAR_RATIO_2 					260		// if no gears are attached - set to gear ratio to 1
-#define ENCODER_RESOLUTION_2 			2000	// 4 x Max count of Quadrature Encoder (4X decoding)
+#define GEAR_RATIO_2 					120		// if no gears are attached - set to gear ratio to 1
+#define ENCODER_RESOLUTION_2 			4000	// 4 x Max count of Incremental Encoder (4X decoding - quadrature mode)
 
-/* Somanet IFM Internal Config */
-#define IFM_RESOLUTION_2				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
+/* Somanet IFM Internal Config:  Specifies the current sensor resolution per Ampere
+ *  (DC300_RESOLUTION / DC100_RESOLUTION / OLD_DC300_RESOLUTION) */
+#define IFM_RESOLUTION_2				DC300_RESOLUTION
 
-/* Position Sensor Types (select your sensor type here) */
-#define SENSOR_SELECTION_CODE_2         QEI_INDEX	// HALL/QEI_INDEX/QEI_NO_INDEX
+/* Position Sensor Types (select your sensor type here)
+ * (HALL/ QEI_INDEX/ QEI_NO_INDEX) */
+#define SENSOR_SELECTION_CODE_2         QEI_INDEX
 
+/* Polarity is used to keep all position sensors to count ticks in the same direction
+ *  (NORMAL/INVERTED) */
 #define QEI_SENSOR_POLARITY_2			INVERTED
 
-/*Commutation offset (range 0-4095) */
-#define COMMUTATION_OFFSET_CLK_2		683
-#define COMMUTATION_OFFSET_CCLK_2		2731
+/* Commutation offset (range 0-4095) (HALL sensor based commutation) */
+#define COMMUTATION_OFFSET_CLK_2		770
+#define COMMUTATION_OFFSET_CCLK_2		2601
 
-/*Motor Winding type*/
-#define WINDING_TYPE_2					STAR_WINDING   		// STAR_WINDING
+/* Motor Winding type (STAR_WINDING/DELTA_WINDING) */
+#define WINDING_TYPE_2					DELTA_WINDING
 
-#define LIMIT_SWITCH_TYPES_2			ACTIVE_HIGH				// ACTIVE_LOW
-#define HOMING_METHOD_2                	HOMING_POSITIVE_SWITCH	// HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
+/* Specify Switch Types (ACTIVE_HIGH/ACTIVE_LOW) when switch is closed
+ * (Only if you have any limit switches in the system for safety/homing ) */
+#define LIMIT_SWITCH_TYPES_2			ACTIVE_HIGH
 
-/* Changes direction of the motor drive */
-#define POLARITY_2 						1		// 1 / -1
+/* Define Homing method (HOMING_POSITIVE_SWITCH/HOMING_NEGATIVE_SWITCH)
+ * this specifies direction for the node to find the home switch */
+#define HOMING_METHOD_2                	HOMING_POSITIVE_SWITCH
 
-/* Profile defines (Mandatory for profile modes)*/
+/* Changes direction of the motor drive  (1 /-1) */
+#define POLARITY_2 						1
+
+/* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_2  		MAX_NOMINAL_SPEED_2
-#define PROFILE_VELOCITY_2				1000	// rpm
-#define MAX_ACCELERATION_2   			2500    // rpm/s
-#define PROFILE_ACCELERATION_2			2000	// rpm/s
-#define PROFILE_DECELERATION_2  		2000	// rpm/s
-#define QUICK_STOP_DECELERATION_2 		2500 	// rpm/s
+#define PROFILE_VELOCITY_2				1000					// rpm
+#define MAX_ACCELERATION_2   			3000    				// rpm/s
+#define PROFILE_ACCELERATION_2			2000					// rpm/s
+#define PROFILE_DECELERATION_2  		2000					// rpm/s
+#define QUICK_STOP_DECELERATION_2 		2500 					// rpm/s
 #define MAX_TORQUE_2					MOTOR_TORQUE_CONSTANT_2 * IFM_RESOLUTION_2 * MAX_NOMINAL_CURRENT_2
-#define TORQUE_SLOPE_2 					60 		// mNm/s
+#define TORQUE_SLOPE_2 					60 						// mNm/s
 
 
 /* Control specific constants/variables */
-	/* Torque Control (Mandatory if Torque control used) */
+	/* Torque Control (Mandatory if Torque control used)
+	 * possible range of gains Kp/Ki/Kd: 1/65536 to 32760
+	 * Note: gains are calculated as NUMERATOR/DENOMINATOR to give ranges */
 #define TORQUE_Kp_NUMERATOR_2 	   		20
 #define TORQUE_Kp_DENOMINATOR_2  		10
 #define TORQUE_Ki_NUMERATOR_2    		11
@@ -99,7 +111,9 @@
 #define TORQUE_Kd_NUMERATOR_2    		1
 #define TORQUE_Kd_DENOMINATOR_2  		10
 
-	/* Velocity Control (Mandatory if Velocity control used) */
+	/* Velocity Control (Mandatory if Velocity control used)
+	 * possible range of gains Kp/Ki/Kd: 1/65536 to 32760
+	 * Note: gains are calculated as NUMERATOR/DENOMINATOR to give ranges */
 #define VELOCITY_Kp_NUMERATOR_2 		5
 #define VELOCITY_Kp_DENOMINATOR_2  		10
 #define VELOCITY_Ki_NUMERATOR_2    		5
@@ -107,14 +121,17 @@
 #define VELOCITY_Kd_NUMERATOR_2   		0
 #define VELOCITY_Kd_DENOMINATOR_2 		1
 
-	/* Position Control (Mandatory if Position control used) */
-#define POSITION_Kp_NUMERATOR_2 		250 	//180
-#define POSITION_Kp_DENOMINATOR_2  		20
-#define POSITION_Ki_NUMERATOR_2    		50	//50
-#define POSITION_Ki_DENOMINATOR_2  		102
-#define POSITION_Kd_NUMERATOR_2    		80	//100
+	/* Position Control (Mandatory if Position control used)
+	 * possible range of gains Kp/Ki/Kd: 1/65536 to 32760
+	 * Note: gains are calculated as NUMERATOR/DENOMINATOR to give ranges */ // PID gains for position control with Incremental Encoder
+#define POSITION_Kp_NUMERATOR_2 		660 	//250 	//180
+#define POSITION_Kp_DENOMINATOR_2  		80 		//20
+#define POSITION_Ki_NUMERATOR_2    		1		//50	//50
+#define POSITION_Ki_DENOMINATOR_2  		25384 	//102
+#define POSITION_Kd_NUMERATOR_2    		0		//100
 #define POSITION_Kd_DENOMINATOR_2  		100
-#define MAX_POSITION_LIMIT_2 			GEAR_RATIO_2*ENCODER_RESOLUTION_2//POLE_PAIRS_2*4096		// degree should not exceed 359
-#define MIN_POSITION_LIMIT_2 			-GEAR_RATIO_2*ENCODER_RESOLUTION_2//-POLE_PAIRS_2*4096		// degree should not exceed -359
+
+#define MAX_POSITION_LIMIT_2 			GEAR_RATIO_2*ENCODER_RESOLUTION_2		// ticks (max range: 2^30, limited for safe operation)
+#define MIN_POSITION_LIMIT_2 			-GEAR_RATIO_2*ENCODER_RESOLUTION_2		// ticks (min range: -2^30, limited for safe operation)
 
 #endif
