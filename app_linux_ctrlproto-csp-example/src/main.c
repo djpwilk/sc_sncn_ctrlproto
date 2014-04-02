@@ -61,6 +61,7 @@ int main()
 	int actual_position = 0;			// ticks
 	int target_position = 0;			// ticks
 	int actual_velocity = 0;
+	float actual_torque;
 	int steps = 0;
 	int i = 1;
 	int position_ramp = 0;
@@ -68,6 +69,8 @@ int main()
 	int slave_number = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	initialize_torque(slave_number, slv_handles);
 
 	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -142,7 +145,8 @@ int main()
 			}*/
 			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-			//printf("actual position %d actual velocity %d\n", actual_position, actual_velocity);
+			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
+			printf("actual position %d actual velocity %d actual_torque %f\n", actual_position, actual_velocity, actual_torque);
 		}
 	}
 

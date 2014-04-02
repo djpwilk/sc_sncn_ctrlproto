@@ -263,7 +263,9 @@ float generate_profile_linear(int step, int slave_number, ctrlproto_slv_handle *
 int target_position_reached(int slave_number, int target_position, int tolerance, ctrlproto_slv_handle *slv_handles)
 {
 	int actual_position =  get_position_actual_ticks(slave_number, slv_handles);
-//	printf("\n act pos %f", actual_position);
+	//printf(" act pos %d target_pos %d tol %d  : %d %d  :%d  %d\n", actual_position,target_position, tolerance, target_position + tolerance/2, target_position-tolerance/2,\
+			actual_position > target_position-tolerance/2, actual_position < target_position + tolerance/2);
+	//fflush(stdout);
 	if(actual_position > target_position-tolerance/2 && actual_position < target_position + tolerance/2)
 	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
 		{
@@ -854,6 +856,9 @@ void start_homing(master_setup_variables_t *master_setup, ctrlproto_slv_handle *
 	int flag = 0;
 	int ack  = 0;
 	int status_word;
+	int actual_position;
+	int actual_velocity;
+	float actual_torque;
 	while(1)
 	{
 

@@ -60,12 +60,16 @@ int main()
 	int deceleration = 1000;					//rpm/s
 	int steps = 0;
 	int i = 1;
-	int target_velocity = 0;
-	int actual_velocity = 0;
+	int target_velocity = 0;					// rpm
+	int actual_velocity = 0;					// rpm
+	int actual_position;						// ticks
+	float actual_torque;						// mNm
 
 	int slave_number = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	initialize_torque(slave_number, slv_handles);
 
 	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -89,7 +93,9 @@ int main()
 				target_velocity = generate_profile_velocity( i, slave_number, slv_handles);
 				set_velocity_rpm(target_velocity, slave_number, slv_handles);
 				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-				printf("velocity %d position %d \n", actual_velocity, get_position_actual_ticks(slave_number, slv_handles));
+				actual_position = get_position_actual_ticks(slave_number, slv_handles);
+				actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
+				printf("Velocity: %d Position: %d Torque: %f\n", actual_velocity, actual_position, actual_torque);
 				i = i+1;
 			}
 			if(i>=steps && flag == 0)

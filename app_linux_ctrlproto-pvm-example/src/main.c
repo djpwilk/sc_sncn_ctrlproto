@@ -5,8 +5,8 @@
  *
  * \brief Example Master App for Profile Velocity (on PC)
  *
- *
- *
+ */
+/*
  * Copyright (c) 2013, Synapticon GmbH
  * All rights reserved.
  * Author: Pavan Kanajar <pkanajar@synapticon.com> & Christian Holl <choll@synapticon.com>
@@ -59,12 +59,13 @@ int main()
 	int target_velocity = 500;		// rpm
 	int tolerance = 20; 			// rpm
 	int actual_position = 0; 		// ticks
-
-
+	float actual_torque;			// mNm
 	int slave_number = 0;
 	int ack = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	initialize_torque(slave_number, slv_handles);
 
 	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -83,7 +84,9 @@ int main()
 			ack = target_velocity_reached(slave_number, target_velocity, tolerance, slv_handles);
 			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
 			actual_position = get_position_actual_ticks(slave_number, slv_handles);
-			printf("velocity %d positon %d ack %d\n", actual_velocity, actual_position, ack);
+			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
+			printf("Velocity: %d Positon: %d Torque: %f ack: %d\n", actual_velocity, actual_position, actual_torque, ack);
+			fflush(stdout);
 		}
 		if(ack == 1)
 		{
@@ -101,12 +104,14 @@ int main()
 		{
 			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
 			actual_position = get_position_actual_ticks(slave_number, slv_handles);
+			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
 			if(actual_velocity > 0 || actual_velocity < 0)
 			{
 				quick_stop_velocity(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 				ack = 1;
 			}
-			printf("velocity %d positon %d ack %d\n", actual_velocity, actual_position, ack);
+			printf("Velocity: %d Positon: %d Torque: %f ack: %d\n", actual_velocity, actual_position, actual_torque, ack);
+			fflush(stdout);
 		}
 	}
 	printf("reached \n");

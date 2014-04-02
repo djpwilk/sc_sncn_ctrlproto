@@ -59,9 +59,9 @@ int main()
 	int actual_position = 0;			// ticks
 	int target_position = 350;			// ticks
 
-	int tolerance = 5;	 				// ticks
+	int tolerance = 35;	 				// ticks
 	int actual_velocity;
-
+	float actual_torque;
 	int slave_number = 0;
 	int stop_position;
 	int ack = 0;
@@ -69,6 +69,8 @@ int main()
 	int i = 0;
 
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
+
+	initialize_torque(slave_number, slv_handles);
 
 	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -97,17 +99,19 @@ int main()
 					 target_position =  actual_position + 10000;
 					 if(target_position > 52000)
 						 target_position = 52000;
-					flag = 1;
-					printf("target_position %d actual_position %d\n", target_position, actual_position);
+					 flag = 1;
+					 printf("target_position %d actual_position %d\n", target_position, actual_position);
 				 }
 			}
 			if(flag == 1)
 			{
 				set_profile_position_ticks(target_position, slave_number, slv_handles);
+				//printf("\n pos %d target_pos %d tol %d", actual_position,target_position, tolerance);
 				ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
 				actual_position = get_position_actual_ticks(slave_number, slv_handles);
 				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-				printf("position %d velocity %d ack %d\n", actual_position, actual_velocity, ack);
+				actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
+				printf("Position: %d Velocity: %d Torque: %f ack: %d\n", actual_position, actual_velocity, actual_torque, ack);
 			}
 		}
 		if(ack == 1)
@@ -157,7 +161,8 @@ int main()
 				ack = 1;
 			}
 			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-			printf("position %d velocity %d ack %d\n", actual_position, actual_velocity, ack);
+			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
+			printf("Position: %d Velocity: %d Torque: %f ack: %d\n", actual_position, actual_velocity, actual_torque, ack);
 		}
 	}
 	printf("reached \n");
