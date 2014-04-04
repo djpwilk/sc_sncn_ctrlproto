@@ -58,8 +58,8 @@
 #define ACTIVE_HIGH					1       // the switch output is high upon activation
 #define ACTIVE_LOW					2		// the switch output is low upon activation
 
-#define NORMAL						0
-#define INVERTED					1
+#define POLARITY_NORMAL				0
+#define POLARITY_INVERTED			1
 
 #define HALL_POSITION_INTERPOLATED_RANGE 4096
 

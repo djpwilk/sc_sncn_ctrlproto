@@ -61,7 +61,9 @@
 /* Somanet IFM Internal Config */
 #define IFM_RESOLUTION_1				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
 
-#define QEI_SENSOR_POLARITY_1			INVERTED
+/* Polarity is used to keep all position sensors to count ticks in the same direction
+ *  (POLARITY_NORMAL/POLARITY_INVERTED)*/
+#define QEI_SENSOR_POLARITY_1			POLARITY_INVERTED
 
 /* Commutation offset (range 0-4095) */
 #define COMMUTATION_OFFSET_CLK_1		683

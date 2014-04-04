@@ -69,8 +69,8 @@
 #define SENSOR_SELECTION_CODE_1         QEI_INDEX
 
 /* Polarity is used to keep all position sensors to count ticks in the same direction
- *  (NORMAL/INVERTED) */
-#define QEI_SENSOR_POLARITY_1			INVERTED
+ *  (POLARITY_NORMAL/POLARITY_INVERTED) */
+#define QEI_SENSOR_POLARITY_1			POLARITY_INVERTED
 
 /* Commutation offset (range 0-4095) (HALL sensor based commutation) */
 #define COMMUTATION_OFFSET_CLK_1		770
@@ -133,7 +133,7 @@
 	#define POSITION_Kd_NUMERATOR_1    		0		//100
 	#define POSITION_Kd_DENOMINATOR_1  		100
 	#define MAX_POSITION_LIMIT_1 			GEAR_RATIO_1*ENCODER_RESOLUTION_1		// ticks (max range: 2^30, limited for safe operation)
-	#define MIN_POSITION_LIMIT_1 			-GEAR_RATIO_1*ENCODER_RESOLUTION_1		// ticks (max range: 2^30, limited for safe operation)
+	#define MIN_POSITION_LIMIT_1 			-GEAR_RATIO_1*ENCODER_RESOLUTION_1		// ticks (min range: -2^30, limited for safe operation)
 #endif
 #if(SENSOR_SELECTION_CODE_1 == HALL)		// PID gains for position control with Hall Sensor
 	#define POSITION_Kp_NUMERATOR_1 	 	2265	//250 //180//
