@@ -41,10 +41,10 @@
 #include <platform.h>
 #include <xs1.h>
 #include <ethercat.h>
-#include <foefs.h>
 #include <print.h>
 #include <ctrlproto.h>
 #include <flash_somanet.h>
+#include <ioports.h>
 
 /* handle pdos from EtherCat */
 static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
@@ -140,7 +140,7 @@ int main(void)
 
 		on stdcore[0] :
 		{
-			firmware_update_loop(foe_out, foe_in, c_sig); 	// firmware update over EtherCat
+			firmware_update_loop(p_spi_flash, foe_out, foe_in, c_sig); 	// firmware update over EtherCat
 		}
 
 		on stdcore[1] :
