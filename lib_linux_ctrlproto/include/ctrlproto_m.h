@@ -1,13 +1,16 @@
 
 /**
- *
  * \file ctrlproto_m.h
- *
- *
- * Copyright (c) 2013, Synapticon GmbH
+ * \brief Ethercat control protocol
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \author Frank Jeschke <jeschke@fjes.de>
+ * \author Christian Holl <choll@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+/*
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com>, Christian Holl <choll@synapticon.com>
- * 			& Frank Jeschke <jeschke@fjes.de>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -47,6 +50,8 @@
 #include <profile.h>
 #include "bldc_motor_config_1.h"
 #include "bldc_motor_config_2.h"
+
+#define FREQUENCY 	1000	// Hz
 
 #ifdef __cplusplus
 extern "C"

@@ -1,16 +1,16 @@
 
 /**
- *
  * \file main.c
- *
- * \brief Example Master App for Cyclic Synchronous Position (on PC)
- *
+ * \brief Example Master App for homing mode (on PC)
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \author Christian Holl <choll@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
  */
+
 /*
- *
- * Copyright (c) 2013, Synapticon GmbH
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com> & Christian Holl <choll@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -61,29 +61,30 @@ int main()
 	int velocity = 350;					// rpm
 	int actual_position = 0;			// ticks
 	int target_position = 0;			// ticks
-	int actual_velocity;
-	float actual_torque;
+	int actual_velocity;				// rpm
+	float actual_torque;				// mNm
 	int steps = 0;
 	int i = 1;
 	int position_ramp = 0;
-	int status_word;
 	int ack;
 	int home_velocity = 250;      		// rpm
 	int home_acceleration = 250;		// rpm/s
 
 	int slave_number = 0;
 
-
+	/* Initialize Ethercat Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Initialize torque parameters */
 	initialize_torque(slave_number, slv_handles);
 
+	/* Initialize all connected nodes with Mandatory Motor Configurations (specified under config/motor/)*/
 	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	/* Set operation mode to Homing */
+	/* Initialize the node specified with slave_number with Homing configurations (specified under config/motor/)*/
 	set_operation_mode(HM, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	/* Enable Homing Operation */
+	/* Enable operation of node in Homing mode */
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	start_homing(&master_setup, slv_handles, home_velocity, home_acceleration, slave_number, TOTAL_NUM_OF_SLAVES);
@@ -93,10 +94,10 @@ int main()
 
 	/*
 	 * Acquire actual position from the node a few times after homing and
-	 * set it as target position to avoid setting controller target position to 0 in one step
+	 * set it as target position. (wait for controller to settle)
 	 */
 	i = 0;
-	int difference =1500;
+	int difference = 1500;
 	int previous=0;
 	while(1)
 	{
@@ -124,11 +125,14 @@ int main()
 
 	}
 
+
+	/* Now initialize the node specified with slave_number with CSP configurations (specified under config/motor/)*/
 	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Enable operation of node in CSP mode */
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-
+	/* Initialize position profile parameters */
 	initialize_position_profile_limits(slave_number, slv_handles);//*/
 
 
@@ -147,14 +151,17 @@ int main()
 	i = 1;
 	while(1)
 	{
-
+		/* Update the process data (EtherCat packets) sent/received from the node */
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)	//Check if the master is active
+		if(master_setup.op_flag)	/*Check if the master is active*/
 		{
 			if(i<steps)
 			{
+				/* Generate target position steps */
 				position_ramp = generate_profile_position(i, slave_number, slv_handles);
+
+				/* Send target position for the node specified by slave_number */
 				set_position_ticks(position_ramp, slave_number, slv_handles);
 				i = i+1;
 			}
@@ -165,6 +172,7 @@ int main()
 			}
 			//printf("actual position %d \n", get_position_actual_ticks(slave_number, slv_handles));
 
+			/* Read actual node sensor values */
 			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
 			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
@@ -172,19 +180,18 @@ int main()
 		}
 	}
 
+	/* Quick stop position mode (for emergency) */
+	quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);				// use quick stop in case of emergency
-
-	renable_ctrl_quick_stop(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES); 	// after quick-stop enable control of node
+	/* Regain control of node to continue after quick stop */
+	renable_ctrl_quick_stop(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);			// set operation mode to CSP
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);				// enable operation
 
+	/* Shutdown node operations */
 	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);			// stop the node operation. or can continue with new position profile
-
-
-
 
 	return 0;
 }

@@ -1,15 +1,15 @@
 
 /**
- *
  * \file main.c
- *
  * \brief Example Master App for Cyclic Synchronous Velocity (on PC)
- *
- *
- *
- * Copyright (c) 2013, Synapticon GmbH
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \author Christian Holl <choll@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+/*
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com> & Christian Holl <choll@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -67,38 +67,50 @@ int main()
 
 	int slave_number = 0;
 
+	/* Initialize Ethercat Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Initialize torque parameters */
 	initialize_torque(slave_number, slv_handles);
 
+	/* Initialize all connected nodes with Mandatory Motor Configurations (specified under config/motor/)*/
 	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Initialize the node specified with slave_number with CSV configurations (specified under config/motor/)*/
 	set_operation_mode(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Enable operation of node in CSV mode */
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	i = 1;
+	/* Initialize velocity profile parameters */
 	steps = init_velocity_profile_params(final_target_velocity, actual_velocity, acceleration, \
 				deceleration, slave_number, slv_handles);
 
 
 	while(1)
 	{
+		/* Update the process data (EtherCat packets) sent/received from the node */
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)//Check if we are up
+		if(master_setup.op_flag) /*Check if the master is active*/
 		{
 			if(i<steps)
 			{
+				/* Generate target velocity steps */
 				target_velocity = generate_profile_velocity( i, slave_number, slv_handles);
+
+				/* Send target velocity for the node specified by slave_number */
 				set_velocity_rpm(target_velocity, slave_number, slv_handles);
+
+				/* Read actual node sensor values */
 				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
 				actual_position = get_position_actual_ticks(slave_number, slv_handles);
 				actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
 				printf("Velocity: %d Position: %d Torque: %f\n", actual_velocity, actual_position, actual_torque);
 				i = i+1;
 			}
-			if(i>=steps && flag == 0)
+		/*	if(i>=steps && flag == 0)
 			{
 				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
 				final_target_velocity = 1000; //rpm
@@ -115,16 +127,18 @@ int main()
 							deceleration, slave_number, slv_handles);
 				i = 1;
 				flag = 2;
-			}
-			if(i >= steps && flag == 2)
+			}*/
+			if(i >= steps && flag == 0)
 			{
 				break;
 			}
 		}
 	}
 
+	/* Quick stop velocity mode (for emergency) */
 	quick_stop_velocity(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Regain control of node to continue after quick stop */
 	renable_ctrl_quick_stop(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -169,7 +183,7 @@ int main()
 	}
 
 */
-
+	/* Shutdown node operations */
 	shutdown_operation(CSV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	return 0;

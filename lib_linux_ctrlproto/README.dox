@@ -1,0 +1,20 @@
+/**
+
+\page libs
+\section lib_linux_ctrlproto
+
+This library provides initialization for multinode setup via config defines, for EtherCAT
+master setup, EtherCAT Process data and Service data update functions.
+
+In order to access this library from your application:
+
+1. Include the header files on your code:
+
+* ctrlproto_m.h - To access the all library functions.
+
+* motor_define.h - To access the motor configurations structs.
+
+Note: All motor configuration (bldc_motor_config_N.h) header files must be included in 
+ctrlproto_m.h
+
+*/

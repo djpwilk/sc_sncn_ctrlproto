@@ -1,13 +1,15 @@
 
 /**
- *
  * \file ctrlproto.h
- *
  * \brief Control Protocol Handler
- *
- * Copyright (c) 2013, Synapticon GmbH
+ * \author Christian Holl <choll@synapticon.com>
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+/*
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Christian Holl <choll@synapticon.com> & Pavan Kanajar <pkanajar@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -91,9 +93,11 @@ typedef struct
  *  This function is not considered as stand alone thread! It's for being executed in
  *  the motor control thread
  *
- * \param pdo_out					The channel for outgoing process data objects
- * \param pdo_in					The channel for incoming process data objects
- * \param InOut						The struct for exchanging data with the motor control functions
+ * \param pdo_out	the channel for outgoing process data objects
+ * \param pdo_in 	the channel for incoming process data objects
+ * \param InOut		the struct for exchanging data with the motor control functions
+ *
+ * \return 	1 if communication is active else 0
  */
 int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut);
 
@@ -118,9 +122,11 @@ int sensor_select_sdo(chanend coe_out);
 /**
  * \brief read qei params from Ethercat
  *
- * \return real_counts
- * \return gear_ratio
- * \return qei_type
+ * \return real counts
+ * \return max position
+ * \return min position
+ * \return qei type
+ * \retrun sensor polarity
  *
  */
 {int, int, int, int, int} qei_sdo_update(chanend coe_out);
@@ -128,15 +134,32 @@ int sensor_select_sdo(chanend coe_out);
 /**
  * \brief read hall params from Ethercat
  *
- * \return gear_ratio
- * \return pole_pairs
+ * \return pole pairs
+ * \return max position
+ * \return min position
  *
  */
 {int, int, int} hall_sdo_update(chanend coe_out);
 
+/**
+ * \brief read commutation parameters from Ethercat
+ *
+ * \return hall_offset_clk
+ * \return hall_offset_cclk
+ * \return winding_type
+ *
+ */
 {int, int, int} commutation_sdo_update(chanend coe_out);
 
+/**
+ * \brief read homing parameters from Ethercat
+ *
+ * \return homing_method
+ * \return limit_switch_type
+ *
+ */
 {int, int} homing_sdo_update(chanend coe_out);
+
 /**
  * \brief read profile torque params from Ethercat
  *
@@ -158,15 +181,14 @@ int sensor_select_sdo(chanend coe_out);
  */
 {int, int, int, int, int} pv_sdo_update(chanend coe_out);
 
-
 /**
  * \brief read profile position params from Ethercat
  *
  * \return max_profile_velocity
+ * \return profile_velocity
  * \return profile_acceleration
  * \return profile_deceleration
  * \return quick_stop_deceleration
- * \return profile_velocity
  * \return min
  * \return max
  * \return polarity
@@ -205,8 +227,8 @@ int sensor_select_sdo(chanend coe_out);
  * \return max_motor_speed
  * \return polarity
  * \return nominal_current
- * \return min
- * \return max
+ * \return min position
+ * \return max position
  * \return max_acceleration
  *
  */

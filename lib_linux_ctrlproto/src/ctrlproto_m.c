@@ -27,18 +27,15 @@
  *
  ****************************************************************************/
  /*
+  * \file ctrlproto_m.c
   * Adaption to somanet by Frank Jeschke <jeschke@fjes.de>, Pavan Kanajar <pkanajar@synapticon.com>
   * & Christian Holl <choll@synapticon.com>
   *
   * for Synapticon GmbH
   */
 
-/**
- *
- * \file ctrlproto_m.c
- *
- *
- * Copyright (c) 2013, Synapticon GmbH
+/*
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +83,6 @@
 
 
 // Application parameters
-#define FREQUENCY 	1000	// Hz
 #define PRIORITY 	1
 
 

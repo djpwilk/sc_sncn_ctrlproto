@@ -1,0 +1,30 @@
+/**
+
+\page libs
+\section lib_linux_motor_drive
+
+This library provides motor drive functions over EtherCAT using lib_linux_ctrlproto.
+	
+	1. Initialization of all connected nodes with basic motor configurations
+	
+	2. Setup and Enable different operating modes:
+		
+		Cyclic Operation modes for Position, Velocity, Torque
+		
+		Profile Operation modes for Position, Velocity, Torque
+		
+		Homing Mode
+		
+	3. Functions to set target values for node and read node sensor values.	
+
+In order to access this library from your application:
+
+1. Include the header files on your code:
+
+* drive_function.h - To access motor drive functions.
+
+* ctrlproto_m.h - To access the all control protocol functions.
+
+* motor_define.h - To access the motor configurations structs.
+
+*/

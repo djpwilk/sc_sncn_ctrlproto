@@ -1,15 +1,16 @@
 
 /**
- *
  * \file main.c
- *
  * \brief Example Master App for Profile Velocity (on PC)
- *
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \author Christian Holl <choll@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
  */
+
 /*
- * Copyright (c) 2013, Synapticon GmbH
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com> & Christian Holl <choll@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -63,25 +64,35 @@ int main()
 	int slave_number = 0;
 	int ack = 0;
 
+	/* Initialize Ethercat Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Initialize torque parameters */
 	initialize_torque(slave_number, slv_handles);
 
+	/* Initialize all connected nodes with Mandatory Motor Configurations (specified under config/motor/)*/
 	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Initialize the node specified with slave_number with Profile Velocity(PV) configurations (specified under config/motor/)*/
 	set_operation_mode(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Enable operation of node in PV mode */
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	while(1)
 	{
-
+		/* Update the process data (EtherCat packets) sent/received from the node */
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 		if(master_setup.op_flag)	// Check if the master is active
 		{
+			/* Send target velocity for the node specified by slave_number */
 			set_velocity_rpm(target_velocity, slave_number, slv_handles);
+
+			/* Check if target velocity is reached with specified tolerance */
 			ack = target_velocity_reached(slave_number, target_velocity, tolerance, slv_handles);
+
+			/* Read actual node sensor values */
 			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
 			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
@@ -107,6 +118,7 @@ int main()
 			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
 			if(actual_velocity > 0 || actual_velocity < 0)
 			{
+				/* Quick stop Profile Velocity mode (for emergency) */
 				quick_stop_velocity(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 				ack = 1;
 			}
@@ -126,13 +138,14 @@ int main()
 //		}
 //	}
 
-
+	/* Regain control of node to continue after quick stop */
 	renable_ctrl_quick_stop(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Shutdown node operations */
 	shutdown_operation(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	/*target_velocity = -300;

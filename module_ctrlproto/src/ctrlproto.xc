@@ -1,13 +1,15 @@
 
 /**
- *
  * \file ctrlproto.xc
- *
  * \brief Control Protocol Handler
- *
- * Copyright (c) 2013, Synapticon GmbH
+ * \author Christian Holl <choll@synapticon.com>
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+/*
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Christian Holl <choll@synapticon.com> & Pavan Kanajar <pkanajar@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -281,7 +283,7 @@ void config_sdo_handler(chanend coe_out)
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
 
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
-	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration)
+	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration);
 	//printintln(max_motor_speed);printintln(nominal_current);printintln(polarity);printintln(max_acceleration);printintln(motor_torque_constant);
 	return {max_motor_speed, nominal_current, polarity, max_acceleration, motor_torque_constant};
 }

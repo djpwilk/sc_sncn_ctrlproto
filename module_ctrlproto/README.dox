@@ -1,0 +1,20 @@
+/**
+
+\page mods
+\section module_ctrlproto
+
+This module provides functions to EtherCAT process data (PDO) handling, enable 
+checking if commmunication is active/idle and read EtherCAT service data (SDO) 
+handling and functions to update the respective motor configuration parameters.
+
+In order to access this module from your application:
+
+1.  Add module_ctrlproto in your app makefile:
+
+USED_MODULES = module_ctrlproto
+
+2. Include the header files on your code:
+
+* ctrlproto.h - To access the control protocol functions (slave side).
+
+*/

@@ -1,15 +1,14 @@
 
 /**
- *
  * \file bldc_motor_config_2.h
- *	Motor Control config file for motor 2 on PC
- *
- *	Please define your the motor specifications here
+ * \brief Motor Control config file for motor 2 (Please define your the motor specifications here)
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
  */
 /*
- * Copyright (c) 2013, Synapticon GmbH
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com> & Martin Schwarz <mschwarz@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:

@@ -1,15 +1,15 @@
 
 /**
- *
  * \file main.c
- *
  * \brief Example Master App for Profile Position (on PC)
- *
- *
- *
- * Copyright (c) 2013, Synapticon GmbH
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \author Christian Holl <choll@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+/*
+ * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com> & Christian Holl <choll@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -58,35 +58,38 @@ int main()
 
 	int actual_position = 0;			// ticks
 	int target_position = 350;			// ticks
-
 	int tolerance = 35;	 				// ticks
-	int actual_velocity;
-	float actual_torque;
+	int actual_velocity;				// rpm
+	float actual_torque;				// mNm
 	int slave_number = 0;
 	int stop_position;
 	int ack = 0;
 	int flag = 0;
 	int i = 0;
 
+	/* Initialize Ethercat Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Initialize torque parameters */
 	initialize_torque(slave_number, slv_handles);
 
+	/* Initialize all connected nodes with Mandatory Motor Configurations (specified under config/motor/)*/
 	init_nodes(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Initialize the node specified with slave_number with PP configurations (specified under config/motor/)*/
 	set_operation_mode(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Enable operation of node in PP mode */
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
 
 	ack = 0;
 	i = 0;
 	while(1)
 	{
+		/* Update the process data (EtherCat packets) sent/received from the node */
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-		if(master_setup.op_flag)	// Check if the master is active
+		if(master_setup.op_flag)	/*Check if the master is active*/
 		{
 			/* Read Actual Position from the node */
 			if(flag == 0)
@@ -105,9 +108,14 @@ int main()
 			}
 			if(flag == 1)
 			{
+				/* Send target position for the node specified by slave_number */
 				set_profile_position_ticks(target_position, slave_number, slv_handles);
 				//printf("\n pos %d target_pos %d tol %d", actual_position,target_position, tolerance);
+
+				/* Check if target position is reached with specified tolerance */
 				ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
+
+				/* Read actual node sensor values */
 				actual_position = get_position_actual_ticks(slave_number, slv_handles);
 				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
 				actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
@@ -157,6 +165,7 @@ int main()
 			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			if(actual_position < stop_position)
 			{
+				/* Quick stop position mode (for emergency) */
 				quick_stop_position(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 				ack = 1;
 			}
@@ -177,12 +186,15 @@ int main()
 //			printf("position %f \n", actual_position);
 //		}
 //	}
+
+	/* Regain control of node to continue after quick stop */
 	renable_ctrl_quick_stop(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	set_operation_mode(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
+	/* Shutdown node operations */
 	shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 
