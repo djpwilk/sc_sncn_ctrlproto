@@ -96,7 +96,7 @@ int main()
 			{
 				/* Generate target torque steps */
 				target_torque = generate_profile_linear(i, slave_number, slv_handles);
-				printf("target_torque %f \n",target_torque);
+
 				/* Send target torque for the node specified by slave_number */
 				set_torque_mNm(target_torque, slave_number, slv_handles);
 
@@ -115,54 +115,8 @@ int main()
 		}
 	}
 
-	/* New target torque */
-/*	i = 1;
-	final_target_torque = 18.0;
-	steps = init_linear_profile_params(final_target_torque, actual_torque, torque_slope, slave_number, slv_handles);
-
-	while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)	// Check if the master is active
-		{
-			if(i<steps)
-			{
-				target_torque = generate_profile_linear(i, slave_number, slv_handles);
-				printf("target_torque %f \n",target_torque);
-				set_torque_mNm(target_torque, slave_number, slv_handles);
-				actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
-				actual_position = get_position_actual_ticks(slave_number, slv_handles);
-				actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
-				printf("actual_torque %f actual_position %d actual_velocity %d\n", actual_torque, actual_position, actual_velocity);
-				i = i+1;
-			}
-
-			if(i >= steps)
-			{
-				break;
-			}
-		}
-	}*/
-
 	/* Quick stop torque mode (for emergency) */
 	quick_stop_torque(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
-
-
-
-	/*while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)//Check if we are up
-		{
-
-			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
-			printf("actual_torque %f \n",actual_torque);
-		}
-	}*/
 
 	/* Regain control of node to continue after quick stop */
 	renable_ctrl_quick_stop(CST, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
@@ -170,46 +124,6 @@ int main()
 	set_operation_mode(CST, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
 	enable_operation(slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
-	/*i = 1;
-	final_target_torque = -15.0;
-	actual_torque= 	get_torque_actual_mNm(slave_number, slv_handles);
-
-	steps = init_linear_profile_params(final_target_torque, actual_torque, torque_slope, slave_number, slv_handles);
-
-	while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag) 	// Check if the master is active
-		{
-			if(i<steps)
-			{
-				target_torque = generate_profile_linear(i, slave_number, slv_handles);
-				printf("target_torque %f \n",target_torque);
-				set_torque_mNm(target_torque, slave_number, slv_handles);
-				actual_torque= get_torque_actual_mNm(slave_number, slv_handles);
-				printf("actual_torque %f \n",actual_torque);
-				i = i+1;
-			}
-			if(i >= steps)
-			{
-				break;
-			}
-		}
-	}*/
-/*	while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)	// Check if the master is active
-		{
-
-			actual_torque = get_torque_actual_mNm(slave_number, slv_handles);
-			printf("actual_torque %f \n", actual_torque);
-		}
-	}*/
 
 
 	/* Shutdown node operations */

@@ -178,16 +178,6 @@ int main()
 	printf("reached \n");
 
 
-//	while(1)
-//	{
-//		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//		if(master_setup.op_flag)	// Check if the master is active
-//		{
-//			actual_position = get_position_actual_ticks(slave_number, slv_handles);
-//			printf("position %f \n", actual_position);
-//		}
-//	}
-
 	/* Regain control of node to continue after quick stop */
 	renable_ctrl_quick_stop(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
@@ -197,32 +187,6 @@ int main()
 
 	/* Shutdown node operations */
 	shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
-/*
-	target_position = 300.0f;
-	while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		if(master_setup.op_flag)	// Check if the master is active
-		{
-			set_profile_position_ticks(target_position, slave_number, slv_handles);
-			actual_position = get_position_actual_ticks(slave_number, slv_handles);
-			ack = target_position_reached(slave_number, target_position, tolerance, slv_handles);
-			printf("position %d ack %d\n", actual_position, ack);
-		}
-		if(ack == 1)
-		{
-			break;
-		}
-
-	}
-
-	printf("reached \n");
-*/
-
-	//shutdown_operation(PP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);//*/
 
 	return 0;
 }

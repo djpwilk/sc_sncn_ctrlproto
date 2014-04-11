@@ -7,6 +7,7 @@
  * \version 1.0
  * \date 10/04/2014
  */
+
 /*
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
@@ -130,29 +131,6 @@ int main()
 				break;
 			}
 
-			/*if(i<steps - steps/2&& flag == 1)
-			{
-				position_ramp = generate_profile_position(i, slave_number, slv_handles);
-				set_position_degree(position_ramp, slave_number, slv_handles);
-				i = i+1;
-			}
-			else if(flag == 1 && i >=steps-steps/2)
-			{
-				break;
-			}*/
-
-			/*if(i>=steps && flag == 0)
-			{
-				actual_position = get_position_actual_degree(slave_number, slv_handles);
-				target_position = 50.0f;
-				velocity = 350;
-				acceleration = 350;
-				deceleration = 350;
-				steps = init_position_profile_params(target_position, actual_position, velocity, acceleration, \
-							deceleration, slave_number, slv_handles);
-				i = 1;
-				flag = 1;
-			}*/
 			/* Read actual node sensor values */
 			actual_position = get_position_actual_ticks(slave_number, slv_handles);
 			actual_velocity = get_velocity_actual_rpm(slave_number, slv_handles);
@@ -173,21 +151,6 @@ int main()
 
 	/* Shutdown node operations */
 	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
-
-
-
-//*/
-	/*while(1)
-	{
-		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-		printf("actual position %f\n", get_position_actual_degree(slave_number, slv_handles));
-	}*/
-//	shutdown_operation(CSP, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-
-
 
 	return 0;
 }

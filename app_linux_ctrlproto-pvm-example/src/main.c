@@ -129,16 +129,6 @@ int main()
 	printf("reached \n");
 
 
-//	while(1)
-//	{
-//		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-//		if(master_setup.op_flag)//Check if we are up
-//		{
-//			actual_velocity =  get_velocity_actual_rpm(slave_number, slv_handles);
-//			printf("velocity %d \n", actual_velocity);
-//		}
-//	}
-
 	/* Regain control of node to continue after quick stop */
 	renable_ctrl_quick_stop(PV, slave_number, &master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 

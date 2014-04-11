@@ -114,13 +114,9 @@ int main()
 			difference = actual_position - previous;
 			if(difference <1 && difference >-1)
 			{
-				//printf(" difference %d act %d\n",difference, actual_position);
 				break;
 			}
-
 			previous = actual_position;
-
-			//printf(" difference %d act %d\n",difference, actual_position);
 		}
 
 	}
@@ -170,7 +166,7 @@ int main()
 				printf("ack received");
 				break;
 			}
-			//printf("actual position %d \n", get_position_actual_ticks(slave_number, slv_handles));
+
 
 			/* Read actual node sensor values */
 			actual_position = get_position_actual_ticks(slave_number, slv_handles);

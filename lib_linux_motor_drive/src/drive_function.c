@@ -2,15 +2,12 @@
 /**
  * \file drive_function.c
  * \brief Motor Drive functions over Ethercat
-<<<<<<< HEAD
- *
-=======
  * \author Pavan Kanajar <pkanajar@synapticon.com>
  * \version 1.0
  * \date 10/04/2014
  */
+
 /*
->>>>>>> develop
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
  *
@@ -122,44 +119,22 @@ int get_position_actual_ticks(int slave_number, ctrlproto_slv_handle *slv_handle
 
 int position_limit(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-<<<<<<< HEAD
-
-	float position_min = (float) slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min;
-	float position_max =(float) slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max;
-
-	if (target_position > position_max)
-	{
-		return   (int) round( (position_max * 10000.0f) );
-	}
-	else if (target_position < position_min)
-	{
-		return (int) round( (position_min * 10000.0f) );
-=======
 	int position = target_position;
-	//printf("\n tar %d\n", position);
 
 	int position_min = slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min;
 	int position_max = slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max;
 
 	if (position > position_max)
-	{//printf("\n tar %d\n", position_max);
-		//printf(" %d", (int) round( (position_max * 10000.0f) ));
-		return   position_max; //slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max;
+	{
+		return position_max;
 	}
 	else if (position < position_min)
-	{//printf("\n tar %d\n", position_min);
-		//printf(" %d", (int) round( (position_max * 10000.0f) ));
-		return position_min; //slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min;
->>>>>>> develop
+	{
+		return position_min;
 	}
 	else if (position >= position_min && position <= position_max)
 	{
-<<<<<<< HEAD
-		return  (int) round( (target_position*10000.0f) );
-=======
-		//printf(" %d", (int) round( (position_max * 10000.0f) ));
 		return position;
->>>>>>> develop
 	}
 }
 
@@ -169,21 +144,11 @@ void set_position_ticks(int target_position, int slave_number, ctrlproto_slv_han
 
 	if(target_position > slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max)
 	{
-<<<<<<< HEAD
-		position = slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max*10000;
-=======
-		//printf(" %d", slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max*10000);
 		position = slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max;
->>>>>>> develop
 	}
 	else if (target_position < slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min)
 	{
-<<<<<<< HEAD
-		position = slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min * 10000;
-=======
-		//printf(" %d", slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min * 10000);
 		position = slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min;
->>>>>>> develop
 	}
 	else if (target_position >= slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min \
 			&& target_position <=  slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max)
@@ -196,7 +161,6 @@ void set_position_ticks(int target_position, int slave_number, ctrlproto_slv_han
 void set_profile_position_ticks(int target_position, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	slv_handles[slave_number].position_setpoint = position_limit(target_position, slave_number, slv_handles);
-	//printf("\n tar %d\n", slv_handles[slave_number].position_setpoint);
 }
 
 int position_set_flag(int slave_number, ctrlproto_slv_handle *slv_handles)
@@ -226,10 +190,7 @@ int read_statusword(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	return slv_handles[slave_number].motorctrl_status_in;
 }
-//__initialize_position_profile_limits(int max_acceleration, int max_velocity,  \
-		int sensor_select, int max_position, int min_position, profile_position_param *profile_pos_params)
-//void init_position_profile_limits(int max_acceleration, int max_velocity, qei_par qei_params, \
-		hall_par hall_params, int sensor_select, int max_position, int min_position)
+
 void initialize_position_profile_limits(int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 	slv_handles[slave_number].profile_position_params.qei_params.real_counts = \
@@ -242,11 +203,6 @@ void initialize_position_profile_limits(int slave_number, ctrlproto_slv_handle *
 			slv_handles[slave_number].motor_config_param.s_software_position_max.software_position_max,\
 			slv_handles[slave_number].motor_config_param.s_software_position_min.software_position_min,\
 			&slv_handles[slave_number].profile_position_params);
-
-//	__initialize_position_profile_limits(slv_handles[slave_number].motor_config_param.s_gear_ratio.gear_ratio,\
-			slv_handles[slave_number].motor_config_param.s_max_acceleration.max_acceleration,\
-			slv_handles[slave_number].motor_config_param.s_nominal_motor_speed.nominal_motor_speed,\
-			&slv_handles[slave_number].profile_position_params);
 }
 
 int generate_profile_position(int step, int slave_number, ctrlproto_slv_handle *slv_handles)
@@ -254,15 +210,14 @@ int generate_profile_position(int step, int slave_number, ctrlproto_slv_handle *
 	return __position_profile_generate_in_steps(step, &slv_handles[slave_number].profile_position_params);
 }
 
-//position_profile_generate_in_steps(int step, profile_position_param *profile_pos_params);
+
 int init_position_profile_params(int target_position, int actual_position, int velocity, \
 		int acceleration, int deceleration, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
 
 	return __initialize_position_profile(target_position, actual_position, velocity, acceleration, deceleration, &slv_handles[slave_number].profile_position_params);
 }
-//init_velocity_profile(final_target_velocity, initial_velocity, acceleration, deceleration, MAX_PROFILE_VELOCITY(1));
-//slv_handles[slave_number].motor_config_param.s_max_profile_velocity.max_profile_velocity
+
 int init_velocity_profile_params(int target_velocity, int actual_velocity, int acceleration, \
 		int deceleration, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
@@ -280,35 +235,23 @@ int init_linear_profile_params(float target_torque, float actual_torque, float t
 {
 	float max_torque =  slv_handles[slave_number].motor_config_param.s_motor_torque_constant.motor_torque_constant \
 			* slv_handles[slave_number].motor_config_param.s_nominal_current.nominal_current;
-<<<<<<< HEAD
 
-	return init_linear_profile_float(target_torque, actual_torque, torque_slope, torque_slope, max_torque);
-=======
-	//printf("\n max torque %f slo %f tar %f, ac %f ", max_torque, torque_slope, target_torque, actual_torque);
 	return __init_linear_profile_float(target_torque, actual_torque, torque_slope, torque_slope, max_torque,\
-			&slv_handles[slave_number].profile_linear_params); //max_torque
->>>>>>> develop
+			&slv_handles[slave_number].profile_linear_params);
 }
 
 float generate_profile_linear(int step, int slave_number, ctrlproto_slv_handle *slv_handles)
 {
-<<<<<<< HEAD
-	float actual_position =  get_position_actual_degree(slave_number, slv_handles);
-
-	if(actual_position > target_position-tolerance/2.0f && actual_position < target_position + tolerance/2.0f)
-=======
 	return __linear_profile_generate_float(step, &slv_handles[slave_number].profile_linear_params);
 }
 
 int target_position_reached(int slave_number, int target_position, int tolerance, ctrlproto_slv_handle *slv_handles)
 {
 	int actual_position =  get_position_actual_ticks(slave_number, slv_handles);
-	//printf(" act pos %d target_pos %d tol %d  : %d %d  :%d  %d\n", actual_position,target_position, tolerance, target_position + tolerance/2, target_position-tolerance/2,\
-			actual_position > target_position-tolerance/2, actual_position < target_position + tolerance/2);
-	//fflush(stdout);
+
 	if(actual_position > target_position-tolerance/2 && actual_position < target_position + tolerance/2)
->>>>>>> develop
-	{	if(check_target_reached(read_statusword(slave_number, slv_handles)))
+	{
+		if(check_target_reached(read_statusword(slave_number, slv_handles)))
 		{
 			return 1;
 		}
@@ -409,54 +352,6 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 
 	int actual_position;
 	int i = 0;
-	// Initial all target values to actual values to keep system stable on restart
-//	while(1)
-//	{
-//		pdo_handle_ecat(master_setup, slv_handles, total_no_of_slaves);
-//
-//		if(master_setup->op_flag)	//Check if the master is active
-//		{
-//			if(operation_mode == CSP)
-//			{
-//				actual_position = get_position_actual_degree(slave_number, slv_handles);
-//				set_profile_position_degree(actual_position, slave_number, slv_handles);
-//				printf("actual position %f\n", actual_position);
-//				i = i + 1;
-//				if(i > 3)
-//				{
-//					break;
-//				}
-//			}
-//		}
-//	}
-
-/*	set_controlword(0, slave_number, slv_handles);
-	printf("updating motor parameters\n");
-	fflush(stdout);
-	**** Set up Parameters ****
-
-
-	slv_handles[slave_number].motor_config_param.update_flag = 0;
-	while(1)
-	{
-		if(slv_handles[slave_number].motor_config_param.update_flag == 1)
-		{
-			slv_handles[slave_number].motor_config_param.update_flag = 0;	// reset to update next set of paramaters
-			break;
-		}
-
-		else
-		{
-			sdo_handle_ecat(master_setup, slv_handles, MOTOR_PARAM_UPDATE, slave_number); // motor config update
-			//printf (".");
-			//fflush(stdout);
-
-		}
-	}
-	printf ("\n");
-	fflush(stdout);
-
-	set_controlword(5, slave_number, slv_handles);*/
 
 	/**********************check ready***********************/
 	while(!ready)
@@ -521,11 +416,6 @@ int set_operation_mode(int operation_mode, int slave_number, master_setup_variab
 	printf("updating control parameters\n");
 	fflush(stdout);
 	/***** Set up Parameters *****/
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
-
 	slv_handles[slave_number].motor_config_param.update_flag = 0;
 	if(operation_mode == CST || operation_mode == TQ)
 	{
