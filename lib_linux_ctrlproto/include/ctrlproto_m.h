@@ -1,13 +1,17 @@
 
 /**
- *
  * \file ctrlproto_m.h
- *
- *
+ * \brief Ethercat control protocol
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \author Frank Jeschke <jeschke@fjes.de>
+ * \author Christian Holl <choll@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+
+/*
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com>, Christian Holl <choll@synapticon.com>
- * 			& Frank Jeschke <jeschke@fjes.de>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -44,8 +48,11 @@
 #include <ecrt.h>
 #include <inttypes.h>
 #include <motor_define.h>
+#include <profile.h>
 #include "bldc_motor_config_1.h"
 #include "bldc_motor_config_2.h"
+
+#define FREQUENCY 	1000	// Hz
 
 #ifdef __cplusplus
 extern "C"
@@ -149,17 +156,17 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{POLARITY(CONFIG_NUMBER), 0},\
 		{SENSOR_SELECTION_CODE(CONFIG_NUMBER), 0},\
 		\
-		{(16384*VELOCITY_Kp_NUMERATOR(CONFIG_NUMBER) )/VELOCITY_Kp_DENOMINATOR(CONFIG_NUMBER), 0},\
-		{(16384*VELOCITY_Ki_NUMERATOR(CONFIG_NUMBER) )/VELOCITY_Ki_DENOMINATOR(CONFIG_NUMBER), 0},\
-		{(16384*VELOCITY_Kd_NUMERATOR(CONFIG_NUMBER) )/VELOCITY_Kd_DENOMINATOR(CONFIG_NUMBER), 0},\
+		{(65536*VELOCITY_Kp_NUMERATOR(CONFIG_NUMBER) )/VELOCITY_Kp_DENOMINATOR(CONFIG_NUMBER), 0},\
+		{(65536*VELOCITY_Ki_NUMERATOR(CONFIG_NUMBER) )/VELOCITY_Ki_DENOMINATOR(CONFIG_NUMBER), 0},\
+		{(65536*VELOCITY_Kd_NUMERATOR(CONFIG_NUMBER) )/VELOCITY_Kd_DENOMINATOR(CONFIG_NUMBER), 0},\
 		\
-		{(16384*POSITION_Kp_NUMERATOR(CONFIG_NUMBER) )/POSITION_Kp_DENOMINATOR(CONFIG_NUMBER), 0},\
-		{(16384*POSITION_Ki_NUMERATOR(CONFIG_NUMBER) )/POSITION_Ki_DENOMINATOR(CONFIG_NUMBER), 0},\
-		{(16384*POSITION_Kd_NUMERATOR(CONFIG_NUMBER) )/POSITION_Kd_DENOMINATOR(CONFIG_NUMBER), 0},\
+		{(65536*POSITION_Kp_NUMERATOR(CONFIG_NUMBER) )/POSITION_Kp_DENOMINATOR(CONFIG_NUMBER), 0},\
+		{(65536*POSITION_Ki_NUMERATOR(CONFIG_NUMBER) )/POSITION_Ki_DENOMINATOR(CONFIG_NUMBER), 0},\
+		{(65536*POSITION_Kd_NUMERATOR(CONFIG_NUMBER) )/POSITION_Kd_DENOMINATOR(CONFIG_NUMBER), 0},\
 		\
-		{(16384*TORQUE_Kp_NUMERATOR(CONFIG_NUMBER) )/TORQUE_Kp_DENOMINATOR(CONFIG_NUMBER), 0},\
-		{(16384*TORQUE_Ki_NUMERATOR(CONFIG_NUMBER) )/TORQUE_Ki_DENOMINATOR(CONFIG_NUMBER), 0},\
-		{(16384*TORQUE_Kd_NUMERATOR(CONFIG_NUMBER) )/TORQUE_Kd_DENOMINATOR(CONFIG_NUMBER), 0},\
+		{(65536*TORQUE_Kp_NUMERATOR(CONFIG_NUMBER) )/TORQUE_Kp_DENOMINATOR(CONFIG_NUMBER), 0},\
+		{(65536*TORQUE_Ki_NUMERATOR(CONFIG_NUMBER) )/TORQUE_Ki_DENOMINATOR(CONFIG_NUMBER), 0},\
+		{(65536*TORQUE_Kd_NUMERATOR(CONFIG_NUMBER) )/TORQUE_Kd_DENOMINATOR(CONFIG_NUMBER), 0},\
 		\
 		{MIN_POSITION_LIMIT(CONFIG_NUMBER),0},\
 		{MAX_POSITION_LIMIT(CONFIG_NUMBER),0},\
@@ -176,6 +183,14 @@ ec_sync_info_t ctrlproto_syncs[] = {\
 		{0, 0},\
 		{0, 0},\
 		{0, 0},\
+		\
+		{COMMUTATION_OFFSET_CLK(CONFIG_NUMBER), 0},\
+		{COMMUTATION_OFFSET_CCLK(CONFIG_NUMBER), 0},\
+		{WINDING_TYPE(CONFIG_NUMBER), 0},\
+		\
+		{LIMIT_SWITCH_TYPES(CONFIG_NUMBER), 0},\
+		{HOMING_METHOD(CONFIG_NUMBER), 0},\
+		{QEI_SENSOR_POLARITY(CONFIG_NUMBER), 0},\
 		\
 		0},\
 		0.0f,\
@@ -204,7 +219,7 @@ typedef struct
 	 * The SDO entries
 	 */
 
-	ec_sdo_request_t *__request[31];
+	ec_sdo_request_t *__request[34];
 
 	/**
 	 * The PDO entries
@@ -313,6 +328,12 @@ typedef struct
 	motor_config motor_config_param; /*set via bldc_motor_config header file*/
 
 	float factor_torq;
+
+	profile_position_param profile_position_params;
+
+	profile_linear_param profile_linear_params;
+
+	profile_velocity_param profile_velocity_params;
 
 }ctrlproto_slv_handle;
 

@@ -1,7 +1,9 @@
 # The TARGET variable determines what target system the application is
 # compiled for. It either refers to an XN file in the source directories
 # or a valid argument for the --target option when compiling
-TARGET = SOMANET-C22
+
+TARGET = SOMANET-C22-ComECAT-IfmBLDC-XScope
+
 
 # The APP_NAME variable determines the name of the final .xe file. It should
 # not include the .xe postfix. If left blank the name will default to
@@ -9,7 +11,7 @@ TARGET = SOMANET-C22
 APP_NAME = app_ctrlproto-test
 
 # The USED_MODULES variable lists other module used by the application.
-USED_MODULES = module_ctrlproto sc_sncn_ethercat/module_ethercat sc_somanet-base/module_fwupdate
+USED_MODULES = module_ctrlproto sc_sncn_ethercat/module_ethercat sc_somanet-base/module_fwupdate sc_somanet-base/module_nodeconfig
 
 # The flags passed to xcc when building the application
 # You can also set the following to override flags for a particular language:

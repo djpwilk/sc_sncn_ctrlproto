@@ -27,17 +27,14 @@
  *
  ****************************************************************************/
  /*
+  * \file ctrlproto_m.c
   * Adaption to somanet by Frank Jeschke <jeschke@fjes.de>, Pavan Kanajar <pkanajar@synapticon.com>
   * & Christian Holl <choll@synapticon.com>
   *
   * for Synapticon GmbH
   */
 
-/**
- *
- * \file ctrlproto_m.c
- *
- *
+/*
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
  *
@@ -80,13 +77,12 @@
 #include <stdarg.h>
 #include <ctrlproto_m.h>
 #include <canod.h>
-/****************************************************************************/
-
 #include "ecrt.h"
 
-/****************************************************************************/
+
+
+
 // Application parameters
-#define FREQUENCY 	1000	// KHz
 #define PRIORITY 	1
 
 
@@ -173,9 +169,8 @@ int read_sdo(ec_sdo_request_t *req)
             break;
         case EC_REQUEST_SUCCESS:
         	sdo_read_value = EC_READ_S32(ecrt_sdo_request_data(req));
-            //logmsg(1, "SDO value read: 0x%X\n",
-            //		sdo_read_value);
-            ecrt_sdo_request_read(req); // trigger next read
+            //logmsg(1, "SDO value read: 0x%X\n", sdo_read_value);
+            ecrt_sdo_request_write(req); // trigger next write
             break;
         case EC_REQUEST_ERROR:
             //fprintf(stderr, "Failed to read SDO!\n");
@@ -201,7 +196,7 @@ int write_sdo(ec_sdo_request_t *req, unsigned data)
 		case EC_REQUEST_SUCCESS:
 			//logmsg(1, "SDO value written: 0x%X\n", data);
 			pause();
-			ecrt_sdo_request_write(req); // trigger next read ???
+			ecrt_sdo_request_read(req); // trigger next read
 			return 1;
 			break;
 		case EC_REQUEST_ERROR:
@@ -497,6 +492,14 @@ void motor_config_request(ec_slave_config_t *slave_config, ec_sdo_request_t *req
 	request[25] = _config_sdo_request(slave_config, request[25], CIA402_CURRENT_GAIN, 2, 4);
 	request[26] = _config_sdo_request(slave_config, request[26], CIA402_CURRENT_GAIN, 3, 4);
 
+	request[27] = _config_sdo_request(slave_config, request[27], COMMUTATION_OFFSET_CLKWISE, 0, 2);
+	request[28] = _config_sdo_request(slave_config, request[28], COMMUTATION_OFFSET_CCLKWISE, 0, 2);
+	request[29] = _config_sdo_request(slave_config, request[29], MOTOR_WINDING_TYPE, 0, 1);
+
+	request[30] = _config_sdo_request(slave_config, request[30], CIA402_HOMING_METHOD, 0, 1);
+	request[31] = _config_sdo_request(slave_config, request[31], LIMIT_SWITCH_TYPE, 0, 1);
+	request[32] = _config_sdo_request(slave_config, request[32], SENSOR_POLARITY, 0, 2);
+
 }
 
 int _motor_config_update(ec_sdo_request_t *request, int update, int value, int sequence)
@@ -505,11 +508,7 @@ int _motor_config_update(ec_sdo_request_t *request, int update, int value, int s
 	if(update==0)
 	{
 		write_sdo(request, value);
-		pause();
-		pause();
 		sdo_update_value = read_sdo(request);
-		pause();
-		pause();
 		if(sdo_update_value == value)
 		{
 			update = 1;
@@ -560,6 +559,47 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				motor_config_param.s_nominal_motor_speed.update_state,  \
 				motor_config_param.s_nominal_motor_speed.nominal_motor_speed, 8);
 
+		if(motor_config_param.s_nominal_motor_speed.update_state && !motor_config_param.s_commutation_offset_clk.update_state)
+			motor_config_param.s_commutation_offset_clk.update_state = _motor_config_update(request[27],\
+				motor_config_param.s_commutation_offset_clk.update_state,  \
+				motor_config_param.s_commutation_offset_clk.commutation_offset_clk, 9);
+
+		if(motor_config_param.s_commutation_offset_clk.update_state && !motor_config_param.s_commutation_offset_cclk.update_state)
+			motor_config_param.s_commutation_offset_cclk.update_state = _motor_config_update(request[28],\
+				motor_config_param.s_commutation_offset_cclk.update_state,  \
+				motor_config_param.s_commutation_offset_cclk.commutation_offset_cclk, 10);
+
+		if(motor_config_param.s_commutation_offset_cclk.update_state && !motor_config_param.s_motor_winding_type.update_state)
+			motor_config_param.s_motor_winding_type.update_state = _motor_config_update(request[29],\
+				motor_config_param.s_motor_winding_type.update_state,  \
+				motor_config_param.s_motor_winding_type.motor_winding_type, 11);
+
+
+		if(motor_config_param.s_motor_winding_type.update_state && !motor_config_param.s_limit_switch_type.update_state)
+			motor_config_param.s_limit_switch_type.update_state = _motor_config_update(request[31],\
+					motor_config_param.s_limit_switch_type.update_state,  \
+					motor_config_param.s_limit_switch_type.limit_switch_type, 12);
+
+		if(motor_config_param.s_limit_switch_type.update_state && !motor_config_param.s_homing_method.update_state)
+			motor_config_param.s_homing_method.update_state = _motor_config_update(request[30],\
+					motor_config_param.s_homing_method.update_state,  \
+					motor_config_param.s_homing_method.homing_method, 13);
+
+		if(motor_config_param.s_homing_method.update_state && !motor_config_param.s_software_position_min.update_state)
+				motor_config_param.s_software_position_min.update_state = _motor_config_update(request[14], \
+					motor_config_param.s_software_position_min.update_state,  \
+					motor_config_param.s_software_position_min.software_position_min, 14);
+
+		if(motor_config_param.s_software_position_min.update_state && !motor_config_param.s_software_position_max.update_state)
+			motor_config_param.s_software_position_max.update_state = _motor_config_update(request[15], \
+				motor_config_param.s_software_position_max.update_state,  \
+				motor_config_param.s_software_position_max.software_position_max, 15);
+
+		if(motor_config_param.s_software_position_max.update_state && !motor_config_param.s_sensor_polarity.update_state)
+			motor_config_param.s_sensor_polarity.update_state = _motor_config_update(request[32], \
+				motor_config_param.s_sensor_polarity.update_state,  \
+				motor_config_param.s_sensor_polarity.sensor_polarity, 16);
+
 		motor_config_param.update_flag = motor_config_param.s_gear_ratio.update_state \
 			& motor_config_param.s_max_acceleration.update_state \
 			& motor_config_param.s_pole_pair.update_state \
@@ -567,7 +607,15 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 			& motor_config_param.s_sensor_selection_code.update_state \
 			& motor_config_param.s_polarity.update_state \
 			& motor_config_param.s_motor_torque_constant.update_state\
-			& motor_config_param.s_nominal_motor_speed.update_state;
+			& motor_config_param.s_nominal_motor_speed.update_state\
+			& motor_config_param.s_commutation_offset_clk.update_state\
+			& motor_config_param.s_commutation_offset_cclk.update_state\
+			& motor_config_param.s_motor_winding_type.update_state\
+			& motor_config_param.s_limit_switch_type.update_state\
+			& motor_config_param.s_homing_method.update_state\
+			& motor_config_param.s_software_position_min.update_state\
+			& motor_config_param.s_software_position_max.update_state\
+			& motor_config_param.s_sensor_polarity.update_state;
 
 	}
 
@@ -652,21 +700,9 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 				motor_config_param.s_position_d_gain.update_state,  \
 				motor_config_param.s_position_d_gain.d_gain, 3);
 
-		if(motor_config_param.s_position_d_gain.update_state && !motor_config_param.s_software_position_min.update_state)
-			motor_config_param.s_software_position_min.update_state = _motor_config_update(request[14], \
-				motor_config_param.s_software_position_min.update_state,  \
-				motor_config_param.s_software_position_min.software_position_min, 4);
-
-		if(motor_config_param.s_software_position_min.update_state && !motor_config_param.s_software_position_max.update_state)
-			motor_config_param.s_software_position_max.update_state = _motor_config_update(request[15], \
-				motor_config_param.s_software_position_max.update_state,  \
-				motor_config_param.s_software_position_max.software_position_max, 5);
-
 		motor_config_param.update_flag = motor_config_param.s_position_p_gain.update_state \
 			& motor_config_param.s_position_i_gain.update_state \
-			& motor_config_param.s_position_d_gain.update_state \
-			& motor_config_param.s_software_position_min.update_state \
-			& motor_config_param.s_software_position_max.update_state;
+			& motor_config_param.s_position_d_gain.update_state;
 	}
 
 	else if(update_sequence == TQ_MOTOR_UPDATE)
@@ -743,6 +779,5 @@ motor_config sdo_motor_config_update(motor_config motor_config_param, ec_sdo_req
 
 	return motor_config_param;
 }
-
 
 

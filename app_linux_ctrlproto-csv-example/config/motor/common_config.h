@@ -1,12 +1,15 @@
 
 /**
- *
  * \file common_config.h
- *
- *
+ * \brief common internal configurations
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+
+/*
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,12 +39,30 @@
  *
  */
 
+/* These are fixed configuration parameters (Default values)*/
 #define QEI_WITH_INDEX				1
 #define QEI_WITH_NO_INDEX 			0
 
 #define DC100_RESOLUTION 			740 	// resolution/A
-#define DC300_RESOLUTION			264 	// resolution/A
+#define DC300_RESOLUTION			400 	// resolution/A
+#define OLD_DC300_RESOLUTION		264 	// resolution/A
 
 #define HALL 						1
 #define QEI_INDEX  					2
 #define QEI_NO_INDEX				3
+
+#define STAR_WINDING				1
+#define DELTA_WINDING				2
+
+#define HOMING_NEGATIVE_SWITCH		1
+#define HOMING_POSITIVE_SWITCH		2
+
+#define ACTIVE_HIGH					1       // the switch output is high upon activation
+#define ACTIVE_LOW					2		// the switch output is low upon activation
+
+#define POLARITY_NORMAL				0
+#define POLARITY_INVERTED			1
+
+#define HALL_POSITION_INTERPOLATED_RANGE 4096
+
+

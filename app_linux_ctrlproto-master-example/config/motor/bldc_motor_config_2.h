@@ -1,14 +1,15 @@
 
 /**
- *
  * \file bldc_motor_config_2.h
- *	Motor Control config file for motor 2 on PC
- *
- *	Please define your the motor specifications here
- *
+ * \brief Motor Control config file for motor 2 (Please define your the motor specifications here)
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+
+/*
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com> & Martin Schwarz <mschwarz@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -46,7 +47,7 @@
  * define Motor Specific Constants (found in motor specification sheet)
  * Mandatory constants to be set
  */
-#define POLE_PAIRS_2  					7
+#define POLE_PAIRS_2  					8
 #define MAX_NOMINAL_SPEED_2  			4000	// rpm
 #define MAX_NOMINAL_CURRENT_2  			2		// A
 #define MOTOR_TORQUE_CONSTANT_2			33		// mNm/A
@@ -55,11 +56,25 @@
  * If you have any gears added specify gear-ratio
  * and any additional encoders attached specify encoder resolution here (optional)
  */
-#define GEAR_RATIO_2 					32		// if no gears are attached - set to gear ratio to 1
+#define GEAR_RATIO_2 					26		// if no gears are attached - set to gear ratio to 1
 #define ENCODER_RESOLUTION_2 			4000	// 4 x Max count of Quadrature Encoder (4X decoding)
 
 /* Somanet IFM Internal Config */
 #define IFM_RESOLUTION_2				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
+
+/* Polarity is used to keep all position sensors to count ticks in the same direction
+ *  (POLARITY_NORMAL/POLARITY_INVERTED)*/
+#define QEI_SENSOR_POLARITY_2			POLARITY_INVERTED
+
+/* Commutation offset (range 0-4095) */
+#define COMMUTATION_OFFSET_CLK_2		683
+#define COMMUTATION_OFFSET_CCLK_2		2731
+
+/* Motor Winding type */
+#define WINDING_TYPE_2					DELTA_WINDING   		// STAR_WINDING/ DELTA_WINDING
+
+#define LIMIT_SWITCH_TYPES_2			ACTIVE_HIGH				// ACTIVE_LOW
+#define HOMING_METHOD_2                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
 
 /* Changes direction of the motor drive */
 #define POLARITY_2 						1		// 1 / -1

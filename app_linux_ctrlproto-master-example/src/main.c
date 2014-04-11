@@ -1,15 +1,15 @@
 
 /**
- *
  * \file main.c
- *
  * \brief Example Master App to test Ethercat (on PC)
- *
- *
- *
+ * \author Christian Holl <choll@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+
+/*
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Christian Holl <choll@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -53,25 +53,30 @@ int main()
 {
 	int slave_number = 0;
 
+	/* Initialize EtherCAT Master */
 	init_master(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
 
-	printf("starting \n");
+	printf("starting Master application\n");
 	while(1)
 	{
+		/* Update the process data (EtherCAT packets) sent/received from the node */
 		pdo_handle_ecat(&master_setup, slv_handles, TOTAL_NUM_OF_SLAVES);
-		if(master_setup.op_flag)
+
+		if(master_setup.op_flag) /*Check if the master is active*/
 		{
+			/* Write Process data */
 			slv_handles[slave_number].motorctrl_out = 12;
 			slv_handles[slave_number].torque_setpoint = 200;
 			slv_handles[slave_number].speed_setpoint = 4000;
 			slv_handles[slave_number].position_setpoint = 10000;
 			slv_handles[slave_number].operation_mode = 125;
 
-			printf("Status: %d\n",slv_handles[slave_number].motorctrl_status_in);
-			printf("Position: %d \n",slv_handles[slave_number].position_in);
-			printf("Speed: %d\n",slv_handles[slave_number].speed_in);
-			printf("Torque: %d\n",slv_handles[slave_number].torque_in);
-			printf("Operation Mode disp: %d\n",slv_handles[slave_number].operation_mode_disp);
+			/* Read Process data */
+			printf("Status: %d\n", slv_handles[slave_number].motorctrl_status_in);
+			printf("Position: %d \n", slv_handles[slave_number].position_in);
+			printf("Speed: %d\n", slv_handles[slave_number].speed_in);
+			printf("Torque: %d\n", slv_handles[slave_number].torque_in);
+			printf("Operation Mode disp: %d\n", slv_handles[slave_number].operation_mode_disp);
 		}
 	}
 

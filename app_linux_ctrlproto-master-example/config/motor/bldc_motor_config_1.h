@@ -1,14 +1,15 @@
 
 /**
- *
  * \file bldc_motor_config_1.h
- *	Motor Control config file for motor 1 on PC
- *
- *	Please define your the motor specifications here
- *
+ * \brief Motor Control config file for motor 1 (Please define your the motor specifications here)
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+
+/*
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Pavan Kanajar <pkanajar@synapticon.com> & Martin Schwarz <mschwarz@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -60,6 +61,20 @@
 
 /* Somanet IFM Internal Config */
 #define IFM_RESOLUTION_1				DC100_RESOLUTION 	// DC300_RESOLUTION /* Specifies the current sensor resolution/A */
+
+/* Polarity is used to keep all position sensors to count ticks in the same direction
+ *  (POLARITY_NORMAL/POLARITY_INVERTED)*/
+#define QEI_SENSOR_POLARITY_1			POLARITY_INVERTED
+
+/* Commutation offset (range 0-4095) */
+#define COMMUTATION_OFFSET_CLK_1		683
+#define COMMUTATION_OFFSET_CCLK_1		2731
+
+/* Motor Winding type */
+#define WINDING_TYPE_1					DELTA_WINDING   		// STAR_WINDING/ DELTA_WINDING
+
+#define LIMIT_SWITCH_TYPES_1			ACTIVE_HIGH				// ACTIVE_LOW
+#define HOMING_METHOD_1                 HOMING_NEGATIVE_SWITCH	// HOMING_POSITIVE_SWITCH
 
 /* Changes direction of the motor drive */
 #define POLARITY_1 						1		// 1 / -1

@@ -1,14 +1,16 @@
 
 /**
- *
  * \file main.xc
- *
- * \brief Test appliction for Ctrlproto on Somanet
- *
+ * \brief Test application for Ctrlproto on Somanet
+ * \author Frank Jeschke <jeschke@fjes.de>
+ * \author Christian Holl <choll@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+
+/*
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Frank Jeschke <jeschke@fjes.de> & Christian Holl <choll@synapticon.com>
- *
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -41,12 +43,14 @@
 #include <platform.h>
 #include <xs1.h>
 #include <ethercat.h>
-#include <foefs.h>
 #include <print.h>
 #include <ctrlproto.h>
 #include <flash_somanet.h>
+#include <ioports.h>
 
-/* handle pdos from EtherCat */
+#define COM_TILE 0
+
+/* Test application handling pdos from EtherCat */
 static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 {
 	timer t;
@@ -117,7 +121,6 @@ static void pdo_handler(chanend coe_out, chanend pdo_out, chanend pdo_in)
 }
 
 
-
 int main(void)
 {
 	chan coe_in;  	 	// CAN from module_ethercat to consumer
@@ -133,19 +136,22 @@ int main(void)
 
 	par
 	{
-		on stdcore[0] : {
+		/* Ethercat Communication Handler Loop */
+		on stdcore[COM_TILE] : {
 			ecat_init();
 			ecat_handler(coe_out, coe_in, eoe_out, eoe_in, eoe_sig, foe_out, foe_in, pdo_out, pdo_in);
 		}
 
-		on stdcore[0] :
+		/* Firmware Update Loop */
+		on stdcore[COM_TILE] :
 		{
-			firmware_update(foe_out, foe_in, c_sig); 	// firmware update over EtherCat
+			firmware_update_loop(p_spi_flash, foe_out, foe_in, c_sig); 	// firmware update over EtherCat
 		}
 
+		/* Test application handling pdos from EtherCat */
 		on stdcore[1] :
 		{
-			pdo_handler(coe_out, pdo_out, pdo_in);		// handle pdos from EtherCat
+			pdo_handler(coe_out, pdo_out, pdo_in);
 		}
 	}
 

@@ -1,9 +1,12 @@
+
 /**
 
 \page apps
 \section app_linux_ctrlproto-master
 
-\brief 
+This application provides example Ethercat Master application for reading/writing process data sent
+to EtherCAT. This application is intended to test the Ethercat communication on Somanet, the nodes 
+must be running app_ctrlproto-test before the Master application runs.
 
-
+NOTE: The application requires EtherCAT Master for Linux from IGH to be installed on your PC. 
 */

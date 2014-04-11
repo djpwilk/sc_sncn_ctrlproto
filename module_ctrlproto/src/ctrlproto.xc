@@ -1,13 +1,16 @@
 
 /**
- *
  * \file ctrlproto.xc
- *
  * \brief Control Protocol Handler
- *
+ * \author Christian Holl <choll@synapticon.com>
+ * \author Pavan Kanajar <pkanajar@synapticon.com>
+ * \version 1.0
+ * \date 10/04/2014
+ */
+
+/*
  * Copyright (c) 2014, Synapticon GmbH
  * All rights reserved.
- * Author: Christian Holl <choll@synapticon.com> & Pavan Kanajar <pkanajar@synapticon.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -70,7 +73,24 @@ void config_sdo_handler(chanend coe_out)
 {
 	int sdo_value;
 
-
+	GET_SDO_DATA(LIMIT_SWITCH_TYPE, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_HOMING_METHOD, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(COMMUTATION_OFFSET_CLKWISE, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(COMMUTATION_OFFSET_CCLKWISE, 0, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(MOTOR_WINDING_TYPE, 0, sdo_value);
+	printintln(sdo_value);
+/*	GET_SDO_DATA(CIA402_QEI_OFFSET, 1, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_QEI_OFFSET, 2, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_QEI_OFFSET, 3, sdo_value);
+	printintln(sdo_value);
+	GET_SDO_DATA(CIA402_QEI_OFFSET, 4, sdo_value);
+	printintln(sdo_value);*/
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, sdo_value);  //motor tor const
 	printintln(sdo_value);
 
@@ -129,12 +149,46 @@ void config_sdo_handler(chanend coe_out)
 	printintln(sdo_value);
 	GET_SDO_DATA(CIA402_QUICK_STOP_DECELERATION, 0, sdo_value);
 	printintln(sdo_value);
+	GET_SDO_DATA(SENSOR_POLARITY, 0, sdo_value);
+	printintln(sdo_value);
 
+}
+
+{int, int} homing_sdo_update(chanend coe_out)
+{
+	int homing_method;
+	int limit_switch_type;
+
+	GET_SDO_DATA(LIMIT_SWITCH_TYPE, 0, limit_switch_type);
+	GET_SDO_DATA(CIA402_HOMING_METHOD, 0, homing_method);
+
+	return {homing_method, limit_switch_type};
+}
+
+{int, int, int} commutation_sdo_update(chanend coe_out)
+{
+	int hall_offset_clk;
+	int hall_offset_cclk;
+	int winding_type;
+
+	GET_SDO_DATA(COMMUTATION_OFFSET_CLKWISE, 0, hall_offset_clk);
+	GET_SDO_DATA(COMMUTATION_OFFSET_CCLKWISE, 0, hall_offset_cclk);
+	GET_SDO_DATA(MOTOR_WINDING_TYPE, 0, winding_type);
+
+	return {hall_offset_clk, hall_offset_cclk, winding_type};
 }
 
 {int, int, int, int, int, int, int, int, int} pp_sdo_update(chanend coe_out)
 {
-	int max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, profile_velocity, min, max, polarity, max_acc;
+	int max_profile_velocity;
+	int profile_acceleration;
+	int profile_deceleration;
+	int quick_stop_deceleration;
+	int profile_velocity;
+	int min;
+	int max;
+	int polarity;
+	int max_acc;
 
 	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, max_profile_velocity);
 	GET_SDO_DATA(CIA402_PROFILE_VELOCITY, 0, profile_velocity);
@@ -151,7 +205,11 @@ void config_sdo_handler(chanend coe_out)
 
 {int, int, int, int, int} pv_sdo_update(chanend coe_out)
 {
-	int max_profile_velocity, profile_acceleration, profile_deceleration, quick_stop_deceleration, polarity;
+	int max_profile_velocity;
+	int profile_acceleration;
+	int profile_deceleration;
+	int quick_stop_deceleration;
+	int polarity;
 
 	GET_SDO_DATA(CIA402_MAX_PROFILE_VELOCITY, 0, max_profile_velocity);
 	GET_SDO_DATA(CIA402_PROFILE_ACCELERATION, 0, profile_acceleration);
@@ -163,7 +221,8 @@ void config_sdo_handler(chanend coe_out)
 
 {int, int} pt_sdo_update(chanend coe_out)
 {
-	int torque_slope, polarity;
+	int torque_slope;
+	int polarity;
 	GET_SDO_DATA(CIA402_TORQUE_SLOPE, 0, torque_slope);
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
 	return {torque_slope, polarity};
@@ -171,7 +230,9 @@ void config_sdo_handler(chanend coe_out)
 
 {int, int, int} position_sdo_update(chanend coe_out)
 {
-	int Kp, Ki, Kd;
+	int Kp;
+	int Ki;
+	int Kd;
 
 	GET_SDO_DATA(CIA402_POSITION_GAIN, 1, Kp);
 	GET_SDO_DATA(CIA402_POSITION_GAIN, 2, Ki);
@@ -182,7 +243,9 @@ void config_sdo_handler(chanend coe_out)
 
 {int, int, int} torque_sdo_update(chanend coe_out)
 {
-	int Kp, Ki, Kd;
+	int Kp;
+	int Ki;
+	int Kd;
 
 	GET_SDO_DATA(CIA402_CURRENT_GAIN, 1, Kp);
 	GET_SDO_DATA(CIA402_CURRENT_GAIN, 2, Ki);
@@ -193,7 +256,11 @@ void config_sdo_handler(chanend coe_out)
 
 {int, int, int, int, int} cst_sdo_update(chanend coe_out)
 {
-	int  nominal_current, max_motor_speed, polarity, max_torque, motor_torque_constant;
+	int  nominal_current;
+	int max_motor_speed;
+	int polarity;
+	int max_torque;
+	int motor_torque_constant;
 
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
@@ -206,15 +273,19 @@ void config_sdo_handler(chanend coe_out)
 
 {int, int, int, int, int} csv_sdo_update(chanend coe_out)
 {
-	int max_motor_speed, nominal_current, polarity, motor_torque_constant, max_acceleration;
+	int max_motor_speed;
+	int nominal_current;
+	int polarity;
+	int motor_torque_constant;
+	int max_acceleration;
 
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 1, nominal_current);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 6, motor_torque_constant);
 
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
-	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration)
-
+	GET_SDO_DATA(CIA402_MAX_ACCELERATION, 0, max_acceleration);
+	//printintln(max_motor_speed);printintln(nominal_current);printintln(polarity);printintln(max_acceleration);printintln(motor_torque_constant);
 	return {max_motor_speed, nominal_current, polarity, max_acceleration, motor_torque_constant};
 }
 
@@ -227,7 +298,12 @@ int speed_sdo_update(chanend coe_out)
 
 {int, int, int, int, int, int} csp_sdo_update(chanend coe_out)
 {
-	int  max_motor_speed, polarity, nominal_current, min, max, max_acc;
+	int max_motor_speed;
+	int polarity;
+	int nominal_current;
+	int min;
+	int max;
+	int max_acc;
 
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 4, max_motor_speed);
 	GET_SDO_DATA(CIA402_POLARITY, 0, polarity);
@@ -249,7 +325,9 @@ int sensor_select_sdo(chanend coe_out)
 }
 {int, int, int} velocity_sdo_update(chanend coe_out)
 {
-	int Kp, Ki, Kd;
+	int Kp;
+	int Ki;
+	int Kd;
 
 	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 1, Kp);
 	GET_SDO_DATA(CIA402_VELOCITY_GAIN, 2, Ki);
@@ -258,32 +336,41 @@ int sensor_select_sdo(chanend coe_out)
 	return {Kp, Ki, Kd};
 }
 
-{int, int} hall_sdo_update(chanend coe_out)
+{int, int, int} hall_sdo_update(chanend coe_out)
 {
-	int gear_ratio, pole_pairs;
+	int pole_pairs;
+	int min;
+	int max;
 
-	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, gear_ratio);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
 	GET_SDO_DATA(CIA402_MOTOR_SPECIFIC, 3, pole_pairs);
 
-	return {pole_pairs, gear_ratio};
+	return {pole_pairs, max, min};
 }
 
 
 
-{int, int, int} qei_sdo_update(chanend coe_out)
+{int, int, int, int, int} qei_sdo_update(chanend coe_out)
 {
-	int real_counts, gear_ratio, qei_type;
+	int real_counts;
+	int qei_type;
+	int min;
+	int max;
+	int sensor_polarity;
 
-	GET_SDO_DATA(CIA402_GEAR_RATIO, 0, gear_ratio);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 1, min);
+	GET_SDO_DATA(CIA402_SOFTWARE_POSITION_LIMIT, 2, max);
 	GET_SDO_DATA(CIA402_POSITION_ENC_RESOLUTION, 0, real_counts);
 	GET_SDO_DATA(CIA402_SENSOR_SELECTION_CODE, 0, qei_type);
+	GET_SDO_DATA(SENSOR_POLARITY, 0, sensor_polarity);
 
 	if(qei_type == QEI_INDEX)
-		return {real_counts, gear_ratio, QEI_WITH_INDEX};
+		return {real_counts, max, min, QEI_WITH_INDEX, sensor_polarity};
 	else if(qei_type == QEI_NO_INDEX)
-		return {real_counts, gear_ratio, QEI_WITH_NO_INDEX};
+		return {real_counts, max, min, QEI_WITH_NO_INDEX, sensor_polarity};
 	else
-		return {real_counts, gear_ratio, QEI_WITH_INDEX};//default
+		return {real_counts, max, min, QEI_WITH_INDEX, sensor_polarity};	//default
 }
 
 int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_proto_values_t &InOut)
@@ -296,10 +383,11 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 
 	pdo_in <: DATA_REQUEST;
 	pdo_in :> count;
-
+	//printstr("count  ");
+	//printintln(count);
 	for (i = 0; i < count; i++) {
 		pdo_in :> buffer[i];
-
+		//printhexln(buffer[i]);
 	}
 
 	//Test for matching number of words
@@ -310,7 +398,11 @@ int ctrlproto_protocol_handler_function(chanend pdo_out, chanend pdo_in, ctrl_pr
 		InOut.target_torque   =  ((buffer[2]<<8 & 0xff00) | (buffer[1]>>8 & 0xff)) & 0x0000ffff;
 		InOut.target_position = ((buffer[4]&0x00ff)<<24 | buffer[3]<<8 | (buffer[2] & 0xff00)>>8 )&0xffffffff;
 		InOut.target_velocity = (buffer[6]<<24 | buffer[5]<<8 |  (buffer[4]&0xff00) >> 8)&0xffffffff;
-
+//		printhexln(InOut.control_word);
+//		printhexln(InOut.operation_mode);
+//		printhexln(InOut.target_torque);
+//		printhexln(InOut.target_position);
+//		printhexln(InOut.target_velocity);
 	}
 
 	if(count > 0)
