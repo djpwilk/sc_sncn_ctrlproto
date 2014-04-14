@@ -4,11 +4,11 @@
 \page apps
 \section app_linux_ctrlproto-csp-example
 
-This application provides example Master Application for Cyclic Synchronous Position (host side).
-The nodes must be running test_ethercat-motorctrl-mode from sc_sncn_motorctrl_sin before the 
-Master application runs.
+This application provides example Master Application for Cyclic Synchronous Position (host side)
+for a single connected node. The nodes must be running test_ethercat-motorctrl-mode from 
+sc_sncn_motorctrl_sin before the Master application runs.
 
-In Cyclic Synchronous position mode, the user can set a new target position fro the node every 
+In Cyclic Synchronous position mode, the user can set a new target position for the node every 
 millisecond making cyclic modes an ideal application for real-time control. We provide examples
 to generate position profiles for a target position with millisecond steps.
 
@@ -20,6 +20,7 @@ at config/motor/bldc_motor_config_N.h
 
 Dependencies: sc_sncn_motorctrl_sin, lib_linux_ctrlproto, lib_linux_motor_drive
 
-NOTE: The application requires EtherCAT Master for Linux from IGH to be installed on your PC. 
+NOTE: The application requires EtherCAT Master for Linux from IGH to be installed on your PC. The 
+node configuration must be defined in ethercat_setup.h
 
 */

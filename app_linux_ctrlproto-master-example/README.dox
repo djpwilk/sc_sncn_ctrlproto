@@ -8,5 +8,7 @@ This application provides example Ethercat Master application for reading/writin
 to EtherCAT. This application is intended to test the Ethercat communication on Somanet, the nodes 
 must be running app_ctrlproto-test before the Master application runs.
 
-NOTE: The application requires EtherCAT Master for Linux from IGH to be installed on your PC. 
+NOTE: The application requires EtherCAT Master for Linux from IGH to be installed on your PC. The 
+node configuration must be defined in ethercat_setup.h
+
 */
