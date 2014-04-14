@@ -13,7 +13,7 @@ Implementation of Communication protocol layer for Motor Control on SOMANET over
 </tr>
 <tr>
   <td height="30px">Maintainer:</td>
-  <td><a href="mailto:support@synapticon.com">support@synapticon.com</a</td>
+  <td><a href="mailto:support@synapticon.com">support@synapticon.com</a></td>
 </tr>
 </table> 
 

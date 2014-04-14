@@ -43,3 +43,6 @@ bin/
 ## ignore KDE files
 .directory
 
+#doxygen output
+.dox/gen/
+
