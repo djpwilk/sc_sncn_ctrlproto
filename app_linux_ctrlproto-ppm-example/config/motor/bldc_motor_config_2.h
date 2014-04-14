@@ -39,6 +39,7 @@
  *
  */
 
+
 #ifndef _MOTOR_2
 #define _MOTOR_2
 #include <common_config.h>
@@ -47,16 +48,16 @@
  * Define Motor Specific Constants (found in motor specification sheet)
  * Mandatory constants to be set
  */
-#define POLE_PAIRS_2  					4	//8		// Number of pole pairs
-#define MAX_NOMINAL_SPEED_2  			3000//4000	// rpm
-#define MAX_NOMINAL_CURRENT_2  			6			// A
-#define MOTOR_TORQUE_CONSTANT_2			112			// mNm/A
+#define POLE_PAIRS_2  					4		// Number of pole pairs
+#define MAX_NOMINAL_SPEED_2  			3000	// rpm
+#define MAX_NOMINAL_CURRENT_2  			6		// A
+#define MOTOR_TORQUE_CONSTANT_2			112		// mNm/A
 
 /**
  * If you have any gears added, specify gear-ratio
  * and any additional encoders attached specify encoder resolution here (Mandatory)
  */
-#define GEAR_RATIO_2 					120		// if no gears are attached - set to gear ratio to 1
+#define GEAR_RATIO_2 					100		// if no gears are attached - set to gear ratio to 1
 #define ENCODER_RESOLUTION_2 			4000	// 4 x Max count of Incremental Encoder (4X decoding - quadrature mode)
 
 /* Somanet IFM Internal Config:  Specifies the current sensor resolution per Ampere
@@ -65,18 +66,18 @@
 
 /* Position Sensor Types (select your sensor type here)
  * (HALL/ QEI_INDEX/ QEI_NO_INDEX) */
-#define SENSOR_SELECTION_CODE_2    		QEI_INDEX
+#define SENSOR_SELECTION_CODE_2         QEI_INDEX
 
 /* Polarity is used to keep all position sensors to count ticks in the same direction
- *  (POLARITY_NORMAL/POLARITY_INVERTED)*/
-#define QEI_SENSOR_POLARITY_2			POLARITY_INVERTED
+ *  (POLARITY_NORMAL/POLARITY_INVERTED) */
+#define QEI_SENSOR_POLARITY_2			POLARITY_NORMAL
 
 /* Commutation offset (range 0-4095) (HALL sensor based commutation) */
-#define COMMUTATION_OFFSET_CLK_2		770
-#define COMMUTATION_OFFSET_CCLK_2		2601
+#define COMMUTATION_OFFSET_CLK_2		683
+#define COMMUTATION_OFFSET_CCLK_2		2731
 
 /* Motor Winding type (STAR_WINDING/DELTA_WINDING) */
-#define WINDING_TYPE_2					DELTA_WINDING
+#define WINDING_TYPE_2					STAR_WINDING
 
 /* Specify Switch Types (ACTIVE_HIGH/ACTIVE_LOW) when switch is closed
  * (Only if you have any limit switches in the system for safety/homing ) */
@@ -91,13 +92,14 @@
 
 /* Profile defines (Mandatory for profile modes) */
 #define MAX_PROFILE_VELOCITY_2  		MAX_NOMINAL_SPEED_2
-#define PROFILE_VELOCITY_2				2000	// rpm
-#define MAX_ACCELERATION_2   			2000    // rpm/s
-#define PROFILE_ACCELERATION_2			2000	// rpm
-#define PROFILE_DECELERATION_2  		2000	// rpm
-#define QUICK_STOP_DECELERATION_2 		2000	// rpm
-#define MAX_TORQUE_2					MOTOR_TORQUE_CONSTANT_2 * IFM_RESOLUTION_2 * MAX_NOMINAL_CURRENT_2
-#define TORQUE_SLOPE_2 					33	 	// mNm/s
+#define PROFILE_VELOCITY_2				1000	// rpm
+#define MAX_ACCELERATION_2   			3000    // rpm/s
+#define PROFILE_ACCELERATION_2			2000	// rpm/s
+#define PROFILE_DECELERATION_2  		2000	// rpm/s
+#define QUICK_STOP_DECELERATION_2 		2500 	// rpm/s
+#define MAX_TORQUE_2					MOTOR_TORQUE_CONSTANT_2 * IFM_RESOLUTION_2 * MAX_NOMINAL_CURRENT_2 // calculated
+#define TORQUE_SLOPE_2 					60 		// mNm/s
+
 
 /* Control specific constants/variables */
 	/* Torque Control (Mandatory if Torque control used)
@@ -122,27 +124,27 @@
 
 	/* Position Control (Mandatory if Position control used)
 	 * possible range of gains Kp/Ki/Kd: 1/65536 to 32760
-	 * Note: gains are calculated as NUMERATOR/DENOMINATOR to give ranges */ // PID gains for position control with Incremental Encoder
-#if(SENSOR_SELECTION_CODE_2 == QEI_INDEX || SENSOR_SELECTION_CODE_2 == QEI_NO_INDEX)
-	#define POSITION_Kp_NUMERATOR_2 		660	// 250 	//180
-	#define POSITION_Kp_DENOMINATOR_2  		80	//20
-	#define POSITION_Ki_NUMERATOR_2    		1	//50	//50
-	#define POSITION_Ki_DENOMINATOR_2  		25384//102
-	#define POSITION_Kd_NUMERATOR_2    		0	//80	//100
-	#define POSITION_Kd_DENOMINATOR_2  		1	//100
+	 * Note: gains are calculated as NUMERATOR/DENOMINATOR to give ranges */
+#if(SENSOR_SELECTION_CODE_2 == QEI_INDEX || SENSOR_SELECTION_CODE_2 == QEI_NO_INDEX) // PID gains for position control with Incremental Encoder
+	#define POSITION_Kp_NUMERATOR_2 		660
+	#define POSITION_Kp_DENOMINATOR_2  		80
+	#define POSITION_Ki_NUMERATOR_2    		1
+	#define POSITION_Ki_DENOMINATOR_2  		25384
+	#define POSITION_Kd_NUMERATOR_2    		0
+	#define POSITION_Kd_DENOMINATOR_2  		100
 	#define MAX_POSITION_LIMIT_2 			GEAR_RATIO_2*ENCODER_RESOLUTION_2		// ticks (max range: 2^30, limited for safe operation)
 	#define MIN_POSITION_LIMIT_2 			-GEAR_RATIO_2*ENCODER_RESOLUTION_2		// ticks (min range: -2^30, limited for safe operation)
 #endif
-#if(SENSOR_SELECTION_CODE_2 == HALL)	// PID gains for position control with Hall Sensor
-	#define POSITION_Kp_NUMERATOR_2 	 	2265	//250 //180//
-	#define POSITION_Kp_DENOMINATOR_2  		1000	//20
-	#define POSITION_Ki_NUMERATOR_2    		1		//50 //50//
-	#define POSITION_Ki_DENOMINATOR_2  		5000	//102
-	#define POSITION_Kd_NUMERATOR_2    		1		//80 //100//
-	#define POSITION_Kd_DENOMINATOR_2  		1000	//100
+#if(SENSOR_SELECTION_CODE_2 == HALL)		// PID gains for position control with Hall Sensor
+	#define POSITION_Kp_NUMERATOR_2 	 	2265
+	#define POSITION_Kp_DENOMINATOR_2  		1000
+	#define POSITION_Ki_NUMERATOR_2    		1
+	#define POSITION_Ki_DENOMINATOR_2  		5000
+	#define POSITION_Kd_NUMERATOR_2    		1
+	#define POSITION_Kd_DENOMINATOR_2  		1000
 
-	#define MAX_POSITION_LIMIT_2 			POLE_PAIRS_2*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_2		// ticks (max range: 2^30, limited for safe operation) qei/hall/any position
-	#define MIN_POSITION_LIMIT_2			-POLE_PAIRS_2*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_2		// ticks (min range: -2^30, limited for safe operation) qei/hall/any position
+	#define MAX_POSITION_LIMIT_2 			POLE_PAIRS_2*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_2		// ticks (max range: 2^30, limited for safe operation) qei/hall/any position sensor
+	#define MIN_POSITION_LIMIT_2			-POLE_PAIRS_2*HALL_POSITION_INTERPOLATED_RANGE*GEAR_RATIO_2		// ticks (min range: -2^30, limited for safe operation) qei/hall/any position sensor
 #endif
 
 #endif
