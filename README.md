@@ -6,6 +6,8 @@ Control Protocol SOFTWARE COMPONENT
 
 Implementation of Communication protocol layer for Motor Control on SOMANET over EtherCAT.
 
+  * Software Component [DOCUMENTATION](http://synapticon.github.io/sc_sncn_ctrlproto/).
+
 <table >
 <tr>
   <td width="150px" height="30px">Latest release: </td>
@@ -19,19 +21,17 @@ Implementation of Communication protocol layer for Motor Control on SOMANET over
 
 Key Features
 ---------
-   * Cyclic Synchronous Position Control
-   * Cyclic Synchronous Velocity Control
-   * Cyclic Synchronous Torque Control
-   * Profile Position Control 
-   * Profile Velocity Control
-   * Profile Torque Control
-   * Support motor and controller parameter update
-   * Support complex node topology
-
-
-Further information
----------
-  * sc_sncn_ctrlproto [DOCUMENTATION](http://synapticon.github.io/sc_sncn_ctrlproto/).
+  * Cyclic Synchronous Position Control
+  * Cyclic Synchronous Velocity Control
+  * Cyclic Synchronous Torque Control
+  * Profile Position Control
+  * Profile Velocity Control
+  * Profile Torque Control
+  * Homing mode 
+  * Precise position control based on position sensor ticks
+  * Support motor and controller parameter update
+  * Support complex node topology
+  * Profile Generation for multinode configurations
 
 Known Issues
 ---------
@@ -46,7 +46,10 @@ Required software (dependencies)
 
 Changelog
 ---------
-
+  * [1.0](https://github.com/synapticon/sc_sncn_ctrlproto/releases/tag/v1.0) (2014-04-17)
+	* Homing Mode
+	* Profile Generation for multinode configurations
+	* Precise position control based on position sensor ticks
   * [0.9beta](https://github.com/synapticon/sc_sncn_ctrlproto/releases/tag/v0.9-beta) (2013-01-24)
 
 License
