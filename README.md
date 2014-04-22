@@ -6,7 +6,7 @@ Control Protocol SOFTWARE COMPONENT
 
 Implementation of Communication protocol layer for Motor Control on SOMANET over EtherCAT.
 
-  * Software Component [DOCUMENTATION](http://synapticon.github.io/sc_sncn_ctrlproto/).
+  * See the [MANUAL](http://synapticon.github.io/sc_sncn_ctrlproto/).
 
 <table >
 <tr>
