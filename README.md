@@ -11,7 +11,7 @@ Implementation of Communication protocol layer for Motor Control on SOMANET over
 <table >
 <tr>
   <td width="150px" height="30px">Latest release: </td>
-  <td width="300px"><a href="https://github.com/synapticon/sc_sncn_ctrlproto/releases/tag/v0.9-beta">0.9beta</a></td>
+  <td width="300px"><a href="https://github.com/synapticon/sc_sncn_ctrlproto/releases/tag/v1.0">1.0</a></td>
 </tr>
 <tr>
   <td height="30px">Maintainer:</td>
