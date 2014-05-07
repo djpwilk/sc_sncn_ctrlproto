@@ -274,7 +274,7 @@ typedef struct
 	/**
 	 * outgoing commands
 	 */
-	int16_t motorctrl_out;				/*only 16 bits valid*/
+	uint16_t motorctrl_out;				/*only 16 bits valid*/
 
 	/**
 	 * outgoing torque (use fromFloatFunction to set it)
@@ -294,12 +294,12 @@ typedef struct
 	/**
 	 * outgoing modes of operation
 	 */
-	int8_t operation_mode;				/*only 8 bits valid*/
+	uint8_t operation_mode;				/*only 8 bits valid*/
 
 	/**
 	 * incoming motorctrl command (readback)
 	 */
-	int16_t motorctrl_status_in;		/*only 16 bits valid*/
+	uint16_t motorctrl_status_in;		/*only 16 bits valid*/
 
 	/**
 	 * incoming torque
@@ -319,7 +319,7 @@ typedef struct
 	/**
 	 * incoming display mode of operation
 	 */
-	int8_t operation_mode_disp;		/*only 8 bits valid*/
+	uint8_t operation_mode_disp;		/*only 8 bits valid*/
 
 	/**
 	 * motor config struct
