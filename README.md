@@ -38,18 +38,16 @@ Content
 ---------
 | Module        				| Demo          						|
 | :-------------: 				|:-------------							|
-| [module_adc][module_adc]      		| [test_adc_external_input][test_adc_external_input] 		|
-| [module_blocks][module_blocks] 		|       							|
-| [module_comm][module_comm]	 		|     								|
-| [module_common][module_common]		|     								|
-| [module_commutation][module_commutation]	|								|
-| [module_ctrl_loops][module_ctrl_loops]	| [test_position-ctrl][test_position-ctrl] [test_velocity-ctrl][test_velocity-ctrl] [test_torque-ctrl][test_torque-ctrl]	|
-| [module_ecat_drive][module_ecat_drive]	| [test_ethercat-motorctrl-mode][test_ethercat-motorctrl-mode]	|
-| [module_gpio][module_gpio]			| [test_gpio_digital][test_gpio_digital] [test_homing][test_homing] 	|
-| [module_hall][module_hall]			| [test_hall][test_hall]					|
-| [module_profile][module_profile]		|								|
-| [module_qei][module_qei]			| [test_qei][test_qei]						|
-| [module_sm][module_sm]			|								|
+| [lib_linux_ctrlproto][lib_linux_ctrlproto]    |								|
+| [lib_linux_motor_drive][lib_linux_motor_drive]|       							|
+| [module_ctrlproto][module_ctrlproto]		| [app_ctrlproto-test][app_ctrlproto-test]  			| |						| [app_linux_ctrlproto-csp-example][app_linux_ctrlproto-csp-example]	|
+|						| [app_linux_ctrlproto-cst-example][app_linux_ctrlproto-cst-example]   	|			
+|						| [app_linux_ctrlproto-csv-example][app_linux_ctrlproto-csv-example]	|
+|						| [app_linux_ctrlproto-hm-example][app_linux_ctrlproto-hm-example]	|
+| 						| [app_linux_ctrlproto-ppm-example][app_linux_ctrlproto-ppm-example]	|
+| 						| [app_linux_ctrlproto-ptm-example][app_linux_ctrlproto-ptm-example]  	|
+| 						| [app_linux_ctrlproto-master-example][app_linux_ctrlproto-master-example]	|
+
 
 
 Required software (dependencies)
@@ -70,3 +68,16 @@ Changelog
 License
 ---------
 Please see [LICENSE](https://github.com/synapticon/sc_sncn_ctrlproto/blob/master/LICENSE.md).
+
+[module_ctrlproto]: http
+[lib_linux_motor_drive]: http
+[lib_linux_ctrlproto]: http
+[app_ctrlproto-test]: http
+[app_linux_ctrlproto-csp-example]: http
+[app_linux_ctrlproto-cst-example]: http	
+[app_linux_ctrlproto-csv-example]: http
+[app_linux_ctrlproto-hm-example]: http
+[app_linux_ctrlproto-ppm-example]: http
+[app_linux_ctrlproto-ptm-example]: http
+[app_linux_ctrlproto-master-example]: http	
+
