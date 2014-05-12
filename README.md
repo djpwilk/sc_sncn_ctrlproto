@@ -6,6 +6,8 @@ Control Protocol SOFTWARE COMPONENT
 
 Implementation of Communication protocol layer for Motor Control on SOMANET over EtherCAT.
 
+* [How to?](https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/howto)
+
 <table >
 <tr>
   <td width="150px" height="30px">Latest release: </td>
@@ -16,6 +18,7 @@ Implementation of Communication protocol layer for Motor Control on SOMANET over
   <td><a href="mailto:support@synapticon.com">support@synapticon.com</a></td>
 </tr>
 </table> 
+
 
 Key Features
 ---------
