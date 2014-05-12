@@ -34,9 +34,23 @@ Key Features
   * Support complex node topology
   * Profile Generation for multinode configurations
 
-Known Issues
+Content
 ---------
-  * None
+| Module        				| Demo          						|
+| :-------------: 				|:-------------							|
+| [module_adc][module_adc]      		| [test_adc_external_input][test_adc_external_input] 		|
+| [module_blocks][module_blocks] 		|       							|
+| [module_comm][module_comm]	 		|     								|
+| [module_common][module_common]		|     								|
+| [module_commutation][module_commutation]	|								|
+| [module_ctrl_loops][module_ctrl_loops]	| [test_position-ctrl][test_position-ctrl] [test_velocity-ctrl][test_velocity-ctrl] [test_torque-ctrl][test_torque-ctrl]	|
+| [module_ecat_drive][module_ecat_drive]	| [test_ethercat-motorctrl-mode][test_ethercat-motorctrl-mode]	|
+| [module_gpio][module_gpio]			| [test_gpio_digital][test_gpio_digital] [test_homing][test_homing] 	|
+| [module_hall][module_hall]			| [test_hall][test_hall]					|
+| [module_profile][module_profile]		|								|
+| [module_qei][module_qei]			| [test_qei][test_qei]						|
+| [module_sm][module_sm]			|								|
+
 
 Required software (dependencies)
 ---------
@@ -55,5 +69,4 @@ Changelog
 
 License
 ---------
-
 Please see [LICENSE](https://github.com/synapticon/sc_sncn_ctrlproto/blob/master/LICENSE.md).
