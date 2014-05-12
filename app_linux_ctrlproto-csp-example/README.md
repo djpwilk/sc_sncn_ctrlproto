@@ -1,8 +1,11 @@
+Cyclic Synchronous Position mode over EtherCAT Demo
+=========================
+<a href="https://github.com/synapticon/sc_sncn_motorctrl_sin/blob/master/SYNAPTICON.md">
+<img align="left" src="https://s3-eu-west-1.amazonaws.com/synapticon-resources/images/logos/synapticon_fullname_blackoverwhite_280x48.png"/>
+</a>
+<br/>
+<br/>
 
-/**
-
-\page apps
-\section app_linux_ctrlproto-csp-example
 
 This application provides example Master Application for Cyclic Synchronous Position (host side)
 for a single connected node. The nodes must be running test_ethercat-motorctrl-mode from 
@@ -23,4 +26,3 @@ Dependencies: sc_sncn_motorctrl_sin, lib_linux_ctrlproto, lib_linux_motor_drive
 NOTE: The application requires EtherCAT Master for Linux from IGH to be installed on your PC. The 
 node configuration must be defined in ethercat_setup.h
 
-*/
