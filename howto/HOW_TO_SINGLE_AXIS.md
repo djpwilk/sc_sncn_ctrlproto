@@ -1,4 +1,4 @@
-How to write an application for a single axis motor control over EtheCAT 
+How to write an application for a single axis motor control over EtherCAT 
 ============================
 <img align="left" src="https://s3-eu-west-1.amazonaws.com/synapticon-resources/images/logos/synapticon_fullname_blackoverwhite_280x48.png"/>
 <br/>
