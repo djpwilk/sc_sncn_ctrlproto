@@ -40,7 +40,8 @@ Content
 | :-------------: 				|:-------------							|
 | [lib_linux_ctrlproto][lib_linux_ctrlproto]    |								|
 | [lib_linux_motor_drive][lib_linux_motor_drive]|       							|
-| [module_ctrlproto][module_ctrlproto]		| [app_ctrlproto-test][app_ctrlproto-test]  			| |						| [app_linux_ctrlproto-csp-example][app_linux_ctrlproto-csp-example]	|
+| [module_ctrlproto][module_ctrlproto]		| [app_ctrlproto-test][app_ctrlproto-test]  			|
+|						| [app_linux_ctrlproto-csp-example][app_linux_ctrlproto-csp-example]	|
 |						| [app_linux_ctrlproto-cst-example][app_linux_ctrlproto-cst-example]   	|			
 |						| [app_linux_ctrlproto-csv-example][app_linux_ctrlproto-csv-example]	|
 |						| [app_linux_ctrlproto-hm-example][app_linux_ctrlproto-hm-example]	|
@@ -69,15 +70,15 @@ License
 ---------
 Please see [LICENSE](https://github.com/synapticon/sc_sncn_ctrlproto/blob/master/LICENSE.md).
 
-[module_ctrlproto]: http
-[lib_linux_motor_drive]: http
-[lib_linux_ctrlproto]: http
-[app_ctrlproto-test]: http
-[app_linux_ctrlproto-csp-example]: http
-[app_linux_ctrlproto-cst-example]: http	
-[app_linux_ctrlproto-csv-example]: http
-[app_linux_ctrlproto-hm-example]: http
-[app_linux_ctrlproto-ppm-example]: http
-[app_linux_ctrlproto-ptm-example]: http
-[app_linux_ctrlproto-master-example]: http	
+[module_ctrlproto]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/module_ctrlproto
+[lib_linux_motor_drive]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/lib_linux_motor_drive
+[lib_linux_ctrlproto]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/lib_linux_ctrlproto
+[app_ctrlproto-test]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/app_ctrlproto-test
+[app_linux_ctrlproto-csp-example]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/app_linux_ctrlproto-csp-example
+[app_linux_ctrlproto-cst-example]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/app_linux_ctrlproto-cst-example	
+[app_linux_ctrlproto-csv-example]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/app_linux_ctrlproto-csv-example
+[app_linux_ctrlproto-hm-example]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/app_linux_ctrlproto-hm-example
+[app_linux_ctrlproto-ppm-example]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/app_linux_ctrlproto-ppm-example
+[app_linux_ctrlproto-ptm-example]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/app_linux_ctrlproto-ptm-example
+[app_linux_ctrlproto-master-example]: https://github.com/synapticon/sc_sncn_ctrlproto/tree/master/app_linux_ctrlproto-master-example	
 
