@@ -11,7 +11,7 @@ Ethercat Operating Modes
 * **PVM** - Profile Velocity Mode 
 * **PTM** - Profile Torque Mode
 
-<img align="center" src="https://github.com/synapticon/sc_sncn_ctrlproto/blob/master/howto/imgs/ethercat_flowchart.png"/>
+<img align="center" src="https://raw.githubusercontent.com/synapticon/sc_sncn_ctrlproto/master/howto/imgs/ethercat_flowchart.png"/>
 
 **See also:**
 
